@@ -588,4 +588,5 @@ Lightx -t 192.168.1.1 -p default -nobr
 
 ## Star History Chart
 
-[![Star History Chart](./assets/Lightx&type=Date.svg+xml)](https://www.star-history.com/#onewinner/Lightx&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=onewinner/Lightx&type=Date)](https://www.star-history.com/#onewinner/Lightx&Date)
+
