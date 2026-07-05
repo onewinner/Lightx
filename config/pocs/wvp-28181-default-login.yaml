@@ -1,0 +1,30 @@
+id: wvp-28181-default-login
+
+info:
+  name: WVP 28181 - Default Login
+  author: qwtd
+  severity: high
+  description: |
+    WVP视频平台(国标28181)默认账号密码为admin:admin。
+  metadata:
+    max-request: 1
+  tags: WVP视频平台
+
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/api/user/login?username=admin&password=21232f297a57a5a743894a0e4a801fc3'
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"code":0'
+          - '"username":'
+          - '"accessToken":'
+        condition: and
+      - type: status
+        status:
+          - 200

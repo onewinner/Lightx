@@ -1,0 +1,26 @@
+id: finereport-duchamp-fileupload
+
+info:
+  name: FineReport duchamp 主题插件 - FileUpload
+  author: qwtd
+  severity: critical
+  description: FineReport duchamp 主题插件存在文件上传漏洞，攻击者可利用该漏洞上传任意文件。
+  tags: 帆软-FineReport
+
+http:
+  - raw:
+      - |
+        GET /webroot/decision/view/duchamp/theme/list HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "theme_config"
+      - type: status
+        status:
+          - 200

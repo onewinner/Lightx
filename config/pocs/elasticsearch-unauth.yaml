@@ -1,0 +1,29 @@
+id: elasticsearch-unauth
+
+info:
+  name: Elasticsearch Unauthenticated Access
+  author: qwtd
+  severity: high
+  description: Elasticsearch is vulnerable to unauthenticated access.
+  metadata:
+    max-request: 1
+  tags: Elasticsearch
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'cluster_name'
+          - 'cluster_uuid'
+          - 'version'
+          - 'You Know, for Search'
+        condition: and

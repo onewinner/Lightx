@@ -1,0 +1,45 @@
+id: CNVD-2021-32085
+
+info:
+  name: Sapido Router - Remote Command Execution
+  author: qwtd
+  severity: critical
+  description: |
+    Sapido routers have a command execution vulnerability that allows attackers to execute arbitrary commands.
+  reference:
+    - https://www.cnvd.org.cn/flaw/show/CNVD-2021-32085
+    - https://www.hacking8.com/bug-iot/Sapido/Sapido%E5%A4%9A%E6%AC%BE%E8%B7%AF%E7%94%B1%E5%99%A8%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E7%AA%81%E7%A0%B4.html
+  tags: Sapido-router
+
+flow: http(1) && http(2)
+
+http:
+  - raw:
+      - |
+        GET /syscmd.htm HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "/boafrm/formSysCmd"
+        part: body
+
+  - raw:
+      - |
+        GET /syscmd.asp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "/boafrm/formSysCmd"
+        part: body

@@ -1,0 +1,33 @@
+id: huiwen-bibliographic-status-disclosure
+
+info:
+  name: Huiwen library bibliographic Retrieval System - Information Disclosure
+  author: qwtd
+  severity: low
+  description: |
+    Huiwen library bibliographic retrieval system /meta-local/opac/status file contains sensitive information, attackers can directly access to obtain information
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: icon_hash="2037539638"
+  tags: 汇文软件-书目检索系统
+
+http:
+  - raw:
+      - |
+        GET /meta-local/opac/status HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "mongoClientOptions"
+          - "defaultWebClientOptionsConfig"
+        part: body
+        condition: and
+
+      - type: status
+        status:
+          - 200
+

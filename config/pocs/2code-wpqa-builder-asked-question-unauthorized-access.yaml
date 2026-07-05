@@ -1,0 +1,33 @@
+id: 2code-wpqa-builder-asked-question-unauthorized-access
+
+info:
+  name: 2code wpqa builder asked-question Unauthorized Access
+  author: bl
+  severity: medium
+  tags: WordPress
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/wp-json/wp/v2/asked-question'
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "\"id\":"
+        part: body
+      - type: word
+        words:
+          - "\"rendered\":"
+        part: body
+      - type: word
+        words:
+          - "application/json"
+        part: content_type
+      - type: word
+        words:
+          - "\"date_gmt\":"
+        part: body

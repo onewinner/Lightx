@@ -1,0 +1,31 @@
+id: kingportal-externalconfig-info-leak
+
+info:
+  name: KingPortal externalConfig.json - Information Disclosure
+  author: qwtd
+  severity: medium
+  description: KingPortal externalConfig.json contains sensitive information.
+  metadata:
+    fofa: title="KingPortal"
+    verified: true
+  tags: KingPortal
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/config/externalConfig.json"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "username"
+          - "password"
+          - "client_secret"
+          - "client_id"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+      

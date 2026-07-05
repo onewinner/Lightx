@@ -1,0 +1,35 @@
+id: datang-ac-default-login
+
+info:
+  name: Datang AC - Default Login
+  author: qwtd
+  severity: high
+  description: |
+    Datang AC default login credentials were discovered.
+  reference:
+    - https://www.cnvd.org.cn/flaw/show/CNVD-2021-04128
+  tags: 大唐电信-AC
+
+requests:
+  - method: POST
+    path:
+      - "{{BaseURL}}/login.cgi"
+    body: user=admin&password1=%E8%AF%B7%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81&password=123456&Submit=%E7%AB%8B%E5%8D%B3%E7%99%BB%E5%BD%95
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "window.open('index.htm?_"
+        condition: and
+
+      - type: word
+        part: header
+        words:
+          - "ac_userid=admin,ac_passwd="
+        condition: and
+
+      - type: status
+        status:
+          - 200

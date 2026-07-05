@@ -1,0 +1,23 @@
+id: e-cology-source-code-leak
+info:
+  name: E-Cology - Source Code Leak
+  author: bl
+  severity: medium
+  description: |
+    Detects potential source code leakage in 泛微E-Cology through an accessible file `ecology_dev.zip`.
+  reference:
+    - https://blog.csdn.net/weixin_57567655/article/details/132017321
+  tags: 泛微-协同办公OA
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/cloudstore/ecode/setup/ecology_dev.zip'
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        words:
+          - application/zip

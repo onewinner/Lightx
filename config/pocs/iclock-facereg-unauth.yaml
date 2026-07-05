@@ -1,0 +1,26 @@
+id: iclock-facereg-unauth
+
+info:
+  name: 时间精细化管理平台 facereg - 未授权访问
+  author: qwtd
+  severity: low
+  description: 登录--时间&安全精细化管理平台/iapp/mobile/facereg/facereg.html接口存在未授权访问漏洞，黑客可以未授权等级员工信息对平台造成影响
+  reference:
+    - https://blog.csdn.net/2301_77012231/article/details/142610179
+  tags: ZKTECO-时间精细化管理平台
+
+
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/iapp/mobile/facereg/facereg.html"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "员工信息登记"
+      - type: status
+        status:
+          - 200

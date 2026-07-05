@@ -1,0 +1,33 @@
+id: xxl-job-api-hessian-deserialize
+
+info:
+  name: XXL-JOB前台api未授权Hessian2反序列化
+  author: qwtd
+  severity: critical
+  description: |
+    XXL-JOB是一个分布式任务调度平台。Hessian2是一种序列化协议，用于在XXL-JOB前后端之间传输数据。
+    前台API未授权Hessian2反序列化是指，客户端请求XXL-JOB的前台API时，没有提供正确的认证信息，导致服务端无法正确地对请求进行反序列化处理。
+  reference:
+    - https://forum.butian.net/share/2592
+    - https://mp.weixin.qq.com/s/UVp3poZZ8TKLmLMygxDvRQ
+  tags: XXL-JOB
+
+http:
+  - raw:
+      - |
+        GET /xxl-job-admin/api HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0
+        Accept-Encoding: gzip, deflate, br
+        Accept: */*
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "xxl-rpc"
+
+      - type: status
+        status:
+          - 200

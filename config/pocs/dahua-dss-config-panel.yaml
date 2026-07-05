@@ -1,0 +1,29 @@
+id: dahua-dss-config-panel
+
+info:
+  name: Dahua DSS - Config Panel
+  author: qwtd
+  severity: info
+  description: |
+    Dahua DSS contains a configuration panel that allows administrators to manage system settings, user accounts, and other configurations. This panel is essential for maintaining the security and functionality of the Dahua DSS system.
+    default credentials are:
+    - username: admin
+    - password: admin123
+  metadata:
+    max-request: 1
+    verified: true
+  tags: Dahua-DSS
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/config/user_toLoginPage.action"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '<title>配置系统</title>'
+      - type: status
+        status:
+          - 200

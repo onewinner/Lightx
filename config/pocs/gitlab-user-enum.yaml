@@ -1,0 +1,31 @@
+id: gitlab-user-enum
+
+info:
+  name: GitLab - User Information Disclosure
+  author: qwtd
+  severity: low
+  metadata:
+    max-request: 100
+    shodan-query: http.title:"GitLab"
+  tags: GitLab
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/root"
+      - "{{BaseURL}}/admin"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Overview"
+          - "Following"
+          - "Contributed projects"
+
+      - type: status
+        status:
+          - 200
+

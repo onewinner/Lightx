@@ -1,0 +1,39 @@
+id: dockerui-default-login
+
+info:
+  name: DockerUI Default Login
+  author: qwtd
+  severity: high
+  description: |
+    DockerUI default login credentials were discovered.
+  tags: Docker-UI
+
+http:
+  - raw:
+      - |
+        POST /login HTTP/1.1
+        Host: {{Hostname}}
+        Authorization: Basic d2ViQXBwOndlYkFwcA==
+        X-Requested-With: XMLHttpRequest
+        Accept-Encoding: gzip, deflate
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+        Accept: application/json, text/javascript, */*; q=0.01
+        uid: 
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Accept-Language: zh -CN,zh;q=0.9
+        Content-Length: 66
+
+        username=ginghan&grant_type=password&password=123456&practicetype=
+
+      
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '"token":'
+          - '"status":0'
+          - '"msg":"OK"'
+        condition: and

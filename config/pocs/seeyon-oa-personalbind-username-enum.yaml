@@ -1,0 +1,31 @@
+id: seeyon-oa-personalbind-username-enum
+
+info:
+  name: Seeyon OA personalBind - Username Enumeration
+  author: qwtd
+  severity: low
+  description: |
+    Seeyon OA personalBind endpoint allows unauthenticated users to retrieve and send usernames.
+    memberIsExist returns true if the username exists.
+  reference:
+    - https://mp.weixin.qq.com/s/UA7zYmqYkpZJsXH4upmZxA
+  metadata:
+    fofa: app="致远互联-OA"
+    max-request: 1
+    verified: true
+  tags: 致远互联-OA
+
+http:
+  - raw:
+      - |
+        GET /seeyon/personalBind.do?method=getBindTypeByLoginName&loginName=admin1 HTTP/1.1
+        Host: {{Hostname}}
+      
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'memberIsExist'
+      - type: status
+        status:
+          - 200

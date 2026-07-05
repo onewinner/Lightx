@@ -1,0 +1,26 @@
+id: yqy-user-enumeration
+
+info:
+  name: YQY - User Enumeration
+  author: qwtd
+  severity: low
+  description: |
+    YQY allows unauthenticated users to enumerate usernames.
+    当preAcceptedRecord的值为true时用户名存在，false不存在
+  tags: 亿企赢网络科技
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/ucapi/uic/protocol/user?appId=08100280010000&scene=login&mobile=13366666666&_t=1732505006291"
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'preAcceptedRecord'
+          - 'accepted'
+      - type: status
+        status:
+          - 200
+    

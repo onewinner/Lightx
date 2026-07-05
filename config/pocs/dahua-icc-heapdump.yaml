@@ -1,0 +1,19 @@
+id: dahua-icc-heapdump
+
+info:
+  name: Dahua Icc - Heap Dump Detection
+  author: qwtd
+  severity: high
+  description: |-
+    A Spring Boot Actuator heap dump was detected. A heap dump is a snapshot of JVM memory, which could expose environment variables and HTTP requests.
+  tags: Dahua-ICC
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/evo-apigw/dsc-mac/heapdump;.js"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200 && contains(hex_encode(body_1), '1f8b080000000000')"

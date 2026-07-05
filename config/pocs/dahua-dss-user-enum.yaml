@@ -1,0 +1,24 @@
+id: dahua-dss-user-enum
+
+info:
+  name: Dahua DSS checkSystemIsDefaultPassword - User Enumeration
+  author: qwtd
+  severity: low
+  description: 大华DSS checkSystemIsDefaultPassword 接口存在用户名枚举漏洞，攻击者可以通过枚举 checkSystemIsDefaultPassword 后的用户名来判断用户是否存在
+  metadata:
+    max-request: 1
+    verified: true
+  tags: Dahua-DSS
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/jg/AuthPlatform/accounts/checkSystemIsDefaultPassword/system"
+      - "{{BaseURL}}/TheNextWebApp/accounts/checkSystemIsDefaultPassword/system"
+
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl: 
+          - 'status_code == 200 && contains(body, "isDefaultPass")'
+          - 'status_code == 500 && contains(body, "the account has not exist")'

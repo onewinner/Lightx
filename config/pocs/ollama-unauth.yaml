@@ -1,0 +1,31 @@
+id: ollama-unauth
+info:
+  name: Ollama - Unauthenticated
+  author: qwtd
+  severity: high
+  description: |
+    Ollama 是一个开源的便于本地部署和运行 Llama 3、Mistral、Gemma 等大型语言模型的工具。
+    据描述，由于 Ollama 的默认部署配置未强制启用身份认证机制，如果服务端口（默认11434）直接暴露于公网，则攻击者可直接访问高危接口，从而读取、下载或删除私有模型文件，并窃取敏感业务数据或滥用模型推理资源，如果 Ollama 以 Docker 部署，则攻击者可能通过恶意指令注入实现容器逃逸。
+  metadata:
+    max-request: 1
+    shodan-query: http.title:"Ollama"
+  tags: ollama
+  classification:
+    cwe-id: CWE-863
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/api/tags'
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"models"'
+          - '"name"'
+          - '"model"'
+          - '"modified_at"'
+          - '"size"'
+          - '"digest"'
+      - type: status
+        status:
+          - 200

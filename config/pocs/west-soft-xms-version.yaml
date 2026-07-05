@@ -1,0 +1,29 @@
+id: west-soft-xms-version
+
+info:
+  name: Westsoft XMS - Version Disclosure
+  author: qwtd
+  severity: info
+  description: |
+    XMS is a web-based management platform for X-Wing Mega System. The XMS version is disclosed in the /WebXMS/xms.ver api response.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/WebXMS/xms.ver"
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - 'Server: Westsoft'
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        regex:
+          - "V([0-9.]+)-([0-9]+)"

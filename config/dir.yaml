@@ -1,0 +1,128 @@
+Alibaba-Nacos:
+  - "/nacos/"
+  - "/api/nacos/"
+Alibaba-Druid:
+  - "/druid/index.html"
+  - "/druid/basic.json"
+  - "/prod-api/druid/basic.json"
+泛微-协同办公OA:
+  - "/wui/index.html"
+SpringBoot-Framework:
+  - "/error"
+  - "/gateway/error/"
+  - "/api/error/"
+ThinkPHP:
+  - "/?a=WKtwuea&c=2RVM&m=fv3C&s=ba5a"
+  - "/admin.php"
+帆软-FineReport:
+  - "/WebReport/ReportServer"
+  - "/ReportServer"
+  - "/webroot/decision/login"
+  - "/decision/login"
+XXL-JOB:
+  - "/xxl-job-admin/toLogin"
+  - "/xxl-job/toLogin"
+  - "/xxl/toLogin"
+XXL-RPC:
+  - "/xxl-rpc-admin"
+  - "/xxl-rpc"
+GeoServer:
+  - "/geoserver/web/"
+  - "/geoserver/wfs"
+  - "/geoserver/ows?service=WFS&acceptversions=2.0.0&request=GetCapabilities"
+百度-UEditor:
+  - "/ueditor/ueditor.all.js"
+  - "/js/ueditor/ueditor.all.js"
+  - "/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/Content/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/Utility/UEditor/net?action=catchimage"
+  - "/Utility/UEditor/controller.ashx?action=catchimage"
+  - "/ueditor/index.html"
+  - "/UEditor/controller.ashx?action=catchimage"
+  - "/ueditor/asp/controller.asp?action=uploadimage"
+  - "/ueditor/asp/controller.asp?action=uploadfile"
+  - "/ueditor/net/controller.ashx?action=uploadimage"
+  - "/ueditor/net/controller.ashx?action=uploadfile"
+  - "/Utility/ueditor/asp/controller.asp?action=uploadimage"
+  - "/Utility/ueditor/asp/controller.asp?action=uploadfile"
+  - "/Utility/ueditor/net/controller.ashx?action=uploadimage"
+  - "/Utility/ueditor/net/controller.ashx?action=uploadfile"
+  - "/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/admin/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/editor/controller.ashx?action=catchimage&encode=utf-8"
+  - "/scripts/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/js/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/plugins/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/ue/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/content/scripts/plugins/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/controller.ashx?action=catchimage&encode=utf-8"
+  - "/assets/js/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/core/controller.ashx?action=catchimage&encode=utf-8"
+  - "/editor/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+  - "/components/ueditor/net/controller.ashx?action=catchimage&encode=utf-8"
+易软天创-禅道系统:
+  - "/zentao/"
+phpMyAdmin:
+  - "/phpmyadmin/"
+  - "/pma/"
+ArcGIS:
+  - "/arcgis/"
+SMARTBI:
+  - "/smartbi/vision/index.jsp"
+HARBOR:
+  - "/harbor/"
+MINIO-Browser:
+  - "/minio/"
+Tomcat-Login:
+  - "/manager/html"
+Jenkins:
+  - "/jenkins/login"
+SpringBoot-Actuator:
+  - "/prod-api/actuator"
+  - "/actuator"
+Grafana_Labs-公司产品:
+  - "/grafana/"
+KindEditor:
+  - "/kindeditor/asp.net/upload_json.ashx?dir=file"
+  - "/kindeditor/jsp/upload_json.jsp?dir=file"
+  - "/kindeditor/php/upload_json.php?dir=file"
+  - "/kindeditor/asp/upload_json.asp?dir=file"
+APACHE-Solr:
+  - "/solr/"
+APACHE-Axis2:
+  - "/axis2/"
+Jeecg-Boot:
+  - "/jeecg-boot/"
+PageOffice:
+  - "/poserver.zz"
+uni-emm:
+  - "/emm-api"
+华天动力OA:
+  - "/OAapp"
+ZABBIX-监控系统:
+  - "/zabbix"
+Nexus-Repository-Manager:
+  - "/nexus"
+Swagger-UI:
+  - "/swagger-ui.html"
+  - "/;/swagger-ui.html"
+  - "/api/swagger-ui.html"
+  - "/swagger/index.html"
+  - "/v2/api%2Ddocs"
+  - "/v3/api%2Ddocs"
+DockerOrEtcd:
+  - "/version"
+若依-管理系统:
+  - "/prod-api/"
+Ureport2:
+  - "/ureport/designer"
+Tongweb:
+  - "/console"
+久其财务报表系统:
+  - "/portal/"
+Apereo-CAS:
+  - "/cas/login"
+JCMS-Plus-内容管理系统:
+  - "/jcms/login.do"
+Monitoring-JavaMelody:
+  - "/monitoring"

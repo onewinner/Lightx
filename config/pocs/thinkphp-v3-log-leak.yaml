@@ -1,0 +1,27 @@
+id: thinkphp-v3-log-leak
+
+info:
+  name: ThinkPHP v3 - Log Leak
+  author: qwtd
+  severity: high
+  description: |
+    ThinkPHP v3 contains a log leak vulnerability. An attacker can obtain sensitive information from the log file.
+  tags: ThinkPHP,Fastadmin
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/Application/Runtime/Logs/{{date_time('%y_%m_%d')}}.log"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "INFO:"
+          - "ERR:"
+          - "NOTIC:"
+        condition: and
+
+      - type: status
+        status:
+          - 200

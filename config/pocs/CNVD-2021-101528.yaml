@@ -1,0 +1,30 @@
+id: CNVD-2021-101528
+
+info:
+  name: Prometheus未授权访问漏洞
+  author: qwtd
+  severity: medium
+  description: |
+    Prometheus是一种开源的事件控件和解决方案。Prometheus未授权访问漏洞，攻击者可利用该漏洞获取敏感信息，/api/v1/status/flags的web.enable-admin-api和web-enable-lifecycle如果为True则可以关闭服务或者删除所有的端点。
+  reference:
+    - https://www.cnvd.org.cn/patchInfo/show/309246
+  tags: Prometheus
+
+http:
+  - raw:
+      - |
+        GET /api/v1/status/flags HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "web.enable-admin-api\":\"true"
+          - "web.enable-lifecycle\":\"true"
+        condition: and
+
+      - type: status
+        status:
+          - 200

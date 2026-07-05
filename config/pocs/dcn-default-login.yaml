@@ -1,0 +1,25 @@
+id: dcn-default-login
+
+info:
+  name: DCN - Default Login
+  author: qwtd
+  severity: high
+  description: |
+    Default credentials admin333/123456 for DCN-DCWS-6028.
+  tags: DCN-DCWS-6028
+
+http:
+  - raw:
+      - |
+        GET /goform/UserPassOperation?user=admin333&password=123456&userpriority=15&operation=1 HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '../webServerUsers.html'
+      - type: status
+        status:
+          - 200

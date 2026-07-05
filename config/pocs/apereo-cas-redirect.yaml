@@ -1,0 +1,26 @@
+id: apereo-cas-redirect
+
+info:
+  name: Apereo CAS Redirect
+  author: qwtd
+  severity: medium
+  description: Apereo CAS redirects to a different URL.
+  reference:
+    - https://xz.aliyun.com/t/6060
+  tags: Apereo-CAS
+
+http:
+  - raw:
+      - |
+        GET /cas/logout?service=http://www.baidu.com HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "Location: http://www.baidu.com"
+      - type: status
+        status:
+          - 302

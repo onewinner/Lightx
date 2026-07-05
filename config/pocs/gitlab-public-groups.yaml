@@ -1,0 +1,26 @@
+id: gitlab-public-groups
+
+info:
+  name: GitLab public groups
+  author: qwtd
+  severity: info
+  metadata:
+    max-request: 2
+    shodan-query: http.title:"GitLab"
+  tags: GitLab
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/explore/groups"
+      - "{{BaseURL}}/-/groups"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '<title>Groups · Explore · GitLab</title>'
+
+      - type: status
+        status:
+          - 200

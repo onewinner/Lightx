@@ -1,0 +1,25 @@
+id: iserver-unauth
+
+info: 
+  name: iServer - Unauthenticated Access
+  author: qwtd
+  severity: medium
+  tags: SuperMap-iServer
+  description: |
+    iServer api docs is susceptible to unauthenticated access.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/iserver/services"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<title>SuperMap iServer Services</title>"
+
+      - type: status
+        status:
+          - 200

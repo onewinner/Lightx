@@ -1,0 +1,20 @@
+id: landray-oa-sysUiExtend-file-upload
+
+info:
+  name: 蓝凌OA sysUiExtend.do 任意文件上传漏洞
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    蓝凌OA系统在/sysUiExtend.do接口中存在任意文件上传漏洞。攻击者可以利用该漏洞上传恶意文件，导致服务器被入侵。
+  tags: LandRay-OA
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/sys/ui/sys_ui_extend/sysUiExtend.do?method=upload"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "添加主题包"
+        part: body

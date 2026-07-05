@@ -1,0 +1,25 @@
+id: seeyon-oa-m3-server-info-leak
+
+info:
+  name: Seeyon M3 Server - Information Leak
+  author: qwtd
+  severity: medium
+  description: Seeyon M3 server information was discovered.
+  metadata:
+    fofa: title="M3-Server"
+  tags: 致远OA-M3-Server
+
+http:
+  - method: GET
+    path: 
+      - "{{BaseURL}}/mobile_portal/logs/autoLogin.log"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "User Session"
+
+      - type: status
+        status:
+          - 200

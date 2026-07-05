@@ -1,0 +1,24 @@
+id: nginx-status-unauth
+
+info:
+  name: nginx状态监控接口未授权访问漏洞
+  author: bl
+  severity: low
+  description: |
+    在Nginx服务器上，默认的状态信息页面可能未受到访问控制的保护，允许任何人查看服务器的实时状态信息。这些信息包括当前活跃连接数、请求处理总数、连接状态分布等。未授权的访问可能会导致服务器负载信息、流量模式等被攻击者获取，增加了攻击的风险。
+  tags: Nginx
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/nginx_status"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'Active connections'
+          - 'server accepts handled requests'
+        condition: and
+      - type: status
+        status:
+          - 200

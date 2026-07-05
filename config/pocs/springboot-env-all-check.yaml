@@ -1,0 +1,54 @@
+id: springboot-env-all-check
+
+info:
+  name: Springboot Env Actuator - Detect
+  author: that_juan_,dwisiswant0,wdahlenb,philippedelteil,stupidfish,SleepingBag945
+  severity: high
+  description: Sensitive environment variables may not be masked
+  tags: SpringBoot-Framework,SpringBoot-Actuator,Alibaba-Nacos
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/env"
+      - "{{BaseURL}}/env.json"
+      - "{{BaseURL}}/actuator/env"
+      - "{{BaseURL}}/actuator/env.json"
+      - "{{BaseURL}}/appenv"
+      - "{{BaseURL}}/api/env"
+      - "{{BaseURL}}/1/..;/env"
+      - "{{BaseURL}}/1/..;/actuator/env"
+      - "{{BaseURL}}/actuator;/env;"
+      - "{{BaseURL}}/message-api/actuator/env"
+      - "{{BaseURL}}/prod-api/actuator/env"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "applicationConfig"
+          - "activeProfiles"
+        condition: or
+
+      - type: word
+        part: body
+        words:
+          - "server.port"
+          - "local.server.port"
+        condition: or
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+          - "application/vnd.spring-boot.actuator"
+          - "application/vnd.spring-boot.actuator.v1+json"
+          - "application/vnd.spring-boot.actuator.v2+json"
+          - "application/vnd.spring-boot.actuator.v3+json"
+        condition: or
+
+      - type: status
+        status:
+          - 200

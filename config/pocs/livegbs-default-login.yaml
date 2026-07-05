@@ -1,0 +1,33 @@
+id: livegbs-default-login
+
+info:
+  name: LiveGBS默认口令
+  author: xxx
+  severity: high
+  description: LiveGBS存在默认用户名口令admin/admin
+  tags: LiveGBS
+
+http:
+  - raw:
+      - |
+        POST /api/v1/login HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0
+        Accept: */*
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        X-Requested-With: XMLHttpRequest
+        Content-Length: 56
+        Origin: http://{{Hostname}}
+        Connection: close
+        Referer: http://{{Hostname}}/login.html
+        Cookie: token=lY8W_cESg
+        Priority: u=1
+
+        username=admin&password=21232f297a57a5a743894a0e4a801fc3
+    matchers:     
+      - type: dsl
+        name: LiveGBS_weakPassword
+        dsl:
+          - "status_code_1 == 200 && contains(body,'TokenTimeout')" 

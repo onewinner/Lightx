@@ -1,0 +1,37 @@
+id: CNVD-2022-48616
+
+info:
+  name: BES Application Server Unauthorized Access
+  author: bl
+  severity: medium
+  description: |
+    BES Application Server contains an unauthorized access vulnerability caused by improper access control on management resources. An attacker can directly access sensitive application pages and obtain information about the server deployment without authentication.
+  reference:
+    - https://www.cnvd.org.cn/flaw/show/CNVD-2022-48616
+  impact: |
+    Successful exploitation may allow attackers to access sensitive administrative interfaces, disclose deployment information, facilitate further attacks against the application server, and increase the likelihood of privilege escalation through chained vulnerabilities.
+  remediation: |
+    Upgrade to a secure version provided by the vendor, enforce authentication for all management interfaces, restrict access to administrative resources using network access controls, and regularly audit exposed application endpoints.
+  tags: 宝兰德
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+
+    redirects: true
+    max-redirects: 3
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "BES"
+          - "name=\"mainFrameTrue\""
+          - "welcome_middle.jsp"
+        condition: and

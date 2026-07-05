@@ -1,0 +1,26 @@
+id: flyrise-fe-uploadattachmentservlet-fileupload
+
+info:
+  name: FE-Enterprise Management Platform Arbitrary File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    飞企互联-FE企业运营管理平台的uploadAttachmentServlet存在任意文件上传漏洞，攻击者可利用该漏洞上传恶意文件，从而控制服务器或窃取敏感信息。
+  metadata:
+    fofa-query: 'app="FE-协作平台"'
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/servlet/uploadAttachmentServlet"
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '"namespace":"CommonResponse"'
+

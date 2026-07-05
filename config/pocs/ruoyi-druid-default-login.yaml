@@ -1,0 +1,39 @@
+id: ruoyi-druid-default-login
+
+info:
+  name: Ruoyi Druid Default Login
+  author: qwtd
+  severity: high
+  description: Ruoyi Druid default login information (ruoyi/123456) was discovered.
+  classification:
+    cwe-id: CWE-798
+  metadata:
+    max-request: 2
+  tags: 若依-管理系统
+
+http:
+  - raw:
+      - |
+        POST /api/druid/submitLogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        loginUsername=ruoyi&loginPassword=123456
+
+      - |
+        POST /prod-api/druid/submitLogin HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        loginUsername=ruoyi&loginPassword=123456
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: regex
+        regex:
+          - "^success$"

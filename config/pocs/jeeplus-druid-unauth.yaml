@@ -1,0 +1,27 @@
+id: jeeplus-druid-unauth
+
+info:
+  name: JeePlus Druid 未授权访问
+  author: qwtd
+  severity: high
+  description: |
+    hunter: web.body="We're sorry but Jeeplus doesn't work"
+  tags: Jeeplus
+
+http:
+  - raw:
+      - |
+        GET /jeeplus-vue/druid/index.html HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "Druid Stat Index"
+          - "DruidVersion"
+        condition: and

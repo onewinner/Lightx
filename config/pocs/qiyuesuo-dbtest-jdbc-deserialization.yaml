@@ -1,0 +1,27 @@
+id: qiyuesuo-dbtest-jdbc-deserialization
+
+info:
+  name: 契约锁 dbtest - JDBC反序列化
+  author: bl
+  severity: critical
+  description: 契约锁/api/setup/dbtest接口存在JDBC反序列化漏洞，攻击者可以通过该漏洞获取主机权限
+  reference:
+    - https://mp.weixin.qq.com/s/2CkkpotZJ6XwSeuyXf5lRg
+  classification:
+    cwe-id: CWE-502
+  metadata:
+    fofa-query: app="契约锁-电子签署平台" && port="9181"
+  tags: 契约锁-电子签署平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/setup/dbtest"
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '\u8BF7\u586B\u5199\u4E3B\u673A\u540D\u79F0'
+      - type: status
+        status:
+          - 200

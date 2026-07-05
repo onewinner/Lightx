@@ -1,0 +1,34 @@
+id: coremail-version-detect
+
+info:
+  name: Coremail - Version Detect
+  author: qwtd
+  severity: info
+  reference:
+    - https://cloud.tencent.com/developer/article/1821371
+  tags: Coremail-邮件系统
+
+http:
+  - raw:
+      - |
+        GET /coremail/s/json?func=verify  HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - '"code":"S_OK"'
+          - "var"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: json
+        name: version
+        group: 1
+        json:
+           - '.var.version'

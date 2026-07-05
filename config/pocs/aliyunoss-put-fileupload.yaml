@@ -1,0 +1,39 @@
+id: aliyunoss-put-fileupload
+
+info:
+  name: Aliyun OSS - Put File Upload
+  author: qwtd
+  severity: medium
+  description: Aliyun OSS is a cloud storage service provided by Alibaba Cloud. It allows users to store and manage their data in the cloud.
+  metadata:
+    max-request: 1
+    verified: true
+  tags: AliyunOSS
+
+variables:
+  filename: "{{to_lower(rand_text_alpha(5))}}"
+
+http:
+  - raw:
+      - |
+        PUT /{{filename}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3
+        Content-Length: 0
+
+        ossuploadtest
+      
+      - |
+        GET /{{filename}}.txt HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "ossuploadtest"
+        part: body

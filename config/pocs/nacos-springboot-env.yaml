@@ -1,0 +1,44 @@
+id: nacos-springboot-env
+
+info:
+  name: Nacos SpringBoot Actuator ENV - Detect
+  author: qwtd
+  severity: high
+  description: Sensitive environment variables may not be masked
+  tags: Alibaba-Nacos
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/nacos/actuator/env"
+      - "{{BaseURL}}/nacos/actuator/;/env"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "applicationConfig"
+          - "activeProfiles"
+        condition: or
+
+      - type: word
+        part: body
+        words:
+          - "server.port"
+          - "local.server.port"
+        condition: or
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
+          - "application/vnd.spring-boot.actuator"
+          - "application/vnd.spring-boot.actuator.v1+json"
+          - "application/vnd.spring-boot.actuator.v2+json"
+          - "application/vnd.spring-boot.actuator.v3+json"
+        condition: or
+
+      - type: status
+        status:
+          - 200

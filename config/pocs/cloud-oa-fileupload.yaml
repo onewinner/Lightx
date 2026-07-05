@@ -1,0 +1,36 @@
+id: cloud-oa-fileupload
+
+info:
+  name: Cloud OA - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    全程云OA接口UploadFile存在任意文件上传漏洞。该漏洞允许攻击者上传webshell木马获取服务器权限.
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E5%85%A8%E7%A8%8B%E4%BA%91OA/%E5%85%A8%E7%A8%8B%E4%BA%91OA%E6%8E%A5%E5%8F%A3UploadFile%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: body="全程云办公" && body="/OA/WebResource.axd"
+  tags: 全程云OA
+
+http:
+  - raw:
+      - |
+        POST /OA/api/2.0/Common/AttachFile/UploadFile HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "上传文件为空"
+          - "10004"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+
+# digest: 490a0046304402201ef7eee5943cd3f135682a31365b7e6e55689cfc32f27191495dd04665d674c402206add4553dd66405401f96e1d14db0797a45c9bfc1beb88c8fd8674137a9d81d7:922c64590222798bb761d5b6d8e72950

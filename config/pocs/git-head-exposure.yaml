@@ -1,0 +1,31 @@
+id: git-head-exposure
+
+info:
+  name: Git HEAD Exposure
+  author: qwtd
+  severity: high
+  description: Exposed .git/HEAD file is accessible.
+  metadata:
+    dast: true
+    verified: true
+    max-request: 1
+  tags: dast
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/HEAD"
+
+    host-redirects: true
+    max-redirects: 2
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: regex
+        part: body
+        regex:
+          - '^ref: refs/(heads|remotes)/[^\r\n]+'

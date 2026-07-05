@@ -1,0 +1,25 @@
+
+
+id: e-office-sqlfile-info-leak
+info:
+  name: E-Office schema_mysql - Info Leak
+  author: qwtd
+  severity: medium
+  description: https://mp.weixin.qq.com/s/tOnPpW9Sv-6xCUL9GBlIww
+  tags: 泛微-EOffice
+http:
+  - raw:
+      - |
+        GET /eoffice10/empty_scene/db/schema_mysql.sql HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "CREATE TABLE"
+
+      - type: word
+        part: header
+        words:
+          - "application/x-sql"

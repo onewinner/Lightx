@@ -1,0 +1,39 @@
+id: sentinel-default-login
+
+info:
+  name: Sentinel Default Login
+  author: qwtd
+  severity: high
+  description: |
+    Alibaba Sentinel has a default login vulnerability. default username and password are sentinel/sentinel.
+  metadata:
+    max-request: 1
+    fofa-query: title="Sentinel Dashboard"
+    verified: true
+  tags: Alibaba-Sentinel
+
+http:
+  - raw:
+      - |
+        POST //auth/login?password=sentinel&username=sentinel HTTP/1.1
+        Host: {{Hostname}}
+        Cookie: sentinel_dashboard_cookie=6279A6143EC5728E2CAA2A25D6E8ECF4
+        Accept: application/json, text/plain, */*
+        Accept-Language: zh-CN,zh;q=0.9
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Content-Length: 0
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: body
+        words:
+          - 'superUser'
+          - 'nickName'
+          - 'loginName'
+          - 'sentinel'
+        condition: and

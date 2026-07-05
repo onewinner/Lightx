@@ -1,0 +1,26 @@
+id: CNVD-2021-30900
+
+info:
+  name: Ruijie RG-ISG Sensitive Information Leak
+  author: qwtd
+  severity: medium
+  description: |
+    Ruijie RG-ISG sensitive information leak vulnerability.
+  reference:
+    - https://blog.csdn.net/weixin_48421613/article/details/116593104
+  tags: Ruijie-RG-ISG
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "<title>RG-ISG"
+          - 'persons = [{"name":"admin","password"'
+          - 'flag":7'
+        part: body
+        condition: and

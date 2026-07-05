@@ -1,0 +1,25 @@
+id: coremail-servers-unauth
+info:
+  name: Coremail 邮件系统 /apiws/services 接口存在未授权访问漏洞
+  author: bl
+  severity: medium
+  description: |
+    Coremail 邮件系统 /apiws/services 接口存在未授权访问漏洞，该漏洞由于缺乏有效的访问控制或身份验证机制，导致未经授权的用户可以访问、修改或破坏系统资源的安全问题。
+  tags: Coremail-邮件系统
+  classification:
+    cwe-id: CWE-862
+http:
+  - method: GET
+    path:
+      - '{{BaseURL}}/apiws/services/API?wsdl'
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - coremail.cn/apiws
+          - tns:addOrgDomainResponse
+          - authenticateResponse
+        condition: and
+      - type: status
+        status:
+          - 200

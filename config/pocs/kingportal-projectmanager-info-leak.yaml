@@ -1,0 +1,30 @@
+id: kingportal-projectmanager-info-leak
+
+info:
+  name: KingPortal ProjectManager.json - Information Disclosure
+  author: qwtd
+  severity: medium
+  description: KingPortal ProjectManager.json contains sensitive information.
+  metadata:
+    fofa: title="KingPortal"
+    verified: true
+  tags: KingPortal
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/ProjectManager.json"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "projectGroups"
+          - "createtime"
+          - "projectMng"
+        condition: and
+
+      - type: status
+        status:
+          - 200
+      

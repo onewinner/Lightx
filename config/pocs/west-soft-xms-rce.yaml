@@ -1,0 +1,29 @@
+id: west-soft-rce
+
+info:
+  name: Westsoft XMS - Remote Code Execution
+  author: qwtd
+  severity: critical
+  description: |
+    西软云XMS /fox-invoker/FoxLookupInvoker接口处存在反序列化漏洞，未经身份认证的攻击者可利用此漏洞执行任意代码，获取服务器权限。
+  reference:
+    - https://github.com/wy876/POC/blob/17fce9e8a8e4c711753f586f24a2b8351f367aee/%E8%A5%BF%E8%BD%AF%E4%BA%91/%E8%A5%BF%E8%BD%AF%E4%BA%91XMS%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.md
+    - https://mp.weixin.qq.com/s/M7rhb-2ANcuJ8cwCfLcZBg
+  
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/fox-invoker/FoxLookupInvoker/?return-exception=true"
+    
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "jboss.invocation"
+          - "InvocationException"
+        condition: and
+
+      - type: status
+        status:
+          - 200

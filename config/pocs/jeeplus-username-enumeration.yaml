@@ -1,0 +1,34 @@
+id: jeeplus-username-enumeration
+
+info:
+  name: JeePlus register - Username Enumeration
+  author: qwtd
+  severity: low
+  description: |
+    JeePlus 注册处存在用户名枚举漏洞，用户名存在返回false，不存在返回true。 
+  metadata:
+    max-request: 1
+    verified: true
+  tags: Jeeplus
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/a/sys/user/validateLoginName?loginName=testadmin123"
+    
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "false"
+          - "true"
+        part: body
+        condition: or
+      - type: word
+        part: header
+        words:
+          - "Content-Length: 4"
+        

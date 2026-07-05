@@ -1,0 +1,58 @@
+手机号信息泄露:
+  severity: medium  # 敏感程度: low(青色-默认), medium(黄色), high(红色), critical(红色闪烁)
+  rules:
+    - 'body~="[^\w]((?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8})[^\w]"'
+
+邮箱信息泄露:
+  severity: medium
+  rules:
+    - 'body~="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"'
+
+身份证信息泄露:
+  severity: critical
+  rules:
+    - 'body~="[^0-9]((\d{8}(0\d|10|11|12)([0-2]\d|30|31)\d{3}$)|(\d{6}(18|19|20)\d{2}(0[1-9]|10|11|12)([0-2]\d|30|31)\d{3}(\d|X|x)))[^0-9]"'
+
+银行卡信息泄露:
+  severity: low
+  rules:
+    - 'body~="[^\w]([1-9]\d{15,18})[^\w]"'
+
+API密钥泄露-AWS:
+  severity: low
+  rules:
+    - 'body~="(AKIA[0-9A-Z]{16})"'
+    - 'body~="((?:A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})"'
+
+API密钥泄露-阿里云:
+  severity: low
+  rules:
+    - 'body~="(LTAI[a-zA-Z0-9]{12,20})"'
+
+API密钥泄露-腾讯云:
+  severity: low
+  rules:
+    - 'body~="(AKID[a-zA-Z0-9]{13,20})"'
+
+数据库连接字符串泄露:
+  severity: high
+  rules:
+    - 'body~="(jdbc:[a-zA-Z0-9]+://[^\s;]+)"'
+    - 'body~="(mongodb://[^\s;]+)"'
+    - 'body~="(redis://[^\s;]+)"'
+
+JWT令牌泄露:
+  severity: high
+  rules:
+    - 'body~="(eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9._-]{10,}|eyJ[A-Za-z0-9_\/+-]{10,}\.[A-Za-z0-9._\/+-]{10,})"'
+
+私钥泄露:
+  severity: low
+  rules:
+    - 'body~="([-]+BEGIN [^\s]+ PRIVATE KEY[-])"'
+
+
+内网IP泄露:
+  severity: low
+  rules:
+    - 'body~="[^0-9.]((127\.0\.0\.1)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3}))"'

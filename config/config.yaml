@@ -1,0 +1,854 @@
+# # Lightx 完整配置文件
+# # 优先级：命令行参数 > 本地配置文件 > 嵌入默认配置
+
+# # ============================================
+# # 扫描全局配置
+# # ============================================
+# scan:
+#   # 线程配置
+#   thread: 100                    # 指纹扫描线程数
+#   tcp_threads: 8000               # TCP端口扫描线程数
+
+#   # 超时配置
+#   timeout: 3                     # Web请求超时时间(秒)
+#   tcp_timeout: 1                 # TCP端口扫描超时时间(秒)
+
+#   # 端口扫描配置
+#   port_range: "default"          # 默认端口范围
+#   exclude_port: "9100,9103,9101,9102,25,110,9104,9105,9106,9107,515,143"  # 排除端口
+#   ports_threshold: 800           # 端口阈值(超过认为是防火墙)
+#   random_port: false             # 是否随机化端口扫描顺序
+
+#   # 扫描模式
+#   deep_scan: true                # 启用深度扫描
+#   root_path: true                # 深度指纹扫描是否采用根路径
+#   service_check: true            # 启用服务指纹识别
+#   web_scan: true                 # 执行Web扫描
+#   use_ping: false                # 禁用存活探测(false表示对所有IP扫描)
+
+#   # 域名解析配置
+#   domain_resolve: false          # 只进行域名解析
+#   resolve_all: false             # 解析所有DNS记录类型
+#   prefer_ipv6: false             # 优先使用IPv6地址
+#   skip_cdn: false                # 跳过CDN保护的域名
+#   force_real_ip: false           # 强制使用真实IP
+#   disable_wildcard: false        # 禁用泛解析过滤
+
+# # ============================================
+# # 漏洞扫描配置
+# # ============================================
+# vulnerability:
+#   # 扫描模式: more(多线程), one(单线程), false(禁用)
+#   mode: "more"
+
+#   # POC配置
+#   template: ""                   # 模板文件或目录
+#   nuclei_ids: ""                 # Nuclei模板ID过滤(逗号分隔)
+#   tags: ""                       # POC标签
+#   include_tags: ""               # 包含的POC标签
+#   exclude_tags: "Nginx"  # 排除的POC标签
+
+#   # 特定漏洞检测
+#   log4j2: true                   # 启用Log4j2检查
+#   api_directory_scan: false      # 启用API/备份文件扫描
+#   disable_fastjson: false        # 禁用Fastjson探测
+#   disable_shiro: false           # 禁用Shiro探测
+
+#   # 无痕模式
+#   stealth: false                 # 关闭所有主动探测
+
+# # ============================================
+# # 爬虫配置
+# # ============================================
+# crawler:
+#   # 爬虫模式: auto(自动), static(静态), dynamic(动态), hybrid(混合), off(禁用)
+#   mode: "auto"
+#   debug: false                   # 爬虫调试模式
+#   scan_urls: false               # 对爬虫发现的URL进行指纹扫描
+
+# # ============================================
+# # DNSLog配置
+# # ============================================
+# dnslog:
+#   disable: false                 # 禁用DNSLog
+#   server: ""                     # 自定义DNSLog服务器地址
+#   token: ""                      # 自定义DNSLog授权令牌
+
+# # ============================================
+# # 代理配置
+# # ============================================
+# proxy:
+#   enabled: false                 # 是否启用代理
+#   url: ""                        # 代理地址 (http://127.0.0.1:8080 或 socks5://127.0.0.1:1080)
+
+# # ============================================
+# # 输出配置
+# # ============================================
+# output:
+#   log_file: "log.txt"            # 日志文件路径
+#   report_file: "report.html"     # HTML报告文件路径
+#   config_delete: true            # 扫描完成后删除临时配置
+
+# # ============================================
+# # 调试配置
+# # ============================================
+# debug:
+#   enabled: false                 # 启用调试模式
+#   show_request: false            # 显示请求和响应数据包
+
+# # ============================================
+# # 插件配置
+# # ============================================
+# plugin:
+#   enabled: true                  # 启用插件系统
+#   module_name: ""                # 指定要调用的插件名称
+#   plugin_params: ""              # 插件自定义参数
+#   webfinger_concurrency: 0       # 漏洞插件并发数(0表示不限制)
+
+# ============================================
+# 爆破配置
+# ============================================
+brute:
+  # 全局参数
+  # threads: 10                    # 爆破线程数
+  # timeout: 5                     # 超时时间(秒)
+  # max_attempts: 800              # 最大尝试次数
+
+  # 服务字典配置
+  services:
+    # MySQL 数据库
+    MySQL:
+      usernames: [root, mysql, mysqlUser]
+      passwords: ["", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1", "12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [mysql]
+
+    # MSSQL 数据库
+    MSSQL:
+      usernames: [sa, sql]
+      passwords: ["", sa, sql, "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [master]
+
+    # PostgreSQL 数据库
+    PostgreSQL:
+      usernames: [postgres, gaussdb, gpadmin, SYS, vbadmin, pwadmin, sysdba]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1", "Changeme_123","Vbase@123",
+                  "admin@123", "Admin@123", "admin123!@#",  "{user}1", "{user}111","12345","Hello@123",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [postgres,vastbase,panweidb,highgo]
+
+    # Oracle 数据库
+    Oracle:
+      usernames: [sys, system, admin, test, web, orcl]
+      passwords: ["", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      sids: [XE, ORCL, ORCLPDB1, XEPDB1, PDBORCL]
+
+    # MongoDB 数据库
+    MongoDB:
+      usernames: [root, admin, mongodb]
+      passwords: ["", mongodb, mongo123, "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [admin, test, local]
+
+    # Redis 数据库
+    Redis:
+      usernames: [root, admin, redis]
+      passwords: ["", foobared, "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SSH 服务
+    SSH:
+      usernames: [root, admin, gly, administrator]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # FTP 服务
+    FTP:
+      usernames: [ftp, admin, www, web, root, anonymous, test]
+      passwords: ["", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Telnet 服务
+    Telnet:
+      usernames: [root, admin, test, user]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SMB/CIFS 服务
+    SMB:
+      usernames: [administrator, admin, guest]
+      passwords: ["", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      domains: [WORKGROUP, ".", ""]
+
+    # RDP 服务
+    RDP:
+      usernames: [administrator, admin, guest, adminroot]
+      passwords: ["", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Memcached 服务
+    Memcached:
+      usernames: [memcached, admin, root]
+      passwords: ["", "123456", "{user}", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Elasticsearch 服务
+    Elastic:
+      usernames: [elastic, admin, kibana]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # RabbitMQ 服务
+    RabbitMQ:
+      usernames: [guest, admin, administrator, rabbit, rabbitmq, root]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Kafka 服务
+    Kafka:
+      usernames: [admin, kafka, root, test]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # ActiveMQ 服务
+    ActiveMQ:
+      usernames: [admin, root, activemq, system, user]
+      passwords: ["", "{user}", "123456", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # LDAP 服务
+    LDAP:
+      usernames: [admin, administrator, root, "cn=admin", "cn=administrator", "cn=manager"]
+      passwords: ["", "123456", "{user}", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SMTP 服务
+    SMTP:
+      usernames: [admin, root, postmaster, mail, smtp, administrator]
+      passwords: ["", "123456", "{user}", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SNMP 服务
+    SNMP:
+      usernames: ["public", "private", "cisco", "community"]
+      passwords: []
+
+    # IMAP 服务
+    IMAP:
+      usernames: [admin, mail, postmaster, root, user, test]
+      passwords: ["", "123456", "{user}", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # POP3 服务
+    POP3:
+      usernames: [admin, root, mail, user, test, postmaster]
+      passwords: ["", "123456", "{user}", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Zabbix 服务
+    Zabbix:
+      usernames: [Admin, admin, guest, user]
+      passwords: ["", zabbix, "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Rsync 服务
+    Rsync:
+      usernames: [rsync, root, admin, backup]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Cassandra 数据库
+    Cassandra:
+      usernames: [cassandra, admin, root, system]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Neo4j 数据库
+    Neo4j:
+      usernames: [neo4j]
+      passwords: ["", "{user}", "73@TuGraph", "123456", "admin", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#"]
+
+    # 达梦数据库
+    DM:
+      usernames: [SYSDBA, SYSSSO, SYSAUDITOR, DM, dm]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # 人大金仓数据库
+    Kingbase:
+      usernames: [SYSTEM, admin, kingbase, system]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [test, kingbase, sample, security, template0, template1]
+
+    # TiDB 数据库
+    TiDB:
+      usernames: [root, tidb, admin, test, user]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [mysql,test]
+
+    # ClickHouse 数据库
+    ClickHouse:
+      usernames: [default, admin, clickhouse, root, user, system]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [default, system]
+
+    # 虚谷数据库 (限制8个密码避免封禁)
+    Xugu:
+      usernames: [SYSDBA, xugu, SYSAUDITOR, SYS, SYSSSO]
+      passwords: ["", "123456", "admin", "{user}", "123", "password", "root"]
+      databases: [SYSTEM]
+
+    # DB2 数据库
+    DB2:
+      usernames: [db2admin, db2inst1, db2fenc1, dasusr1]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: ["SAMPLE", "DB2", "DB2", "BLUDB", "MYDB"]
+
+    # TDengine 数据库
+    TDengine:
+      usernames: [root, admin, taosdata, tdengine, taosd]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # 神通数据库
+    ShenTong:
+      usernames: [SYSDBA, SYSSSO, SYSAUDITOR, admin, oscar, shentong]
+      passwords: ["", "szoscar55", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: ["OSRDB", "OSCAR", "SHENTONG", "TEST", "DB"]
+
+    # 南大通用数据库
+    GBase:
+      usernames: [gbasedbt, admin, root, gbase]
+      passwords: ["", "gbasedbt", "Big4ifmx", "{user}", "GBase123", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: ["OSRDB", "sysmaster", "syscdr", "testdb", "gbaseserver", "sysadmin", "sysuser", "sysutils"]
+
+    # RTSP 服务
+    RTSP:
+      usernames: [admin, root, user, guest, operator, camera, rtsp, hikvision, dahua, onvif, axis, supervisor]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      uris: ["/live.sdp", "/cam/realmonitor", "/h264", "/mpeg4", "/stream1", "/stream2", "/video.mp4", "/media.amp", "/onvif1", "/onvif2", "/Streaming/Channels/101", "/Streaming/Channels/1", "/ch0", "/ch1", "/live/ch00_0", "/axis-media/media.amp"]
+
+    # VNC 服务（限速爆破：单线程+间隔延迟，避免触发服务器连接锁定）
+    VNC:
+      attempt_delay: 500    # 每次尝试间隔(毫秒)，避免触发服务器锁定
+      lockout_delay: 5      # 检测到锁定(rejected)后等待恢复秒数
+      passwords: [
+        "", "123456", "1", "123", "1234", "12345", "12345678", "password",
+        "111111", "000000", "666666", "888888",
+        "admin", "admin123", "root", "test", "vnc", "remote", "desktop", "server",
+        "pass123", "qwerty", "abc123", "1qaz2wsx", "P@ssw0rd",
+        "123qwe", "a123456", "Aa123456", "changeme", "letmein"
+      ]
+
+    # Zookeeper 服务(只实现未授权)
+    Zookeeper:
+      usernames: []
+      passwords: []
+
+    # MQTT 服务
+    MQTT:
+      usernames: [admin, root, mqtt, user, guest, test, mosquitto, emqx, system]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SOCKS5 代理
+    SOCKS5:
+      usernames: [admin, root, socks5, user, guest, test]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # SVN 服务
+    SVN:
+      usernames: [admin, root, svn, user, guest, test, web]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Sybase 数据库
+    Sybase:
+      usernames: [sa, sybase, admin, dbo, probe]
+      passwords: ["", "{user}", "sasasa", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      databases: [master, model, tempdb, sybsystemprocs]
+
+    # IoTDB 时序数据库
+    IoTDB:
+      usernames: [root, admin, user, iotdb, test]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # InfluxDB 时序数据库
+    InfluxDB:
+      usernames: [admin, root, influxdb, influx, user, test]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # Hazelcast 内存网格
+    Hazelcast:
+      usernames: []  # Hazelcast 未授权访问不需要用户名
+      passwords: []  # Hazelcast 未授权访问不需要密码
+      cluster_names: [dev, prod, test, cluster, hazelcast]  # 尝试的集群名称
+      map_names: [default, cache, session, data, config, users, products, orders, inventory, settings]  # 尝试访问的Map名称
+
+    # Kerberos 认证服务
+    Kerberos:
+      usernames: [administrator, admin, guest, krbtgt, test, user, backup, service, sql_svc, web_svc]
+      passwords: []  # Kerberos主要用于用户枚举，不进行密码爆破
+      databases: [DOMAIN.LOCAL, CORP.LOCAL, LAB.LOCAL, TEST.LOCAL]  # 域名列表
+
+    # CouchDB 数据库
+    CouchDB:
+      usernames: [admin, root, couchdb, administrator]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # RADIUS 认证服务
+    RADIUS:
+      usernames: [admin, user, test, radius, root, guest]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+      # RADIUS共享密钥(Secret)列表 - 用于RADIUS认证
+      secrets: [testing123, secret, radius, admin, password, "123456", ""]
+
+    # WinRM 远程管理服务
+    WinRM:
+      usernames: [administrator, admin, Administrator, root, user]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1","12345",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
+
+    # 默认字典 (服务未定义时使用)
+    default:
+      usernames: ["root", "admin", "administrator", "test", "user", "sa","sys"]
+      passwords: ["", "{user}", "123456", "admin", "admin123", "root", "pass123", "Admin@9000", "pass@123", "password",
+                  "Password", "P@ssword123", "123123", "654321", "111111", "123", "1",
+                  "admin@123", "Admin@123", "admin123!@#", "{user}1", "{user}111",
+                  "{user}123", "{user}@123", "{user}@123!", "{user}#123", "{user}@111",
+                  "{user}@2019", "{user}@2020", "{user}@2021", "{user}@2022", "{user}@2023", "{user}@123#4",
+                  "{user}@2024", "{user}@2025", "{user}12#$", "{user}!@#123", "{user}123!@#", "{user}!@#",
+                  "P@ssw0rd!", "P@ssw0rd", "Passw0rd", "qwe123","12345678", "test", "test123", "123qwe",
+                  "123qwe!@#", "123456789", "123321","666666", "a123456.", "123456~a", "123456!a", "000000", "1234567890", "8888888",
+                  "!QAZ2wsx", "1qaz2wsx", "1q2w3e4r", "abc123", "abc123456", "1qaz@WSX", "a11111", "a12345",
+                  "Aa1234", "Aa1234.", "Aa12345", "a123456", "a123123", "Aa123123", "Aa123456",
+                  "Aa12345.", "sysadmin", "system", "1qaz!QAZ", "2wsx@WSX", "qwe123!@#", "Aa123456!",
+                  "A123456s!", "sa123456", "1q2w3e", "Aa123456789", "q1w2e3r4"]
